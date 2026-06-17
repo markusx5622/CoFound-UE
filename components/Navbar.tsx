@@ -5,11 +5,12 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -26,6 +27,10 @@ export default function Navbar() {
       console.error("Error signing out:", error);
     }
   };
+
+  if (pathname === "/") {
+    return null;
+  }
 
   return (
     <nav className="bg-white border-b border-gray-200 py-4 px-6 sticky top-0 z-50">
