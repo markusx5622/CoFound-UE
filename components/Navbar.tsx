@@ -36,14 +36,15 @@ export default function Navbar() {
     <nav className="bg-white border-b border-gray-200 py-4 px-6 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center">
-          <Image 
-            src="/CoFoundUE_logo.png" 
-            alt="CoFound UE Logo" 
-            width={40} 
-            height={40} 
-            className="h-10 w-auto object-contain"
-            priority
-          />
+          <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300">
+            <Image 
+              src="/CoFoundUE_logo.png" 
+              alt="CoFound UE Logo" 
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-300"
+              priority
+            />
+          </div>
         </Link>
         
         {user && (

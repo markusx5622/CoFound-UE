@@ -15,11 +15,11 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="inline-block mb-4">
               <Image 
-                src="/CoFoundUE_banner.png" 
+                src="/CoFoundUE_logo.png" 
                 alt="CoFound UE Logo" 
-                width={150} 
-                height={38} 
-                className="h-8 w-auto object-contain brightness-0 invert opacity-90"
+                width={60} 
+                height={60} 
+                className="h-12 w-auto object-contain rounded-xl"
               />
             </Link>
             <p className="text-sm mb-6 text-zinc-500">
