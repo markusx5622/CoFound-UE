@@ -43,19 +43,45 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Plataforma</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/#how-it-works" className="hover:text-white transition-colors">
+                <button 
+                  onClick={() => {
+                    if (window.location.pathname === "/") {
+                      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      window.location.href = "/#how-it-works";
+                    }
+                  }}
+                  className="hover:text-white transition-colors text-left"
+                >
                   Cómo funciona
-                </Link>
+                </button>
               </li>
               <li>
-                <Link href="/#features" className="hover:text-white transition-colors">
-                  Perfiles buscados
-                </Link>
+                <button 
+                  onClick={() => {
+                    if (window.location.pathname === "/") {
+                      document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      window.location.href = "/#features";
+                    }
+                  }}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Beneficios y Perfiles
+                </button>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-white transition-colors">
-                  Dashboard de Proyectos
-                </Link>
+                <button 
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    if (window.location.pathname !== "/") {
+                      window.location.href = "/";
+                    }
+                  }}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Unirme a la red
+                </button>
               </li>
             </ul>
           </div>

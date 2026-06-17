@@ -28,7 +28,7 @@ export default function Navbar() {
     }
   };
 
-  if (pathname === "/") {
+  if (pathname === "/" || pathname.startsWith("/legal")) {
     return null;
   }
 
