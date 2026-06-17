@@ -46,6 +46,8 @@ export const metadata: Metadata = {
   },
 };
 
+import ParticleBackground from "@/components/particle-background";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -53,9 +55,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.className} min-h-screen bg-white text-black flex flex-col`}>
+      <body className={`${inter.className} min-h-screen bg-zinc-950 text-white flex flex-col relative`}>
+        <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+          <ParticleBackground />
+        </div>
         <Navbar />
-        <main className="flex-grow flex flex-col">
+        <main className="flex-grow flex flex-col relative z-10">
           {children}
         </main>
       </body>

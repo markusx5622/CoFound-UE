@@ -61,12 +61,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white relative">
-      {/* Fondo de Partículas (fijo detrás de todas las secciones) */}
-      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
-        <ParticleBackground />
-      </div>
-
+    <div className="min-h-screen bg-transparent text-white relative">
       {/* Sección Hero + Formulario */}
       <div className="relative z-10 flex flex-col justify-center min-h-[calc(100vh-80px)] overflow-hidden">
         {/* Glows de ambientación traseros */}

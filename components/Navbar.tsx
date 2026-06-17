@@ -33,10 +33,10 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white border-b border-gray-200 py-4 px-6 sticky top-0 z-50">
+    <nav className="bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 py-4 px-6 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center">
-          <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300">
+          <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-2xl overflow-hidden shadow-sm border border-zinc-800 hover:shadow-[0_0_15px_rgba(230,0,0,0.15)] hover:border-zinc-700 transition-all duration-300">
             <Image 
               src="/CoFoundUE_logo.png" 
               alt="CoFound UE Logo" 
@@ -49,18 +49,18 @@ export default function Navbar() {
         
         {user && (
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="text-sm font-medium hover:text-[#E60000] transition-colors">
+            <Link href="/dashboard" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
               Dashboard
             </Link>
-            <Link href="/dashboard/nuevo" className="text-sm font-medium hover:text-[#E60000] transition-colors">
+            <Link href="/dashboard/nuevo" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
               Nuevo Proyecto
             </Link>
-            <Link href="/perfil" className="text-sm font-medium hover:text-[#E60000] transition-colors">
+            <Link href="/perfil" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
               Mi Perfil
             </Link>
             <button
               onClick={handleLogout}
-              className="bg-black text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-800 transition-all duration-200 shadow-sm"
+              className="bg-zinc-900 border border-zinc-800 text-zinc-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-sm"
             >
               Cerrar Sesión
             </button>
