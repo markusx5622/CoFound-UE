@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 import ParticleBackground from "@/components/particle-background";
 import HeroSection from "@/components/hero-section";
@@ -18,16 +19,15 @@ export default function LandingPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push("/dashboard");
-      }
+      setCurrentUser(user);
     });
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
   const validateEmail = (email: string) => {
     const domainCheck = email.endsWith("@live.uem.es") || email.endsWith("@universidadeuropea.es");
@@ -84,77 +84,97 @@ export default function LandingPage() {
             <div className="bg-white p-8 rounded-2xl shadow-2xl relative overflow-hidden border border-zinc-200">
               <div className="absolute top-0 left-0 w-full h-1 bg-[#E60000]"></div>
               
-              <h2 className="text-3xl font-bold text-black mb-2">
-                {isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
-              </h2>
-              <p className="text-gray-500 mb-8 text-sm">
-                Usa tu correo @live.uem.es o @universidadeuropea.es
-              </p>
-
-              <form onSubmit={handleAuth} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Institucional</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
-                      placeholder="estudiante@live.uem.es"
-                    />
-                  </div>
+              {currentUser ? (
+                <div className="text-center py-6">
+                  <h2 className="text-3xl font-bold text-black mb-3">
+                    ¡Hola de nuevo!
+                  </h2>
+                  <p className="text-gray-500 mb-8 text-sm">
+                    Has iniciado sesión con tu cuenta institucional de la universidad.
+                  </p>
+                  <Link
+                    href="/dashboard"
+                    className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  >
+                    Ir al Dashboard
+                    <ArrowRight className="h-5 w-5" />
+                  </Link>
                 </div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold text-black mb-2">
+                    {isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
+                  </h2>
+                  <p className="text-gray-500 mb-8 text-sm">
+                    Usa tu correo @live.uem.es o @universidadeuropea.es
+                  </p>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
+                  <form onSubmit={handleAuth} className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Institucional</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Mail className="h-5 w-5 text-gray-400" />
+                        </div>
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
+                          placeholder="estudiante@live.uem.es"
+                        />
+                      </div>
                     </div>
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
-                      placeholder="••••••••"
-                    />
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Lock className="h-5 w-5 text-gray-400" />
+                        </div>
+                        <input
+                          type="password"
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
+                          placeholder="••••••••"
+                        />
+                      </div>
+                    </div>
+
+                    {error && (
+                      <div className="p-3 bg-red-50 text-[#E60000] text-sm rounded-xl flex items-start gap-2 border border-red-100">
+                        <AlertCircle className="h-5 w-5 shrink-0" />
+                        <span>{error}</span>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-70"
+                    >
+                      {loading ? "Procesando..." : (isLogin ? "Entrar" : "Registrarse")}
+                      {!loading && <ArrowRight className="h-5 w-5" />}
+                    </button>
+                  </form>
+
+                  <div className="mt-6 text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsLogin(!isLogin);
+                        setError("");
+                      }}
+                      className="text-sm text-gray-600 hover:text-black font-medium transition-colors"
+                    >
+                      {isLogin ? "¿No tienes cuenta? Regístrate aquí" : "¿Ya tienes cuenta? Inicia sesión"}
+                    </button>
                   </div>
-                </div>
-
-                {error && (
-                  <div className="p-3 bg-red-50 text-[#E60000] text-sm rounded-xl flex items-start gap-2 border border-red-100">
-                    <AlertCircle className="h-5 w-5 shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-70"
-                >
-                  {loading ? "Procesando..." : (isLogin ? "Entrar" : "Registrarse")}
-                  {!loading && <ArrowRight className="h-5 w-5" />}
-                </button>
-              </form>
-
-              <div className="mt-6 text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLogin(!isLogin);
-                    setError("");
-                  }}
-                  className="text-sm text-gray-600 hover:text-black font-medium transition-colors"
-                >
-                  {isLogin ? "¿No tienes cuenta? Regístrate aquí" : "¿Ya tienes cuenta? Inicia sesión"}
-                </button>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </div>
