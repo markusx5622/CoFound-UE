@@ -9,6 +9,7 @@ import ParticleBackground from "@/components/particle-background";
 import HeroSection from "@/components/hero-section";
 import FeaturesSection from "@/components/features-section";
 import HowItWorks from "@/components/how-it-works";
+import Footer from "@/components/footer";
 import { getFriendlyErrorMessage } from "@/lib/auth-errors";
 
 export default function LandingPage() {
@@ -29,14 +30,17 @@ export default function LandingPage() {
   }, [router]);
 
   const validateEmail = (email: string) => {
-    return email.endsWith("@live.uem.es") || email.endsWith("@universidadeuropea.es");
+    const domainCheck = email.endsWith("@live.uem.es") || email.endsWith("@universidadeuropea.es");
+    return domainCheck;
   };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
-    if (!validateEmail(email)) {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (!validateEmail(normalizedEmail)) {
       setError("Acceso restringido. Utiliza tu correo institucional de la Universidad Europea.");
       return;
     }
@@ -44,9 +48,9 @@ export default function LandingPage() {
     setLoading(true);
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, normalizedEmail, password);
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
+        await createUserWithEmailAndPassword(auth, normalizedEmail, password);
       }
     } catch (err: any) {
       const friendlyMessage = getFriendlyErrorMessage(err?.code || "");
@@ -185,6 +189,8 @@ export default function LandingPage() {
             </button>
           </div>
         </section>
+        
+        <Footer />
       </div>
     </div>
   );

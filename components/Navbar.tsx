@@ -35,12 +35,12 @@ export default function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 py-4 px-6 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href={user ? "/dashboard" : "/"} className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image 
-            src="/CoFoundUE_banner.png" 
+            src="/CoFoundUE_logo.png" 
             alt="CoFound UE Logo" 
-            width={200} 
-            height={50} 
+            width={40} 
+            height={40} 
             className="h-10 w-auto object-contain"
             priority
           />
