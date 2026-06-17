@@ -70,9 +70,9 @@ export default function LandingPage() {
           <Image 
             src="/CoFoundUE_logo.png" 
             alt="CoFound UE Square Logo" 
-            width={160} 
-            height={160} 
-            className="rounded-3xl shadow-2xl mb-8 animate-float hover:scale-105 hover:rotate-1 hover:shadow-[0_0_50px_rgba(230,0,0,0.5)] cursor-pointer transition-all duration-500 ease-out"
+            width={220} 
+            height={220} 
+            className="-mt-6 rounded-3xl shadow-2xl mb-6 animate-float hover:scale-105 hover:rotate-1 hover:shadow-[0_0_50px_rgba(230,0,0,0.5)] cursor-pointer transition-all duration-500 ease-out"
             priority
           />
           <h1 className="text-5xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight">
