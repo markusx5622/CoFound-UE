@@ -43,7 +43,7 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="py-24 border-t border-zinc-900 bg-zinc-950/40 relative">
+    <section id="features" className="py-24 border-t border-zinc-900 bg-zinc-950/40 relative">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header de Sección */}

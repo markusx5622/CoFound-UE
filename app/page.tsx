@@ -63,7 +63,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-transparent text-white relative">
       {/* Sección Hero + Formulario */}
-      <div className="relative z-10 flex flex-col justify-center min-h-[calc(100vh-80px)] overflow-hidden">
+      <div id="join" className="relative z-10 flex flex-col justify-center min-h-[calc(100vh-80px)] overflow-hidden">
         {/* Glows de ambientación traseros */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] bg-[#E60000] rounded-full blur-[150px] opacity-15"></div>

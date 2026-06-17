@@ -43,45 +43,28 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Plataforma</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <button 
-                  onClick={() => {
-                    if (window.location.pathname === "/") {
-                      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
-                    } else {
-                      window.location.href = "/#how-it-works";
-                    }
-                  }}
-                  className="hover:text-white transition-colors text-left"
+                <Link 
+                  href="/#how-it-works"
+                  className="hover:text-white transition-colors block"
                 >
                   Cómo funciona
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
-                  onClick={() => {
-                    if (window.location.pathname === "/") {
-                      document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
-                    } else {
-                      window.location.href = "/#features";
-                    }
-                  }}
-                  className="hover:text-white transition-colors text-left"
+                <Link 
+                  href="/#features"
+                  className="hover:text-white transition-colors block"
                 >
                   Beneficios y Perfiles
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                    if (window.location.pathname !== "/") {
-                      window.location.href = "/";
-                    }
-                  }}
-                  className="hover:text-white transition-colors text-left"
+                <Link 
+                  href="/#join"
+                  className="hover:text-white transition-colors block"
                 >
                   Unirme a la red
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
