@@ -25,7 +25,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 border-t border-zinc-900 bg-zinc-950 relative overflow-hidden">
+    <section id="how-it-works" className="py-24 border-t border-zinc-900 bg-transparent relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Header de Sección */}

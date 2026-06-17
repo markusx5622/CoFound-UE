@@ -181,7 +181,7 @@ export default function LandingPage() {
         <HowItWorks />
 
         {/* CTA Final */}
-        <section className="py-24 border-t border-zinc-900 text-center bg-zinc-950 relative overflow-hidden">
+        <section className="py-24 border-t border-zinc-900 text-center bg-transparent relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#E60000] rounded-full blur-[120px] opacity-10 pointer-events-none"></div>
           
           <div className="max-w-4xl mx-auto px-6 relative z-10">
