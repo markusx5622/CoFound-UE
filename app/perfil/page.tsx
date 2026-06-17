@@ -149,6 +149,8 @@ export default function MiPerfil() {
                   <option value="Villaviciosa">Villaviciosa de Odón</option>
                   <option value="Alcobendas">Alcobendas</option>
                   <option value="Valencia">Valencia</option>
+                  <option value="Alicante">Alicante</option>
+                  <option value="Málaga">Málaga</option>
                   <option value="Canarias">Canarias</option>
                   <option value="Online">Online</option>
                 </select>
