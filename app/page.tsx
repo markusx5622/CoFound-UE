@@ -6,6 +6,7 @@ import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import ParticleBackground from "@/components/particle-background";
 
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -54,6 +55,8 @@ export default function LandingPage() {
 
   return (
     <div className="flex-grow flex items-center justify-center bg-zinc-950 relative overflow-hidden">
+      <ParticleBackground />
+
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#E60000] rounded-full blur-[150px] opacity-20 pointer-events-none"></div>
