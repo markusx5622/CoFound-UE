@@ -9,6 +9,7 @@ import ParticleBackground from "@/components/particle-background";
 import HeroSection from "@/components/hero-section";
 import FeaturesSection from "@/components/features-section";
 import HowItWorks from "@/components/how-it-works";
+import { getFriendlyErrorMessage } from "@/lib/auth-errors";
 
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -48,7 +49,8 @@ export default function LandingPage() {
         await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (err: any) {
-      setError(err.message || "Error en la autenticación. Por favor revisa tus credenciales.");
+      const friendlyMessage = getFriendlyErrorMessage(err?.code || "");
+      setError(friendlyMessage);
     } finally {
       setLoading(false);
     }
