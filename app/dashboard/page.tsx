@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Briefcase, UserCircle, Tag } from "lucide-react";
+import Link from "next/link";
 
 interface Project {
   id: string;
@@ -59,7 +60,7 @@ export default function Dashboard() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => (
-                <div key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_0_20px_rgba(230,0,0,0.15)] transition-all duration-300 border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group">
+                <Link href={`/dashboard/proyecto/${project.id}`} key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_0_20px_rgba(230,0,0,0.15)] transition-all duration-300 border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group">
                   <div className="flex-grow">
                     <div className="flex justify-between items-start mb-4">
                       <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2.5 py-1 rounded-md">
@@ -90,10 +91,10 @@ export default function Dashboard() {
                   
                   <div className="mt-auto pt-4 border-t border-zinc-800/50">
                     <button className="w-full py-2.5 bg-zinc-800/50 border border-zinc-700 text-zinc-300 rounded-xl font-semibold hover:bg-[#E60000] hover:border-[#E60000] hover:text-white transition-all duration-200">
-                      Postularse
+                      Ver Detalles y Postularse
                     </button>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

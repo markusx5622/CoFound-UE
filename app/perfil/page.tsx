@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { X, Plus, Save } from "lucide-react";
+import { toast } from "sonner";
 
 export default function MiPerfil() {
   const [name, setName] = useState("");
@@ -85,10 +86,10 @@ export default function MiPerfil() {
         updatedAt: new Date()
       }, { merge: true });
 
-      alert("Perfil guardado correctamente.");
+      toast.success("Perfil guardado correctamente.");
     } catch (error) {
       console.error("Error saving profile:", error);
-      alert("Hubo un error al guardar el perfil.");
+      toast.error("Hubo un error al guardar el perfil.");
     } finally {
       setLoading(false);
     }

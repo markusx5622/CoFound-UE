@@ -1,0 +1,209 @@
+"use client";
+
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useEffect, useState } from "react";
+import { collection, query, where, getDocs, doc, deleteDoc, getDoc } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
+import { Briefcase, UserCircle, Tag, Trash2, Users } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  profiles: string[];
+  creator_id: string;
+}
+
+interface Application {
+  id: string;
+  projectId: string;
+  projectTitle: string;
+  applicantId: string;
+  status: string;
+  createdAt: any;
+  applicantData?: any;
+}
+
+export default function MisProyectos() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        // Fetch user's projects
+        const qProjects = query(collection(db, "projects"), where("creator_id", "==", user.uid));
+        const projectSnapshot = await getDocs(qProjects);
+        const projectsData = projectSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Project[];
+        setProjects(projectsData);
+
+        // Fetch applications for these projects
+        const qApps = query(collection(db, "applications"), where("creatorId", "==", user.uid));
+        const appSnapshot = await getDocs(qApps);
+        
+        const appsData = await Promise.all(appSnapshot.docs.map(async (appDoc) => {
+          const app = { id: appDoc.id, ...appDoc.data() } as Application;
+          // Fetch applicant data
+          const userDocRef = doc(db, "users", app.applicantId);
+          const userDocSnapshot = await getDoc(userDocRef);
+          if (userDocSnapshot.exists()) {
+            app.applicantData = userDocSnapshot.data();
+          }
+          return app;
+        }));
+        
+        setApplications(appsData);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error al cargar tus proyectos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Give auth time to initialize if needed
+    const timeout = setTimeout(() => {
+      fetchData();
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const handleDelete = async (projectId: string) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este proyecto? Se perderán las postulaciones asociadas.")) return;
+    
+    try {
+      await deleteDoc(doc(db, "projects", projectId));
+      setProjects(projects.filter(p => p.id !== projectId));
+      toast.success("Proyecto eliminado correctamente");
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      toast.error("Error al eliminar el proyecto");
+    }
+  };
+
+  return (
+    <ProtectedRoute>
+      <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-10">
+            <h1 className="text-4xl font-extrabold text-white tracking-tight">Mis Proyectos</h1>
+            <Link 
+              href="/dashboard/nuevo" 
+              className="bg-[#E60000] hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md"
+            >
+              Crear Nuevo
+            </Link>
+          </div>
+          
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800 mb-12">
+              <Briefcase className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">Aún no has creado ningún proyecto</h3>
+              <p className="text-zinc-400 mb-6">Publica tu primera idea y empieza a recibir postulaciones.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              {projects.map((project) => (
+                <div key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-zinc-800 flex flex-col h-full relative group">
+                  <button 
+                    onClick={() => handleDelete(project.id)}
+                    className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors z-20"
+                    title="Eliminar proyecto"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                  <Link href={`/dashboard/proyecto/${project.id}`} className="flex-grow z-10">
+                    <div className="flex justify-between items-start mb-4 pr-10">
+                      <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2.5 py-1 rounded-md">
+                        <Tag className="h-3 w-3" />
+                        {project.category}
+                      </span>
+                    </div>
+                    <h2 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#E60000] transition-colors">{project.title}</h2>
+                    <p className="text-zinc-400 text-sm mb-6 line-clamp-3">
+                      {project.description}
+                    </p>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Sección de Postulaciones Recibidas */}
+          <h2 className="text-3xl font-extrabold text-white mb-8 tracking-tight flex items-center gap-3">
+            <Users className="h-8 w-8 text-[#E60000]" />
+            Postulaciones Recibidas
+          </h2>
+
+          {loading ? null : applications.length === 0 ? (
+            <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
+              <Users className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">No hay postulaciones</h3>
+              <p className="text-zinc-400 mb-6">Aún nadie se ha postulado a tus proyectos.</p>
+            </div>
+          ) : (
+            <div className="bg-zinc-900/60 backdrop-blur-md rounded-2xl border border-zinc-800 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-zinc-400">
+                  <thead className="text-xs text-zinc-300 uppercase bg-zinc-800/50 border-b border-zinc-700">
+                    <tr>
+                      <th className="px-6 py-4">Candidato</th>
+                      <th className="px-6 py-4">Titulación / Campus</th>
+                      <th className="px-6 py-4">Proyecto</th>
+                      <th className="px-6 py-4 text-center">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {applications.map((app) => (
+                      <tr key={app.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-white">{app.applicantData?.name || 'Usuario sin nombre'}</div>
+                          <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.email}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div>{app.applicantData?.degree || 'No especificada'}</div>
+                          <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.campus || 'No especificado'}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <Link href={`/dashboard/proyecto/${app.projectId}`} className="text-[#E60000] hover:underline font-medium">
+                            {app.projectTitle}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <button 
+                            className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors"
+                            onClick={() => {
+                              alert(`Perfil completo de ${app.applicantData?.name}:\n\nBio: ${app.applicantData?.bio || 'Sin biografía'}\nHabilidades: ${app.applicantData?.skills?.join(', ') || 'Ninguna'}`);
+                            }}
+                          >
+                            Ver Perfil
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </ProtectedRoute>
+  );
+}

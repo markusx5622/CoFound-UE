@@ -50,7 +50,13 @@ export default function Navbar() {
         {user && (
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
-              Dashboard
+              Explorar
+            </Link>
+            <Link href="/dashboard/mis-proyectos" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
+              Mis Proyectos
+            </Link>
+            <Link href="/dashboard/mis-postulaciones" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
+              Mis Postulaciones
             </Link>
             <Link href="/dashboard/nuevo" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
               Nuevo Proyecto

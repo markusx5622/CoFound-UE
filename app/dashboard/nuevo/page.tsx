@@ -6,6 +6,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { X, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 export default function NuevoProyecto() {
   const [title, setTitle] = useState("");
@@ -37,7 +38,7 @@ export default function NuevoProyecto() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !description || profiles.length === 0) {
-      alert("Por favor completa todos los campos y añade al menos un perfil buscado.");
+      toast.error("Por favor completa todos los campos y añade al menos un perfil buscado.");
       return;
     }
 
@@ -55,10 +56,11 @@ export default function NuevoProyecto() {
         createdAt: serverTimestamp()
       });
 
+      toast.success("Proyecto publicado correctamente.");
       router.push("/dashboard");
     } catch (error) {
       console.error("Error creating project:", error);
-      alert("Hubo un error al publicar el proyecto.");
+      toast.error("Hubo un error al publicar el proyecto.");
       setLoading(false);
     }
   };
