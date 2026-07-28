@@ -9,7 +9,7 @@
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-10.12-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
-  
+  [![License: Propietaria](https://img.shields.io/badge/License-Propietaria-red.svg?style=for-the-badge)](LICENSE)
 
   <p align="center">
     <strong>Conecta con estudiantes de ADE, Marketing, Tech y Diseño para transformar ideas universitarias en startups de alto impacto.</strong>
@@ -28,6 +28,9 @@
 </div>
 
 <br/>
+
+> [!NOTE]
+> **Experimento archivado:** CoFound UE fue el primer experimento de comunidad exclusiva de la Universidad Europea. Sus aprendizajes sobre autenticación institucional y matching entre estudiantes evolucionaron en **[Match UEV](https://cofound-ue.vercel.app)**, que es el proyecto en desarrollo activo. Este repositorio se conserva como registro histórico del proceso de iteración y validación.
 
 ## 📌 Visión General
 
@@ -107,7 +110,7 @@ CoFound-UE/
 │   ├── CoFoundUE_banner.png    # Banner promocional para OpenGraph (1200x630)
 │   └── CoFoundUE_logo.png      # Logotipo oficial de CoFound UE
 ├── .gitignore                  # Exclusiones del control de versiones Git
-├── LICENSE                     # Licencia del proyecto (MIT)
+├── LICENSE                     # Licencia propietaria (Todos los derechos reservados)
 ├── next.config.mjs             # Configuración de compilación Next.js
 ├── package.json                # Dependencias, scripts y metadatos
 ├── postcss.config.mjs          # Plugins de procesamiento CSS (Autoprefixer, Tailwind)
