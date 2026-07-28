@@ -9,7 +9,7 @@
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-10.12-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg?style=for-the-badge)](LICENSE)
+  
 
   <p align="center">
     <strong>Conecta con estudiantes de ADE, Marketing, Tech y Diseño para transformar ideas universitarias en startups de alto impacto.</strong>
@@ -128,7 +128,7 @@ Asegúrate de tener instalados:
 
 ### 2. Clonar el Repositorio
 ```bash
-git clone https://github.com/tu-usuario/CoFound-UE.git
+git clone https://github.com/markusx5622/CoFound-UE.git
 cd CoFound-UE
 ```
 
