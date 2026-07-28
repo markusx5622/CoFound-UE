@@ -239,7 +239,11 @@ La plataforma está optimizada para ser desplegada en **Vercel** o plataformas c
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia **MIT** - consulta el archivo [LICENSE](LICENSE) para más detalles.
+**Copyright © 2026 Marc Cubero Cantavella — Todos los derechos reservados.**
+
+Este proyecto, incluyendo su código fuente, diseño, algoritmos y documentación, es propiedad intelectual exclusiva de su autor. No se concede ningún derecho de uso, copia, modificación, distribución o explotación sin autorización previa y por escrito. La presencia de este código en un repositorio público cumple una función estrictamente demostrativa y de portafolio profesional.
+
+Consulta el archivo [`LICENSE`](./LICENSE) para obtener más detalles.
 
 ---
 
