@@ -9,11 +9,32 @@ import { Send, UserCircle, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+interface UserData {
+  name: string;
+  photoURL?: string;
+}
+
+interface Conversation {
+  id: string;
+  applicantId: string;
+  creatorId: string;
+  projectTitle: string;
+  status: string;
+  otherUser: UserData;
+}
+
+interface Message {
+  id: string;
+  text: string;
+  senderId: string;
+  createdAt: any;
+}
+
 export default function Mensajes() {
   const { user } = useAuth();
-  const [conversations, setConversations] = useState<any[]>([]);
-  const [activeChat, setActiveChat] = useState<any | null>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeChat, setActiveChat] = useState<Conversation | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -42,8 +63,11 @@ export default function Mensajes() {
           
           return {
             ...convo,
-            otherUser: otherUserData
-          };
+            otherUser: {
+              name: otherUserData.name || "Usuario Desconocido",
+              photoURL: otherUserData.photoURL
+            }
+          } as Conversation;
         }));
         
         setConversations(enhancedConvos);
@@ -66,7 +90,7 @@ export default function Mensajes() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
       setMessages(msgs);
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

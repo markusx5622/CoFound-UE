@@ -25,14 +25,22 @@ interface Application {
   applicantId: string;
   status: string;
   createdAt: any;
-  applicantData?: any;
+  applicantData?: {
+    name: string;
+    email: string;
+    degree: string;
+    campus: string;
+    bio: string;
+    skills: string[];
+    photoURL?: string;
+  };
 }
 
 export default function MisProyectos() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
+  const [selectedApplicant, setSelectedApplicant] = useState<Application["applicantData"] | null>(null);
   const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
