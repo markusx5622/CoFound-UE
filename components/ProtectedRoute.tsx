@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { AlertTriangle } from "lucide-react";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -22,5 +23,17 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  return user ? <>{children}</> : null;
+  return user ? (
+    <div className="flex flex-col min-h-screen w-full relative z-10">
+      {!user.emailVerified && (
+        <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-4 py-3 text-center relative z-50">
+          <p className="text-sm text-yellow-500 flex items-center justify-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Por favor, verifica tu correo electrónico institucional. Es posible que algunas funciones estén limitadas hasta que lo hagas.
+          </p>
+        </div>
+      )}
+      {children}
+    </div>
+  ) : null;
 }

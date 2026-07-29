@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, Clock, CheckCircle } from "lucide-react";
+import { Briefcase, Clock, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
@@ -95,15 +95,22 @@ export default function MisPostulaciones() {
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    {app.status === 'pending' ? (
+                    {app.status === 'pending' && (
                       <span className="inline-flex items-center gap-1.5 bg-yellow-500/10 text-yellow-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-yellow-500/20">
                         <Clock className="h-4 w-4" />
                         Pendiente
                       </span>
-                    ) : (
+                    )}
+                    {app.status === 'accepted' && (
                       <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-green-500/20">
                         <CheckCircle className="h-4 w-4" />
                         Aceptada
+                      </span>
+                    )}
+                    {app.status === 'rejected' && (
+                      <span className="inline-flex items-center gap-1.5 bg-red-500/10 text-red-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-500/20">
+                        <XCircle className="h-4 w-4" />
+                        Rechazada
                       </span>
                     )}
                   </div>

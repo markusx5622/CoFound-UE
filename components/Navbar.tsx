@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { auth } from "@/lib/firebase";
+import { useState, useEffect } from "react";
+import { auth, db } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Menu, X } from "lucide-react";
@@ -14,6 +15,23 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    
+    const q = query(
+      collection(db, "applications"),
+      where("creatorId", "==", user.uid),
+      where("status", "==", "pending")
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setPendingCount(snapshot.size);
+    });
+    
+    return () => unsubscribe();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -56,8 +74,13 @@ export default function Navbar() {
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-6">
               {navLinks.map((link) => (
-                <Link key={link.href} href={link.href} className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
+                <Link key={link.href} href={link.href} className="text-sm font-medium text-zinc-300 hover:text-white transition-colors relative">
                   {link.label}
+                  {link.label === "Mis Proyectos" && pendingCount > 0 && (
+                    <span className="absolute -top-2 -right-4 flex h-4 w-4 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
+                      {pendingCount}
+                    </span>
+                  )}
                 </Link>
               ))}
               <button
@@ -86,10 +109,15 @@ export default function Navbar() {
             <Link 
               key={link.href} 
               href={link.href} 
-              className="text-sm font-medium text-zinc-300 hover:text-white transition-colors w-full text-center py-2"
+              className="text-sm font-medium text-zinc-300 hover:text-white transition-colors w-full text-center py-2 relative flex justify-center items-center gap-2"
               onClick={() => setIsMenuOpen(false)}
             >
               {link.label}
+              {link.label === "Mis Proyectos" && pendingCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
+                  {pendingCount}
+                </span>
+              )}
             </Link>
           ))}
           <button

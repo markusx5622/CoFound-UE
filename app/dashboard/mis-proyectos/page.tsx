@@ -2,10 +2,10 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, doc, deleteDoc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, deleteDoc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Briefcase, UserCircle, Tag, Trash2, Users, X } from "lucide-react";
+import { Briefcase, UserCircle, Tag, Trash2, Users, X, Check, XCircle, Edit } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -101,6 +101,21 @@ export default function MisProyectos() {
     }
   };
 
+  const handleUpdateStatus = async (appId: string, newStatus: string) => {
+    try {
+      await updateDoc(doc(db, "applications", appId), {
+        status: newStatus
+      });
+      setApplications(applications.map(app => 
+        app.id === appId ? { ...app, status: newStatus } : app
+      ));
+      toast.success(newStatus === 'accepted' ? 'Candidato aceptado' : 'Candidato rechazado');
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Error al actualizar el estado");
+    }
+  };
+
   return (
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
@@ -129,13 +144,22 @@ export default function MisProyectos() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
               {projects.map((project) => (
                 <div key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-zinc-800 flex flex-col h-full relative group">
-                  <button 
-                    onClick={() => handleDelete(project.id)}
-                    className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors z-20"
-                    title="Eliminar proyecto"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
+                  <div className="absolute top-4 right-4 flex items-center gap-1 z-20">
+                    <Link
+                      href={`/dashboard/proyecto/${project.id}/editar`}
+                      className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+                      title="Editar proyecto"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Link>
+                    <button 
+                      onClick={() => handleDelete(project.id)}
+                      className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                      title="Eliminar proyecto"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                   <Link href={`/dashboard/proyecto/${project.id}`} className="flex-grow z-10">
                     <div className="flex justify-between items-start mb-4 pr-10">
                       <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2.5 py-1 rounded-md">
@@ -179,9 +203,21 @@ export default function MisProyectos() {
                   </thead>
                   <tbody>
                     {applications.map((app) => (
-                      <tr key={app.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors">
+                      <tr key={app.id} className={`border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors ${
+                        app.status === 'accepted' ? 'bg-green-950/10' : app.status === 'rejected' ? 'bg-red-950/10 opacity-75' : ''
+                      }`}>
                         <td className="px-6 py-4">
-                          <div className="font-medium text-white">{app.applicantData?.name || 'Usuario sin nombre'}</div>
+                          <div className="flex items-center gap-2">
+                            <Link href={`/perfil/${app.applicantId}`} className="font-medium text-white hover:text-[#E60000] transition-colors">
+                              {app.applicantData?.name || 'Usuario sin nombre'}
+                            </Link>
+                            {app.status === 'accepted' && (
+                              <span className="bg-green-500/20 text-green-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Aceptado</span>
+                            )}
+                            {app.status === 'rejected' && (
+                              <span className="bg-red-500/20 text-red-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Rechazado</span>
+                            )}
+                          </div>
                           <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.email}</div>
                         </td>
                         <td className="px-6 py-4">
@@ -189,17 +225,39 @@ export default function MisProyectos() {
                           <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.campus || 'No especificado'}</div>
                         </td>
                         <td className="px-6 py-4">
-                          <Link href={`/dashboard/proyecto/${app.projectId}`} className="text-[#E60000] hover:underline font-medium">
+                          <Link href={`/dashboard/proyecto/${app.projectId}`} className="text-zinc-300 hover:text-white transition-colors text-sm">
                             {app.projectTitle}
                           </Link>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <button 
-                            className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors"
-                            onClick={() => setSelectedApplicant(app.applicantData)}
-                          >
-                            Ver Perfil
-                          </button>
+                          <div className="flex items-center justify-center gap-2">
+                            <button 
+                              className="text-zinc-400 hover:text-white p-1.5 rounded-md hover:bg-zinc-800 transition-colors"
+                              onClick={() => setSelectedApplicant(app.applicantData)}
+                              title="Ver Perfil Detallado"
+                            >
+                              <UserCircle className="h-5 w-5" />
+                            </button>
+                            
+                            {app.status === 'pending' && (
+                              <>
+                                <button
+                                  onClick={() => handleUpdateStatus(app.id, 'accepted')}
+                                  className="text-green-500 hover:text-green-400 p-1.5 rounded-md hover:bg-green-500/10 transition-colors"
+                                  title="Aceptar Candidato"
+                                >
+                                  <Check className="h-5 w-5" />
+                                </button>
+                                <button
+                                  onClick={() => handleUpdateStatus(app.id, 'rejected')}
+                                  className="text-red-500 hover:text-red-400 p-1.5 rounded-md hover:bg-red-500/10 transition-colors"
+                                  title="Rechazar Candidato"
+                                >
+                                  <XCircle className="h-5 w-5" />
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}

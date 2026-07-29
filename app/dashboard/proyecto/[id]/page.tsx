@@ -186,7 +186,7 @@ export default function ProyectoDetalle() {
               <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-10 pb-8 border-b border-zinc-800/50">
                 <div className="flex items-center gap-2">
                   <UserCircle className="h-5 w-5 text-zinc-500" />
-                  <span>Creado por <strong className="text-zinc-200">{creator?.name || 'Anónimo'}</strong></span>
+                  <span>Creado por <Link href={`/perfil/${project.creator_id}`} className="text-zinc-200 font-bold hover:text-[#E60000] hover:underline transition-colors">{creator?.name || 'Anónimo'}</Link></span>
                 </div>
                 {creator?.degree && (
                   <>

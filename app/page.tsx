@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 import Link from "next/link";
 import { Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 import ParticleBackground from "@/components/particle-background";
@@ -45,7 +46,9 @@ export default function LandingPage() {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, normalizedEmail, password);
       } else {
-        await createUserWithEmailAndPassword(auth, normalizedEmail, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
+        await sendEmailVerification(userCredential.user);
+        toast.success("Cuenta creada. Por favor revisa tu correo institucional para verificar tu cuenta.");
       }
     } catch (err: any) {
       const friendlyMessage = getFriendlyErrorMessage(err?.code || "");
