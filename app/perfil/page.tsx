@@ -3,9 +3,10 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { X, Plus, Save } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 export default function MiPerfil() {
   const [name, setName] = useState("");
@@ -18,11 +19,13 @@ export default function MiPerfil() {
   
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
+      if (authLoading) return;
+      
       try {
-        const user = auth.currentUser;
         if (user) {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
@@ -43,13 +46,8 @@ export default function MiPerfil() {
       }
     };
     
-    // Slight delay to ensure auth state is loaded
-    const timer = setTimeout(() => {
-      fetchProfile();
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    fetchProfile();
+  }, [user, authLoading]);
 
   const handleAddSkill = () => {
     if (skillInput.trim() !== "" && !skills.includes(skillInput.trim())) {
@@ -73,7 +71,6 @@ export default function MiPerfil() {
     e.preventDefault();
     setLoading(true);
     try {
-      const user = auth.currentUser;
       if (!user) throw new Error("No user logged in");
 
       await setDoc(doc(db, "users", user.uid), {

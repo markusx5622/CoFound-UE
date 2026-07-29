@@ -3,8 +3,9 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, doc, deleteDoc, getDoc } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
-import { Briefcase, UserCircle, Tag, Trash2, Users } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
+import { Briefcase, UserCircle, Tag, Trash2, Users, X } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -31,11 +32,13 @@ export default function MisProyectos() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
+      if (authLoading) return;
       try {
-        const user = auth.currentUser;
         if (!user) return;
 
         // Fetch user's projects
@@ -72,21 +75,26 @@ export default function MisProyectos() {
       }
     };
 
-    // Give auth time to initialize if needed
-    const timeout = setTimeout(() => {
-      fetchData();
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, []);
+    fetchData();
+  }, [user, authLoading]);
 
   const handleDelete = async (projectId: string) => {
     if (!window.confirm("¿Estás seguro de que deseas eliminar este proyecto? Se perderán las postulaciones asociadas.")) return;
     
     try {
+      // 1. Delete project document
       await deleteDoc(doc(db, "projects", projectId));
+      
+      // 2. Cascade delete applications
+      const qApps = query(collection(db, "applications"), where("projectId", "==", projectId));
+      const appSnapshot = await getDocs(qApps);
+      
+      const deletePromises = appSnapshot.docs.map(appDoc => deleteDoc(doc(db, "applications", appDoc.id)));
+      await Promise.all(deletePromises);
+
       setProjects(projects.filter(p => p.id !== projectId));
-      toast.success("Proyecto eliminado correctamente");
+      setApplications(applications.filter(a => a.projectId !== projectId));
+      toast.success("Proyecto y postulaciones eliminadas correctamente");
     } catch (error) {
       console.error("Error deleting project:", error);
       toast.error("Error al eliminar el proyecto");
@@ -188,9 +196,7 @@ export default function MisProyectos() {
                         <td className="px-6 py-4 text-center">
                           <button 
                             className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors"
-                            onClick={() => {
-                              alert(`Perfil completo de ${app.applicantData?.name}:\n\nBio: ${app.applicantData?.bio || 'Sin biografía'}\nHabilidades: ${app.applicantData?.skills?.join(', ') || 'Ninguna'}`);
-                            }}
+                            onClick={() => setSelectedApplicant(app.applicantData)}
                           >
                             Ver Perfil
                           </button>
@@ -204,6 +210,62 @@ export default function MisProyectos() {
           )}
         </div>
       </div>
+
+      {selectedApplicant && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+            <button 
+              onClick={() => setSelectedApplicant(null)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 bg-zinc-800 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <UserCircle className="h-12 w-12 text-zinc-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white">{selectedApplicant.name || 'Sin nombre'}</h3>
+              <p className="text-[#E60000]">{selectedApplicant.email}</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Titulación y Campus</h4>
+                <p className="text-zinc-300">{selectedApplicant.degree || 'No especificada'} - {selectedApplicant.campus || 'No especificado'}</p>
+              </div>
+              
+              <div>
+                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Sobre Mí</h4>
+                <p className="text-zinc-300 whitespace-pre-wrap">{selectedApplicant.bio || 'El usuario no ha escrito una biografía.'}</p>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Habilidades</h4>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {selectedApplicant.skills && selectedApplicant.skills.length > 0 ? (
+                    selectedApplicant.skills.map((skill: string, idx: number) => (
+                      <span key={idx} className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded-md">
+                        {skill}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-zinc-500 italic text-sm">Ninguna habilidad listada</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-8">
+              <button 
+                onClick={() => setSelectedApplicant(null)}
+                className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ProtectedRoute>
   );
 }

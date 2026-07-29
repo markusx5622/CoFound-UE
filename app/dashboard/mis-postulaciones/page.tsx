@@ -3,10 +3,11 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { Briefcase, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 interface Application {
   id: string;
@@ -20,11 +21,13 @@ interface Application {
 export default function MisPostulaciones() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const fetchApplications = async () => {
+      if (authLoading) return;
+
       try {
-        const user = auth.currentUser;
         if (!user) return;
 
         const qApps = query(collection(db, "applications"), where("applicantId", "==", user.uid));
@@ -51,12 +54,8 @@ export default function MisPostulaciones() {
       }
     };
 
-    const timeout = setTimeout(() => {
-      fetchApplications();
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, []);
+    fetchApplications();
+  }, [user, authLoading]);
 
   return (
     <ProtectedRoute>

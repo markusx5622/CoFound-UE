@@ -3,7 +3,8 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { doc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import { Briefcase, UserCircle, Tag, ArrowLeft, Send } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -34,9 +35,11 @@ export default function ProyectoDetalle() {
   
   const [hasApplied, setHasApplied] = useState(false);
   const [applying, setApplying] = useState(false);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const fetchProjectAndCreator = async () => {
+      if (authLoading) return;
       try {
         if (!id || typeof id !== "string") return;
         
@@ -58,7 +61,6 @@ export default function ProyectoDetalle() {
           }
 
           // Check if already applied
-          const user = auth.currentUser;
           if (user) {
             const q = query(
               collection(db, "applications"),
@@ -80,12 +82,11 @@ export default function ProyectoDetalle() {
     };
 
     fetchProjectAndCreator();
-  }, [id]);
+  }, [id, user, authLoading]);
 
   const handleApply = async () => {
     try {
       setApplying(true);
-      const user = auth.currentUser;
       if (!user) {
         toast.error("Debes iniciar sesión para postularte");
         return;
@@ -167,17 +168,17 @@ export default function ProyectoDetalle() {
                 <div className="shrink-0">
                   <button
                     onClick={handleApply}
-                    disabled={hasApplied || applying || auth.currentUser?.uid === project.creator_id}
+                    disabled={hasApplied || applying || user?.uid === project.creator_id}
                     className={`px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 shadow-md ${
                       hasApplied 
                         ? "bg-green-600/20 text-green-500 border border-green-600/30 cursor-default" 
-                        : auth.currentUser?.uid === project.creator_id
+                        : user?.uid === project.creator_id
                         ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
                         : "bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
                     }`}
                   >
                     {applying ? "Procesando..." : hasApplied ? "Ya postulado" : "Postularme"}
-                    {!hasApplied && !applying && auth.currentUser?.uid !== project.creator_id && <Send className="h-5 w-5" />}
+                    {!hasApplied && !applying && user?.uid !== project.creator_id && <Send className="h-5 w-5" />}
                   </button>
                 </div>
               </div>

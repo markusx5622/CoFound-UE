@@ -3,7 +3,8 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { X, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -15,6 +16,7 @@ export default function NuevoProyecto() {
   const [profileInput, setProfileInput] = useState("");
   const [profiles, setProfiles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
   const router = useRouter();
 
   const handleAddProfile = () => {
@@ -44,7 +46,6 @@ export default function NuevoProyecto() {
 
     setLoading(true);
     try {
-      const user = auth.currentUser;
       if (!user) throw new Error("No user logged in");
 
       await addDoc(collection(db, "projects"), {

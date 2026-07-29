@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 import ParticleBackground from "@/components/particle-background";
@@ -15,19 +16,13 @@ import { getFriendlyErrorMessage } from "@/lib/auth-errors";
 
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [isResetPassword, setIsResetPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const { user: currentUser } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribe();
-  }, []);
 
   const validateEmail = (email: string) => {
     const domainCheck = email.endsWith("@live.uem.es") || email.endsWith("@universidadeuropea.es");
@@ -52,6 +47,28 @@ export default function LandingPage() {
       } else {
         await createUserWithEmailAndPassword(auth, normalizedEmail, password);
       }
+    } catch (err: any) {
+      const friendlyMessage = getFriendlyErrorMessage(err?.code || "");
+      setError(friendlyMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (!normalizedEmail) {
+      setError("Por favor, introduce tu correo institucional.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, normalizedEmail);
+      setError("Correo de recuperación enviado. Revisa tu bandeja de entrada.");
     } catch (err: any) {
       const friendlyMessage = getFriendlyErrorMessage(err?.code || "");
       setError(friendlyMessage);
@@ -95,6 +112,63 @@ export default function LandingPage() {
                     <ArrowRight className="h-5 w-5" />
                   </Link>
                 </div>
+              ) : isResetPassword ? (
+                <>
+                  <h2 className="text-3xl font-bold text-black mb-2">
+                    Recuperar Contraseña
+                  </h2>
+                  <p className="text-gray-500 mb-8 text-sm">
+                    Te enviaremos un correo para que puedas restablecerla.
+                  </p>
+
+                  <form onSubmit={handleResetPassword} className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Institucional</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Mail className="h-5 w-5 text-gray-400" />
+                        </div>
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
+                          placeholder="estudiante@live.uem.es"
+                        />
+                      </div>
+                    </div>
+
+                    {error && (
+                      <div className="p-3 bg-red-50 text-[#E60000] text-sm rounded-xl flex items-start gap-2 border border-red-100">
+                        <AlertCircle className="h-5 w-5 shrink-0" />
+                        <span>{error}</span>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-70"
+                    >
+                      {loading ? "Enviando..." : "Enviar Correo"}
+                      {!loading && <ArrowRight className="h-5 w-5" />}
+                    </button>
+                  </form>
+
+                  <div className="mt-6 text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsResetPassword(false);
+                        setError("");
+                      }}
+                      className="text-sm text-gray-600 hover:text-black font-medium transition-colors"
+                    >
+                      Volver a iniciar sesión
+                    </button>
+                  </div>
+                </>
               ) : (
                 <>
                   <h2 className="text-3xl font-bold text-black mb-2">
@@ -137,6 +211,20 @@ export default function LandingPage() {
                           placeholder="••••••••"
                         />
                       </div>
+                      {isLogin && (
+                        <div className="text-right mt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsResetPassword(true);
+                              setError("");
+                            }}
+                            className="text-xs text-[#E60000] hover:underline"
+                          >
+                            ¿Olvidaste tu contraseña?
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     {error && (

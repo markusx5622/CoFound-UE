@@ -23,14 +23,13 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const q = query(collection(db, "projects"));
+        const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
         const projectsData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data()
         })) as Project[];
-        // Sort by id for consistency since we didn't add composite index for createdAt
-        setProjects(projectsData.reverse());
+        setProjects(projectsData);
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {
