@@ -49,6 +49,7 @@ export const metadata: Metadata = {
 
 import ParticleBackground from "@/components/particle-background";
 import { AuthProvider } from "@/context/AuthContext";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function RootLayout({
   children,
@@ -67,6 +68,7 @@ export default function RootLayout({
           {children}
         </main>
         <Toaster position="top-center" richColors theme="dark" />
+        <Analytics />
         </AuthProvider>
       </body>
     </html>
