@@ -6,6 +6,7 @@ import { collection, getDocs, query, orderBy, limit, startAfter, QueryDocumentSn
 import { db } from "@/lib/firebase";
 import { Briefcase, UserCircle, Tag, Search, Filter } from "lucide-react";
 import Link from "next/link";
+import { ProjectSkeleton } from "@/components/ui/skeleton";
 
 interface Project {
   id: string;
@@ -123,8 +124,10 @@ export default function Dashboard() {
           </div>
           
           {loading ? (
-            <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+              {[...Array(6)].map((_, i) => (
+                <ProjectSkeleton key={i} />
+              ))}
             </div>
           ) : projects.length === 0 ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">

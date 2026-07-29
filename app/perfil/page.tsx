@@ -3,16 +3,21 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { X, Plus, Save } from "lucide-react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
+import { X, Plus, Save, Upload, UserCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
 
 export default function MiPerfil() {
   const [name, setName] = useState("");
   const [degree, setDegree] = useState("");
   const [campus, setCampus] = useState("Villaviciosa");
   const [bio, setBio] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
   
   const [skillInput, setSkillInput] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
@@ -37,6 +42,8 @@ export default function MiPerfil() {
             setCampus(data.campus || "Villaviciosa");
             setBio(data.bio || "");
             setSkills(data.skills || []);
+            setPhotoURL(data.photoURL || "");
+            setImagePreview(data.photoURL || "");
           }
         }
       } catch (error) {
@@ -67,11 +74,32 @@ export default function MiPerfil() {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("La imagen no debe superar los 2MB");
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (!user) throw new Error("No user logged in");
+
+      let updatedPhotoURL = photoURL;
+
+      if (imageFile) {
+        const storageRef = ref(storage, `users/${user.uid}/avatar`);
+        await uploadBytes(storageRef, imageFile);
+        updatedPhotoURL = await getDownloadURL(storageRef);
+        setPhotoURL(updatedPhotoURL);
+      }
 
       await setDoc(doc(db, "users", user.uid), {
         name,
@@ -79,6 +107,7 @@ export default function MiPerfil() {
         campus,
         bio,
         skills,
+        photoURL: updatedPhotoURL,
         email: user.email,
         updatedAt: new Date()
       }, { merge: true });
@@ -111,6 +140,31 @@ export default function MiPerfil() {
           <div className="bg-zinc-900/60 backdrop-blur-md p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)] border border-zinc-800">
             <form onSubmit={handleSave} className="space-y-6">
               
+              <div className="flex flex-col items-center mb-8">
+                <div className="relative w-28 h-28 mb-4 group rounded-full">
+                  {imagePreview ? (
+                    <Image 
+                      src={imagePreview} 
+                      alt="Avatar Preview" 
+                      fill 
+                      className="object-cover rounded-full border-2 border-zinc-700 group-hover:border-[#E60000] transition-colors"
+                    />
+                  ) : (
+                    <UserCircle className="w-28 h-28 text-zinc-600 bg-zinc-900 rounded-full border-2 border-zinc-700 group-hover:border-[#E60000] transition-colors" />
+                  )}
+                  <label className="absolute inset-0 flex items-center justify-center bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                    <Upload className="h-6 w-6" />
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      className="hidden" 
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                </div>
+                <p className="text-xs text-zinc-500">JPG, PNG o GIF. Máx 2MB.</p>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-zinc-300 mb-2">Nombre Completo</label>

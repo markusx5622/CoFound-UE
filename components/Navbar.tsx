@@ -50,6 +50,7 @@ export default function Navbar() {
     { href: "/dashboard", label: "Explorar" },
     { href: "/dashboard/mis-proyectos", label: "Mis Proyectos" },
     { href: "/dashboard/mis-postulaciones", label: "Mis Postulaciones" },
+    { href: "/dashboard/mensajes", label: "Mensajes" },
     { href: "/dashboard/nuevo", label: "Nuevo Proyecto" },
     { href: "/perfil", label: "Mi Perfil" },
   ];
