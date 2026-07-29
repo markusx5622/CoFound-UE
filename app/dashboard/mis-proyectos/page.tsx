@@ -68,7 +68,16 @@ export default function MisProyectos() {
           const userDocRef = doc(db, "users", app.applicantId);
           const userDocSnapshot = await getDoc(userDocRef);
           if (userDocSnapshot.exists()) {
-            app.applicantData = userDocSnapshot.data();
+            const data = userDocSnapshot.data();
+            app.applicantData = {
+              name: data.name || "Desconocido",
+              email: data.email || "",
+              degree: data.degree || "",
+              campus: data.campus || "",
+              bio: data.bio || "",
+              skills: data.skills || [],
+              photoURL: data.photoURL
+            };
           }
           return app;
         }));
