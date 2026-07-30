@@ -30,13 +30,16 @@ export default function HeroSection() {
       {/* Background glowing blob */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-[#E60000]/10 rounded-full blur-[100px] md:blur-[150px] -z-10 pointer-events-none animate-pulse duration-1000"></div>
 
-      <motion.div variants={itemVariants}>
+      <motion.div variants={itemVariants} className="relative inline-block group">
+        {/* Glow halo behind the logo on hover */}
+        <div className="absolute inset-0 bg-[#E60000] rounded-3xl blur-2xl opacity-20 group-hover:opacity-60 group-hover:scale-110 transition-all duration-500 ease-out pointer-events-none -z-10"></div>
+
         <Image 
           src="/CoFoundUE_logo.png" 
           alt="CoFound UE Square Logo" 
           width={220} 
           height={220} 
-          className="-mt-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] mb-6 animate-float hover:scale-105 hover:rotate-1 hover:shadow-[0_0_50px_rgba(230,0,0,0.5)] cursor-pointer transition-all duration-500 ease-out border border-zinc-800"
+          className="-mt-6 rounded-3xl shadow-[0_10px_35px_rgba(0,0,0,0.6)] mb-6 animate-float cursor-pointer border border-zinc-800/80 group-hover:border-[#E60000]/60 group-hover:scale-[1.04] group-hover:-translate-y-1.5 group-hover:brightness-105 group-hover:shadow-[0_15px_45px_rgba(230,0,0,0.35)] transition-all duration-500 ease-out"
           priority
         />
       </motion.div>
