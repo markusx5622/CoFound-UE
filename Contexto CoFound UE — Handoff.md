@@ -1,33 +1,33 @@
 # CoFound UE — Documento de Traspaso de Contexto
 
-> **Instrucciones de uso:** sube este documento al primer mensaje del nuevo chat junto con el "mensaje de arranque" del final (sección 7). Sustituye antes los huecos marcados con `[COMPLETAR]`.
+> **Instrucciones de uso:** sube este documento al primer mensaje del nuevo chat junto con el "mensaje de arranque" del final (sección 7).
 
 ---
 
 ## 1. Quién soy y qué es CoFound UE
 
 - **Autor:** Marc Cubero Cantavella (GitHub: `markusx5622`), estudiante de IOI en la Universidad Europea de Valencia.
-- **Proyecto:** CoFound UE — `[COMPLETAR: descripción en 2-3 frases de qué hace la app, qué problema resuelve y para quién]`.
-- **Público objetivo:** ya definido — comunidad UEV. `[COMPLETAR: segmento concreto si hay más detalle]`.
+- **Proyecto:** CoFound UE — Plataforma web exclusiva para que los estudiantes conecten entre sí para formar equipos de startups y proyectos. Resuelve la falta de sinergias cruzadas entre facultades (ADE, Tech, Diseño), permitiendo a los alumnos publicar ideas y buscar co-fundadores dentro del campus.
+- **Público objetivo:** ya definido — comunidad UEV. Estudiantes de grados técnicos (Ingeniería, Datos), creativos (Diseño) y de negocio (ADE, Marketing) del campus (verificados mediante correo institucional `@live.uem.es` o `@universidadeuropea.es`).
 - **Estado estratégico:** es el proyecto prioritario. Match UEV queda congelado hasta septiembre; desde entonces el foco completo es CoFound UE. La confianza de adopción es alta porque el público está definido y es accesible (campus).
-- **Repo:** `[COMPLETAR: URL del repo GitHub de CoFound UE y si es público o privado]`.
-- **Stack:** `[COMPLETAR: tecnologías usadas — p. ej. Next.js, Firebase, Vercel, etc.]`.
-- **Estado actual del código:** `[COMPLETAR: qué funciona hoy, qué está a medias, URL de producción si existe]`.
+- **Repo:** https://github.com/markusx5622/CoFound-UE (Rama principal: `main`).
+- **Stack:** Frontend: Next.js 14 (App Router), React 18, Tailwind CSS, Sonner, Lucide React. Backend: Firebase (Auth, Firestore, Storage). Infraestructura: Vercel (Hosting + Analytics integrado).
+- **Estado actual del código:** **100% Funcional y Desplegado**. Las Fases 1 (Core) y 2 (UX) del MVP están completadas. Funciona el Auth institucional, el CRUD de proyectos con borrado en cascada, el sistema de postulaciones (anti-spam y anti-ego), mensajería en tiempo real y perfiles de usuario. URL de producción activa y monitorizada con Vercel Analytics: https://cofound-ue.vercel.app.
 
 ## 2. Trabajo ya realizado (de sesiones anteriores)
 
-- **Landing page** de CoFound UE: existe y está trabajada. `[COMPLETAR: URL / estado / stack de la landing]`.
+- **Landing page** de CoFound UE: Completada e integrada nativamente en `app/page.tsx`. Tiene Hero animado, Canvas de Partículas (optimizado para no quemar batería en móvil), Features, Footer y Auth. Estética Dark Mode (Zinc-950) y Glassmorphism muy pulida.
 - **Pendiente en la landing** (identificado, no implementado):
   - Sección de visión **"Hacia dónde voy"**.
   - Sustituir/añadir iconos **Lucide** donde corresponda.
-- **Licencias del repo:** hay correcciones de licencia pendientes (tarea identificada, sin hacer). `[COMPLETAR: qué archivos/licencias concretas si lo recuerdas]`.
-- **Auditoría preventiva:** se ofreció preparar un prompt de auditoría preventiva para CoFound UE (equivalente a la que destapó los agujeros de seguridad de Match UEV). No llegó a pedirse. **Es tarea candidata prioritaria para el nuevo chat** — ver sección 5.
+- **Licencias del repo:** hay correcciones de licencia pendientes (tarea identificada, sin hacer). Añadir licencia MIT o privativa oficial en el archivo `LICENSE` para clarificar la distribución comercial del MVP.
+- **Auditoría técnica completada:** El proyecto ya pasó por una profunda auditoría de código donde se arreglaron vulnerabilidades serias (Reglas de Firestore abiertas, TS Strict Errors en Vercel, dependencias cíclicas). No obstante, revisiones de seguridad continuas siempre son bienvenidas.
 
 ## 3. Lecciones aprendidas en Match UEV (aplicables desde el día 1)
 
 Estas son las lecciones caras del rescate de Match UEV. CoFound UE debe nacer con ellas incorporadas:
 
-1. **Seguridad desde el primer commit, no al final.** Firestore/Storage rules estrictas escritas el día 1, con tests de reglas (`@firebase/rules-unit-testing` v5.x, que es la versión compatible con `firebase@^12`) corriendo en CI contra el emulador. En Match UEV, añadirlas al final costó semanas.
+1. **Seguridad desde el primer commit, no al final.** Firestore/Storage rules estrictas escritas el día 1, con tests de reglas (`@firebase/rules-unit-testing` v5.x, que es la versión compatible con `firebase@^12`) corriendo en CI contra el emulador. En Match UEV, añadirlas al final costó semanas. *(Nota: En CoFound UE las reglas actuales de Firestore ya son robustas y bloquean lecturas/escrituras cruzadas)*.
 2. **CI desde el primer push:** `npm ci` + tests + build bloqueantes; lint como deuda documentada no bloqueante si hace falta, pero tests y build jamás.
 3. **Feature flags para hibernar, no borrar.** `lib/features.ts` con flags por funcionalidad: desarrollar con el flag apagado cuesta cero y reactivar es girar un booleano (documentado en RESCATE.md de Match UEV).
 4. **API routes con validación estricta (zod)** y escritas sensibles solo vía Admin SDK; el cliente nunca escribe campos protegidos (regla del `diff(resource.data).affectedKeys()`).
@@ -48,15 +48,15 @@ Estas reglas salieron de errores reales del proceso. Copiarlas tal cual al nuevo
 
 ## 5. Prioridades propuestas para el nuevo chat
 
-1. **Auditoría preventiva de seguridad/arquitectura** de CoFound UE (antes de seguir construyendo, aplicando las lecciones de la sección 3).
+1. **Monitorización Post-Lanzamiento:** Recoger métricas de Vercel Analytics y la consola de Firebase en las primeras semanas con usuarios reales.
 2. Terminar la landing: sección "Hacia dónde voy" + iconos Lucide.
-3. Resolver las licencias del repo.
-4. `[COMPLETAR: siguiente gran funcionalidad o milestone]`.
+3. Resolver las licencias del repo (archivo `LICENSE`).
+4. **Arrancar la FASE 3A (Pulido y Retención):** Implementar notificaciones transaccionales por email (Resend/EmailJS), buscador global de proyectos, dashboard personal de métricas para los creadores y PWA.
 
 ## 6. Contexto técnico útil heredado
 
 - **Firebase Auth + Firestore + Vercel** es el stack validado que ya domina el autor.
-- **Patrón de verificación de email institucional** ya implementado en Match UEV (reutilizable).
+- **Patrón de verificación de email institucional** ya implementado en Match UEV y portado exitosamente a CoFound UE.
 - **CI de referencia:** el `ci.yml` de Match UEV (repo `markusx5622/Match-UEV`, público) ya tiene el pipeline completo funcionando: npm ci → lint no bloqueante → Java 21 + emulador Firestore → Vitest (unitarios + reglas) → build. Es plantilla directa para CoFound UE.
 - **Tests de reglas de referencia:** `tests/rules.test.ts` del mismo repo, con `assertFails`/`assertSucceeds` (no comparar mensajes de error: en SDK v12 los `get()` denegados no incluyen "PERMISSION_DENIED" en el mensaje).
 
@@ -69,8 +69,9 @@ de mi proyecto. Léelo entero antes de responder. A partir de ahora trabajamos
 sección 4 (verificación con evidencia, logs primero a ti, instrucciones
 quirúrgicas para agentes que editan a ciegas).
 
-Mi repo es: [URL]. Quiero empezar por la prioridad 1 de la sección 5: la
-auditoría preventiva de seguridad y arquitectura, aplicando las lecciones del
-rescate de Match UEV (sección 3). Dime qué necesitas que te pase del repo para
+Mi repo es: https://github.com/markusx5622/CoFound-UE. Quiero empezar por la 
+prioridad 2 de la sección 5: Terminar la landing page, y luego prepararnos 
+para la Fase 3A (Métricas y Retención) mientras los usuarios de prueba 
+utilizan el MVP en producción. Dime qué necesitas que te pase del repo para 
 empezar.
 ```

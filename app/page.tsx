@@ -12,6 +12,7 @@ import ParticleBackground from "@/components/particle-background";
 import HeroSection from "@/components/hero-section";
 import FeaturesSection from "@/components/features-section";
 import HowItWorks from "@/components/how-it-works";
+import VisionSection from "@/components/vision-section";
 import Footer from "@/components/footer";
 import { getFriendlyErrorMessage } from "@/lib/auth-errors";
 
@@ -270,6 +271,7 @@ export default function LandingPage() {
       <div className="relative z-10">
         <FeaturesSection />
         <HowItWorks />
+        <VisionSection />
 
         {/* CTA Final */}
         <section className="py-24 border-t border-zinc-900 text-center bg-transparent relative overflow-hidden">
