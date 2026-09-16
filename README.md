@@ -10,6 +10,7 @@
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-10.12-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
   [![License: Propietaria](https://img.shields.io/badge/License-Propietaria-red.svg?style=for-the-badge)](LICENSE)
+  ![Estado](https://img.shields.io/badge/Estado-En_desarrollo_activo-brightgreen?style=for-the-badge)
 
   <p align="center">
     <strong>Conecta con estudiantes de ADE, Marketing, Tech y Diseño para transformar ideas universitarias en startups de alto impacto.</strong>
@@ -19,6 +20,7 @@
   [Arquitectura](#-arquitectura-del-proyecto) •
   [Instalación](#-instalación-y-configuración-local) •
   [Modelo de Datos](#-modelo-de-datos-firestore) •
+  [Roadmap](#-roadmap) •
   [Despliegue](#-despliegue)
 
   ---
@@ -30,19 +32,19 @@
 <br/>
 
 > [!NOTE]
-> **Experimento archivado:** CoFound UE fue el primer experimento de comunidad exclusiva de la Universidad Europea. Sus aprendizajes sobre autenticación institucional y matching entre estudiantes evolucionaron en **[Match UEV](https://cofound-ue.vercel.app)**, que es el proyecto en desarrollo activo. Este repositorio se conserva como registro histórico del proceso de iteración y validación.
+> **Proyecto en desarrollo activo:** CoFound UE es la plataforma prioritaria y en desarrollo activo para la comunidad de la Universidad Europea ([cofound-ue.vercel.app](https://cofound-ue.vercel.app)). Match UEV fue el experimento previo del que se heredaron aprendizajes clave (autenticación institucional, reglas de seguridad de Firestore y CI), el cual se encuentra actualmente congelado para focalizar todos los recursos en CoFound UE.
 
 ## 📌 Visión General
 
 **CoFound UE** es una plataforma web full-stack diseñada específicamente para la comunidad académica y emprendedora de la **Universidad Europea**. 
 
-La aplicación resuelve la fragmentación del talento dentro del campus universitario, permitiendo a estudiantes y graduados de diversas áreas (Business, Ingeniería, Software, Diseño, Marketing, etc.) encontrarse, colaborar en proyectos interdisciplinarios, publicar retos académicos, Trabajos de Fin de Grado (TFG) o lanzar verdaderas *startups*.
+La aplicación resuelve la fragmentación del talento dentro del campus universitario, permitiendo a estudiantes y graduados de diversas áreas (Business, Ingeniería, Software, Diseño, Marketing, etc.) encontrarse, colaborar en proyectos interdisciplinarios, publicar retos académicos, Trabajos de Fin de Grado (TFG) o lanzar *startups*.
 
 ### 🔑 Propuesta de Valor
 * **Exclusividad Institucional:** Autenticación estricta restringida a dominios de la universidad (`@live.uem.es` y `@universidadeuropea.es`).
 * **Matchmaking por Habilidades:** Conexión estratégica entre creadores de ideas e integradores técnicos o de negocio.
 * **Formatos Flexibles:** Proyectos categorizados en *Retos Académicos*, *TFGs* y *Startups Reales*.
-* **Experiencia de Usuario Inmersiva:** Interfaz en modo oscuro vanguardista con animaciones dinámicas de partículas en tiempo real mediante canvas interactivo.
+* **Experiencia de Usuario Inmersiva:** Interfaz en modo oscuro moderna con animaciones dinámicas de partículas en tiempo real mediante canvas interactivo.
 
 ---
 
@@ -52,10 +54,11 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 | :--- | :--- | :--- |
 | **🛡️ Auth Restringida** | Registro e inicio de sesión validado mediante expresión regular para asegurar el acceso únicamente a usuarios con correo institucional de la Universidad Europea. | Firebase Auth & TypeScript regex validation |
 | **🎨 Interfaz Inmersiva** | Estética *dark-mode* moderna con canvas de partículas fluidas, efectos glassmorphism (`backdrop-blur`) y acentos de color institucional de la UE (`#E60000`). | Tailwind CSS & HTML5 Canvas |
-| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno: nombre, titulación, selección de campus (*Villaviciosa, Alcobendas, Valencia, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge & Sonner Toasts |
+| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno: nombre, titulación, selección de campus (*Villaviciosa, Alcobendas, Valencia, Alicante, Málaga, Canarias, Online*), biografía, avatar y tags interactivos de habilidades. | Firestore Document Merge, Firebase Storage & Sonner Toasts |
 | **💡 Marketplace de Proyectos** | Tablero central en tiempo real para visualizar proyectos activos, filtrar por tipo de reto y explorar perfiles requeridos. | Firestore Queries & Lucide Icons |
 | **📝 Creador de Proyectos** | Publicador de ideas con categorización, descripción detallada y definidor dinámico de perfiles buscados (*ej: Frontend Developer, Growth Hacker*). | Controlled Dynamic Forms |
 | **🤝 Postulaciones & Matching** | Sistema de un clic para postularse a iniciativas, prevención de autopostulaciones y control de duplicados. | Realtime Firestore Collections |
+| **💬 Mensajería en tiempo real** | Chat directo entre el creador del proyecto y los postulantes, con acceso restringido por reglas de Firestore a ambas partes. | Firestore Subcollections & Realtime Listeners (`onSnapshot`) |
 | **📂 Gestión Personal** | Paneles dedicados para administrar *Mis Proyectos* creados y monitorear el estado de *Mis Postulaciones*. | Protected Route System |
 
 ---
@@ -71,7 +74,9 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 
 ### Backend & Servicios
 * **[Firebase Auth](https://firebase.google.com/docs/auth):** Manejo de autenticación basada en email y contraseña con control de errores localizado en español.
-* **[Cloud Firestore](https://firebase.google.com/docs/firestore):** Base de datos NoSQL escalable para el almacenamiento en tiempo real de usuarios, proyectos y postulaciones.
+* **[Cloud Firestore](https://firebase.google.com/docs/firestore):** Base de datos NoSQL escalable para el almacenamiento en tiempo real de usuarios, proyectos, postulaciones y mensajes.
+* **[Firebase Storage](https://firebase.google.com/docs/storage):** Almacenamiento seguro en la nube para avatares y archivos multimedia de los perfiles de usuario.
+* **[Vercel & Analytics](https://vercel.com/):** Plataforma de despliegue continuo optimizada para Next.js con monitorización de rendimiento y analíticas en tiempo real.
 
 ---
 
@@ -81,6 +86,7 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 CoFound-UE/
 ├── app/                        # Rutas y páginas principales (Next.js App Router)
 │   ├── dashboard/              # Panel principal del estudiante (Marketplace de proyectos)
+│   │   ├── mensajes/           # Chat y mensajería en tiempo real entre creadores y postulantes
 │   │   ├── mis-postulaciones/  # Rastreador de postulaciones enviadas
 │   │   ├── mis-proyectos/      # Gestor de proyectos creados por el usuario
 │   │   ├── nuevo/              # Formulario para publicar una nueva idea/proyecto
@@ -91,25 +97,29 @@ CoFound-UE/
 │   │   ├── cookies/            # Política de Galletas / Cookies
 │   │   └── privacidad/         # Política de Privacidad de Datos
 │   ├── perfil/                 # Editor del Perfil Universitario del estudiante
-│   │   └── page.tsx            # Gestión de datos personales, campus y habilidades
+│   │   └── page.tsx            # Gestión de datos personales, campus, avatar y habilidades
 │   ├── globals.css             # Estilos globales y extensiones Tailwind
 │   ├── layout.tsx              # Estructura raíz con fondo interactivo y Toaster
 │   └── page.tsx                # Landing Page con formulario de Login/Registro integrados
 ├── components/                 # Componentes de UI reutilizables
+│   ├── ui/                     # Primitivas y componentes visuales base (Skeleton loaders)
 │   ├── features-section.tsx    # Cuadrícula de características destacadas en Landing
 │   ├── footer.tsx              # Pie de página institucional con enlaces legales
 │   ├── hero-section.tsx        # Sección principal de bienvenida e impacto visual
 │   ├── how-it-works.tsx        # Guía paso a paso sobre el funcionamiento de la red
 │   ├── Navbar.tsx              # Barra de navegación adaptativa con estado de usuario
 │   ├── particle-background.tsx # Canvas HTML5 con efecto matricial de partículas
-│   └── ProtectedRoute.tsx      # HOC / Guardián para proteger rutas privadas
+│   ├── ProtectedRoute.tsx      # HOC / Guardián para proteger rutas privadas
+│   └── vision-section.tsx      # Sección de visión institucional y proyección
+├── context/                    # Contextos globales de React
+│   └── AuthContext.tsx         # Proveedor y hook de autenticación de usuario
 ├── lib/                        # Lógica de negocio y utilidades
 │   ├── auth-errors.ts          # Mapeo de errores de Firebase Auth a lenguaje amigable (ES)
-│   └── firebase.ts             # Inicialización del SDK de Firebase, Auth y Firestore
+│   └── firebase.ts             # Inicialización del SDK de Firebase, Auth, Firestore y Storage
 ├── public/                     # Recursos estáticos de la marca
 │   ├── CoFoundUE_banner.png    # Banner promocional para OpenGraph (1200x630)
 │   └── CoFoundUE_logo.png      # Logotipo oficial de CoFound UE
-├── .gitignore                  # Exclusiones del control de versiones Git
+├── firestore.rules             # Reglas de seguridad de Firestore (Auth, accesos y mensajería)
 ├── LICENSE                     # Licencia propietaria (Todos los derechos reservados)
 ├── next.config.mjs             # Configuración de compilación Next.js
 ├── package.json                # Dependencias, scripts y metadatos
@@ -162,13 +172,14 @@ Abre tu navegador y entra en [http://localhost:3000](http://localhost:3000).
 
 ## 💾 Modelo de Datos (Firestore)
 
-El proyecto utiliza tres colecciones principales en **Firebase Firestore**:
+El proyecto organiza sus datos en **Firebase Firestore** estructurados en colecciones principales y la subcolección de mensajería en tiempo real:
 
 ```mermaid
 erDiagram
     USERS ||--o{ PROJECTS : "crea"
     USERS ||--o{ APPLICATIONS : "envía"
     PROJECTS ||--o{ APPLICATIONS : "recibe"
+    APPLICATIONS ||--o{ MESSAGES : "contiene"
 
     USERS {
         string uid PK
@@ -177,6 +188,7 @@ erDiagram
         string degree
         string campus
         string bio
+        string photoURL
         array skills
         timestamp updatedAt
     }
@@ -198,6 +210,13 @@ erDiagram
         string applicantId FK
         string creatorId FK
         string status
+        timestamp createdAt
+    }
+
+    MESSAGES {
+        string id PK
+        string senderId FK
+        string text
         timestamp createdAt
     }
 ```
@@ -226,7 +245,9 @@ La aplicación incluye un motor de validación para proteger el ecosistema unive
    - `@live.uem.es` *(Alumnos)*
    - `@universidadeuropea.es` *(Personal / Docentes)*
 2. **Rutas Protegidas (`ProtectedRoute.tsx`):**
-   Las vistas internas (`/dashboard`, `/perfil`, `/dashboard/nuevo`, `/dashboard/proyecto/[id]`, etc.) verifican la sesión activa en Firebase Auth antes de conceder acceso, redirigiendo automáticamente a la Landing Page si el usuario no se encuentra autenticado.
+   Las vistas internas (`/dashboard`, `/perfil`, `/dashboard/nuevo`, `/dashboard/proyecto/[id]`, `/dashboard/mensajes`, etc.) verifican la sesión activa en Firebase Auth antes de conceder acceso, redirigiendo automáticamente a la Landing Page si el usuario no se encuentra autenticado.
+3. **Reglas de Seguridad Estrictas (`firestore.rules`):**
+   Acceso granular en Firestore: usuarios solo editan su propio perfil, creadores gestionan sus proyectos, y la subcolección de mensajes está estrictamente restringida a los dos participantes de la postulación (creador y postulante), bloqueando cualquier acceso cruzado no autorizado.
 
 ---
 
@@ -237,6 +258,26 @@ La plataforma está optimizada para ser desplegada en **Vercel** o plataformas c
 1. Conecta tu repositorio de GitHub con **Vercel**.
 2. En la configuración del proyecto, agrega las variables de entorno de Firebase (`NEXT_PUBLIC_FIREBASE_*`).
 3. Vercel detectará automáticamente Next.js 14 y ejecutará la compilación.
+
+URL de producción activa: **[https://cofound-ue.vercel.app](https://cofound-ue.vercel.app)**
+
+---
+
+## 🗺️ Roadmap
+
+El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a consolidar la plataforma y responder a las necesidades reales del campus:
+
+* **Completado:**
+  * **Fase 0:** Auth institucional (`@live.uem.es` / `@universidadeuropea.es`), reglas de seguridad de Firestore y borrado de proyectos en cascada.
+  * **Fase 1:** Marketplace de proyectos, sistema de postulaciones y perfiles universitarios.
+  * **Fase 2:** Mensajería en tiempo real, avatares de usuario y *skeleton loaders*.
+
+* **En curso (Fase 3A):**
+  * PWA instalable.
+  * CI con tests automatizados de reglas Firestore.
+  * Notificaciones transaccionales por email.
+  * Buscador global de proyectos.
+  * Dashboard de métricas para creadores.
 
 ---
 
