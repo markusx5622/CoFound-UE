@@ -33,24 +33,18 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
+    type: "website",
+    locale: "es_ES",
+    siteName: "CoFound UE",
     title: "CoFound UE - Conecta con talento en el Campus",
     description: "La red exclusiva para conectar talento de ADE, Marketing, Tech y Diseño de la Universidad Europea.",
     url: "https://cofound-ue.vercel.app",
-    siteName: "CoFound UE",
-    locale: "es_ES",
-    type: "website",
     images: [
       {
         url: "/CoFoundUE_banner.png",
-        width: 1200,
-        height: 630,
-        alt: "CoFound UE - Conecta con talento en la Universidad Europea",
-      },
-      {
-        url: "/CoFoundUE_logo.png",
-        width: 500,
-        height: 500,
-        alt: "CoFound UE Logo",
+        width: 3164,
+        height: 1086,
+        alt: "CoFound UE",
       },
     ],
   },
@@ -58,7 +52,14 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CoFound UE - Conecta con talento en el Campus",
     description: "La red exclusiva para conectar talento de ADE, Marketing, Tech y Diseño de la Universidad Europea.",
-    images: ["/CoFoundUE_banner.png"],
+    images: [
+      {
+        url: "/CoFoundUE_banner.png",
+        width: 3164,
+        height: 1086,
+        alt: "CoFound UE",
+      },
+    ],
   },
 };
 
