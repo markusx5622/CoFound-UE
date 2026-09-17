@@ -113,8 +113,8 @@ export default function Footer() {
 
         <div className="border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
           <p>© {currentYear} CoFound UE. Todos los derechos reservados.</p>
-          <p>
-            Diseñado con <span className="text-[#E60000]">♥</span> por M&C Web Solutions
+          <p className="text-zinc-400 text-sm mb-4 md:mb-0">
+            Diseñado con <span className="text-[#E60000]">♥</span> por el equipo de CoFound UE
           </p>
         </div>
       </div>

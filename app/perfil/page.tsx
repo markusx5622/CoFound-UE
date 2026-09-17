@@ -76,16 +76,20 @@ export default function MiPerfil() {
     try {
       if (!user) throw new Error("No user logged in");
 
+      const generatedAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=18181b&color=E60000&size=256&font-size=0.4`;
+
       await setDoc(doc(db, "users", user.uid), {
         name,
         degree,
         campus,
         bio,
         skills,
+        photoURL: generatedAvatar,
         email: user.email,
         updatedAt: new Date()
       }, { merge: true });
 
+      setPhotoURL(generatedAvatar);
       toast.success("Perfil guardado correctamente.");
     } catch (error) {
       console.error("Error saving profile:", error);

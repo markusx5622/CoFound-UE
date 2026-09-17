@@ -39,7 +39,7 @@ export default function HeroSection() {
           alt="CoFound UE Square Logo" 
           width={220} 
           height={220} 
-          className="-mt-6 rounded-3xl shadow-[0_10px_35px_rgba(0,0,0,0.6)] mb-6 animate-float cursor-pointer border border-zinc-800/80 group-hover:border-[#E60000]/60 group-hover:scale-[1.04] group-hover:-translate-y-1.5 group-hover:brightness-105 group-hover:shadow-[0_15px_45px_rgba(230,0,0,0.35)] transition-all duration-500 ease-out"
+          className="-mt-6 shadow-[0_10px_35px_rgba(0,0,0,0.6)] mb-6 animate-float cursor-pointer group-hover:scale-[1.04] group-hover:-translate-y-1.5 group-hover:brightness-105 group-hover:shadow-[0_15px_45px_rgba(230,0,0,0.35)] transition-all duration-500 ease-out"
           priority
         />
       </motion.div>

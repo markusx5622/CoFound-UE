@@ -24,8 +24,8 @@ export default function AvisoLegal() {
         <div className="space-y-8 text-zinc-300 leading-relaxed">
           <section>
             <h2 className="text-xl font-bold text-white mb-3">1. Datos Identificativos</h2>
-            <p>
-              En cumplimiento con el deber de información recogido en artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se hace constar que esta plataforma web ha sido desarrollada por el equipo de M&C Web Solutions, operando bajo el nombre de proyecto universitario <strong className="text-white">CoFound UE</strong>.
+            <p className="text-zinc-400">
+              En cumplimiento con el deber de información recogido en artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se hace constar que esta plataforma web ha sido desarrollada operando bajo el nombre de proyecto universitario <strong className="text-white">CoFound UE</strong>.
             </p>
             <ul className="list-disc pl-5 mt-4 space-y-2 text-zinc-400">
               <li><strong className="text-zinc-200">Denominación del proyecto:</strong> CoFound UE</li>

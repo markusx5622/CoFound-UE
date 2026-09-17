@@ -1,8 +1,7 @@
 <div align="center">
 
-  <img src="public/CoFoundUE_logo.png" alt="CoFound UE Logo" width="120" height="120" style="border-radius: 20px;" />
+  <img src="public/CoFoundUE_banner.png" alt="CoFound UE Banner" width="100%" style="border-radius: 20px; margin-bottom: 20px;" />
 
-  # 🚀 CoFound UE
   ### *La Plataforma Exclusiva de Co-Founders y Talento para la Universidad Europea*
 
   [![Next.js](https://img.shields.io/badge/Next.js-14.2.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)

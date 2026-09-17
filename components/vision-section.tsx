@@ -58,53 +58,61 @@ export default function VisionSection() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="flex-1 w-full relative"
           >
-            <div className="relative rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm aspect-square md:aspect-[4/3] flex items-center justify-center group shadow-2xl">
+            <div className="relative rounded-3xl overflow-hidden border border-zinc-800/50 bg-zinc-900/30 backdrop-blur-md p-6 md:p-10 flex flex-col items-center justify-center gap-4 shadow-2xl">
               
-              {/* Central glowing core */}
-              <div className="absolute w-32 h-32 bg-[#E60000] rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+              {/* Glow */}
+              <div className="absolute w-full h-full bg-[#E60000] rounded-full blur-[100px] opacity-[0.08] pointer-events-none"></div>
               
-              {/* Connecting nodes visual */}
-              <div className="relative w-64 h-64">
-                <motion.div 
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 border border-zinc-700/50 rounded-full border-dashed"
-                ></motion.div>
-                <motion.div 
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-8 border border-zinc-800 rounded-full"
-                ></motion.div>
-                
-                {/* Center Node */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-zinc-950 border border-zinc-800 rounded-2xl flex items-center justify-center shadow-lg z-20">
-                  <span className="font-bold text-white tracking-tighter">UEV</span>
+              {/* Project Card Mockup */}
+              <motion.div 
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="w-full max-w-sm bg-zinc-950/90 border border-zinc-800 rounded-2xl p-5 shadow-lg relative z-10"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-bold text-zinc-300">CM</div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-white">Carlos M.</h4>
+                      <p className="text-xs text-zinc-500">ADE • Buscando Tech</p>
+                    </div>
+                  </div>
+                  <span className="bg-[#E60000]/10 text-[#E60000] text-[10px] font-bold px-2 py-1 rounded-full border border-[#E60000]/20">Proyecto</span>
                 </div>
-                
-                {/* Orbiting Node 1 */}
-                <motion.div 
-                  animate={{ 
-                    x: [0, 80, 0, -80, 0],
-                    y: [-80, 0, 80, 0, -80]
-                  }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                  className="absolute top-1/2 left-1/2 w-10 h-10 -ml-5 -mt-5 bg-zinc-900 border border-zinc-700 rounded-full flex items-center justify-center shadow-lg z-10"
-                >
-                  <span className="text-[10px] font-bold text-zinc-400">Tech</span>
-                </motion.div>
+                <h3 className="text-base font-bold text-white mb-2">App de Gestión Financiera</h3>
+                <p className="text-xs text-zinc-400 mb-4 line-clamp-2">Buscamos un co-founder técnico para desarrollar el MVP en Next.js y Firebase...</p>
+                <div className="flex gap-2">
+                  <span className="bg-zinc-900 text-zinc-400 text-[10px] px-2.5 py-1 rounded-md border border-zinc-800">Finanzas</span>
+                  <span className="bg-zinc-900 text-zinc-400 text-[10px] px-2.5 py-1 rounded-md border border-zinc-800">SaaS</span>
+                </div>
+              </motion.div>
 
-                {/* Orbiting Node 2 */}
-                <motion.div 
-                  animate={{ 
-                    x: [0, -70, 0, 70, 0],
-                    y: [70, 0, -70, 0, 70]
-                  }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                  className="absolute top-1/2 left-1/2 w-10 h-10 -ml-5 -mt-5 bg-zinc-900 border border-zinc-700 rounded-full flex items-center justify-center shadow-lg z-10"
-                >
-                  <span className="text-[10px] font-bold text-zinc-400">ADE</span>
-                </motion.div>
+              {/* Connection Link */}
+              <div className="flex items-center justify-center h-6 relative z-0">
+                <div className="w-px h-full bg-gradient-to-b from-zinc-700 to-[#E60000]/60"></div>
+                <div className="absolute w-3 h-3 rounded-full bg-[#E60000] shadow-[0_0_10px_rgba(230,0,0,0.8)] border-2 border-zinc-950"></div>
               </div>
+
+              {/* Match Card Mockup */}
+              <motion.div 
+                animate={{ y: [0, 4, 0] }}
+                transition={{ duration: 4, delay: 1, repeat: Infinity, ease: "easeInOut" }}
+                className="w-full max-w-sm bg-gradient-to-br from-zinc-950/90 to-[#E60000]/5 border border-[#E60000]/20 rounded-2xl p-5 shadow-[0_0_20px_rgba(230,0,0,0.1)] relative z-10"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#E60000]/10 border border-[#E60000]/30 flex items-center justify-center text-sm font-bold text-[#E60000]">AG</div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-white">Ana G.</h4>
+                      <p className="text-xs text-[#E60000]/80 font-medium">Ing. Informática • Tech</p>
+                    </div>
+                  </div>
+                  <button className="bg-[#E60000] hover:bg-[#CC0000] text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg transition-colors">
+                    Conectar
+                  </button>
+                </div>
+              </motion.div>
+
             </div>
           </motion.div>
           
