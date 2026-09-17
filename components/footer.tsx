@@ -103,8 +103,8 @@ export default function Footer() {
               </li>
               <li className="mt-4">
                 <p className="text-zinc-500 text-xs">
-                  Campus Villaviciosa de Odón<br />
-                  Universidad Europea de Madrid
+                  Campus Turia<br />
+                  Universidad Europea de Valencia
                 </p>
               </li>
             </ul>

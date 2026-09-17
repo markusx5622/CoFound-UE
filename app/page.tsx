@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 import ParticleBackground from "@/components/particle-background";
 import HeroSection from "@/components/hero-section";
+import CampusFeedPreview from "@/components/campus-feed-preview";
 import FeaturesSection from "@/components/features-section";
 import HowItWorks from "@/components/how-it-works";
 import VisionSection from "@/components/vision-section";
@@ -91,61 +92,67 @@ export default function LandingPage() {
           <div className="absolute bottom-[-10%] right-[-10%] w-[35%] h-[35%] bg-white rounded-full blur-[150px] opacity-5"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-16 w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 flex-grow">
-          {/* Hero */}
+        <div className="max-w-7xl mx-auto px-6 py-12 md:py-16 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10 flex-grow">
+          {/* Hero Content */}
           <HeroSection />
 
-          {/* Formulario de Auth */}
+          {/* Formulario de Auth Estilo App Social */}
           <div className="w-full max-w-md mx-auto">
-            <div className="bg-white p-8 rounded-2xl shadow-2xl relative overflow-hidden border border-zinc-200">
-              <div className="absolute top-0 left-0 w-full h-1 bg-[#E60000]"></div>
+            <div className="bg-zinc-900/90 backdrop-blur-xl p-7 sm:p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative overflow-hidden border border-zinc-800">
+              {/* Subtle top accent gradient */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent"></div>
               
               {currentUser ? (
                 <div className="text-center py-6">
-                  <h2 className="text-3xl font-bold text-black mb-3">
-                    ¡Hola de nuevo!
+                  <div className="w-14 h-14 bg-red-950/60 border border-[#E60000]/40 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#E60000]">
+                    <ShieldCheck className="h-7 w-7" />
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                    ¡Sesión Iniciada!
                   </h2>
-                  <p className="text-gray-500 mb-8 text-sm">
-                    Has iniciado sesión con tu cuenta institucional de la universidad.
+                  <p className="text-zinc-400 mb-8 text-sm">
+                    Estás conectado con tu cuenta de la Universidad Europea.
                   </p>
                   <Link
                     href="/dashboard"
-                    className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                    className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                   >
-                    Ir al Dashboard
+                    <span>Entrar al Dashboard de Proyectos</span>
                     <ArrowRight className="h-5 w-5" />
                   </Link>
                 </div>
               ) : isResetPassword ? (
                 <>
-                  <h2 className="text-3xl font-bold text-black mb-2">
-                    Recuperar Contraseña
-                  </h2>
-                  <p className="text-gray-500 mb-8 text-sm">
-                    Te enviaremos un correo para que puedas restablecerla.
-                  </p>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-1">
+                      Recuperar Contraseña
+                    </h2>
+                    <p className="text-zinc-400 text-xs sm:text-sm">
+                      Te enviaremos un correo institucional para que puedas restablecerla.
+                    </p>
+                  </div>
 
-                  <form onSubmit={handleResetPassword} className="space-y-5">
+                  <form onSubmit={handleResetPassword} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Institucional</label>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">Correo Institucional</label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                          <Mail className="h-4 w-4 text-zinc-500" />
                         </div>
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
+                          className="block w-full pl-10 pr-3.5 py-3 border border-zinc-800 bg-zinc-950 rounded-xl focus:ring-1 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-white text-sm placeholder:text-zinc-600"
                           placeholder="estudiante@live.uem.es"
                         />
                       </div>
                     </div>
 
                     {error && (
-                      <div className="p-3 bg-red-50 text-[#E60000] text-sm rounded-xl flex items-start gap-2 border border-red-100">
-                        <AlertCircle className="h-5 w-5 shrink-0" />
+                      <div className="p-3 bg-red-950/40 text-red-300 text-xs rounded-xl flex items-start gap-2 border border-red-900/50">
+                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#E60000]" />
                         <span>{error}</span>
                       </div>
                     )}
@@ -153,10 +160,10 @@ export default function LandingPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-70"
+                      className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-70 text-sm"
                     >
-                      {loading ? "Enviando..." : "Enviar Correo"}
-                      {!loading && <ArrowRight className="h-5 w-5" />}
+                      {loading ? "Enviando..." : "Enviar Correo de Recuperación"}
+                      {!loading && <ArrowRight className="h-4 w-4" />}
                     </button>
                   </form>
 
@@ -167,7 +174,7 @@ export default function LandingPage() {
                         setIsResetPassword(false);
                         setError("");
                       }}
-                      className="text-sm text-gray-600 hover:text-black font-medium transition-colors"
+                      className="text-xs text-zinc-400 hover:text-white font-medium transition-colors"
                     >
                       Volver a iniciar sesión
                     </button>
@@ -175,55 +182,88 @@ export default function LandingPage() {
                 </>
               ) : (
                 <>
-                  <h2 className="text-3xl font-bold text-black mb-2">
-                    {isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
-                  </h2>
-                  <p className="text-gray-500 mb-8 text-sm">
-                    Usa tu correo @live.uem.es o @universidadeuropea.es
-                  </p>
+                  {/* Top Campus Tag */}
+                  <div className="flex items-center justify-between gap-2 mb-5">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-950/50 border border-red-800/40 text-[11px] font-semibold text-red-300">
+                      <ShieldCheck className="h-3.5 w-3.5 text-[#E60000]" />
+                      <span>Campus Turia • Registro Oficial</span>
+                    </div>
+                  </div>
 
-                  <form onSubmit={handleAuth} className="space-y-5">
+                  {/* Switch Tab (Iniciar Sesión / Crear Cuenta) */}
+                  <div className="flex rounded-xl bg-zinc-950 p-1 mb-6 border border-zinc-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsLogin(true);
+                        setError("");
+                      }}
+                      className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all ${
+                        isLogin ? "bg-[#E60000] text-white shadow-md" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      Iniciar Sesión
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsLogin(false);
+                        setError("");
+                      }}
+                      className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all ${
+                        !isLogin ? "bg-[#E60000] text-white shadow-md" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      Crear Cuenta
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleAuth} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Institucional</label>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                        Correo Institucional UE
+                      </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                          <Mail className="h-4 w-4 text-zinc-500" />
                         </div>
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
-                          placeholder="estudiante@live.uem.es"
+                          className="block w-full pl-10 pr-3.5 py-3 border border-zinc-800 bg-zinc-950 rounded-xl focus:ring-1 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-white text-sm placeholder:text-zinc-600"
+                          placeholder="ej: estudiante@live.uem.es"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                        Contraseña
+                      </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Lock className="h-5 w-5 text-gray-400" />
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                          <Lock className="h-4 w-4 text-zinc-500" />
                         </div>
                         <input
                           type="password"
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-black"
+                          className="block w-full pl-10 pr-3.5 py-3 border border-zinc-800 bg-zinc-950 rounded-xl focus:ring-1 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-colors text-white text-sm placeholder:text-zinc-600"
                           placeholder="••••••••"
                         />
                       </div>
                       {isLogin && (
-                        <div className="text-right mt-2">
+                        <div className="text-right mt-1.5">
                           <button
                             type="button"
                             onClick={() => {
                               setIsResetPassword(true);
                               setError("");
                             }}
-                            className="text-xs text-[#E60000] hover:underline"
+                            className="text-xs text-zinc-400 hover:text-[#E60000] transition-colors"
                           >
                             ¿Olvidaste tu contraseña?
                           </button>
@@ -232,8 +272,8 @@ export default function LandingPage() {
                     </div>
 
                     {error && (
-                      <div className="p-3 bg-red-50 text-[#E60000] text-sm rounded-xl flex items-start gap-2 border border-red-100">
-                        <AlertCircle className="h-5 w-5 shrink-0" />
+                      <div className="p-3 bg-red-950/40 text-red-300 text-xs rounded-xl flex items-start gap-2 border border-red-900/50">
+                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#E60000]" />
                         <span>{error}</span>
                       </div>
                     )}
@@ -241,24 +281,27 @@ export default function LandingPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-70"
+                      className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-70 text-sm mt-2"
                     >
-                      {loading ? "Procesando..." : (isLogin ? "Entrar" : "Registrarse")}
-                      {!loading && <ArrowRight className="h-5 w-5" />}
+                      {loading
+                        ? "Procesando..."
+                        : isLogin
+                        ? "Entrar a CoFound UE"
+                        : "Crear mi Cuenta de Estudiante"}
+                      {!loading && <ArrowRight className="h-4 w-4" />}
                     </button>
                   </form>
 
-                  <div className="mt-6 text-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsLogin(!isLogin);
-                        setError("");
-                      }}
-                      className="text-sm text-gray-600 hover:text-black font-medium transition-colors"
-                    >
-                      {isLogin ? "¿No tienes cuenta? Regístrate aquí" : "¿Ya tienes cuenta? Inicia sesión"}
-                    </button>
+                  {/* Trust guarantees footer */}
+                  <div className="mt-5 pt-4 border-t border-zinc-800/80 space-y-1.5 text-[11px] text-zinc-500">
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
+                      <span>Verificación automática para @live.uem.es</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
+                      <span>Acceso libre para alumnos del Campus Turia</span>
+                    </div>
                   </div>
                 </>
               )}
@@ -269,6 +312,17 @@ export default function LandingPage() {
 
       {/* Contenido Adicional con Scroll */}
       <div className="relative z-10">
+        {/* Showcase de Proyectos Activos de Estudiantes del Campus */}
+        <CampusFeedPreview
+          onSelectProject={() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+            if (emailInput) {
+              emailInput.focus();
+            }
+          }}
+        />
+
         <FeaturesSection />
         <HowItWorks />
         <VisionSection />
@@ -281,8 +335,8 @@ export default function LandingPage() {
             <h3 className="text-3xl lg:text-5xl font-extrabold text-white mb-6">
               ¿Listo para encontrar a tu <span className="text-[#E60000]">Co-Founder</span>?
             </h3>
-            <p className="text-gray-400 max-w-xl mx-auto mb-8 text-base leading-relaxed">
-              Regístrate hoy mismo de forma gratuita y empieza a conectar con el mejor talento de la Universidad Europea.
+            <p className="text-zinc-400 max-w-xl mx-auto mb-8 text-base leading-relaxed">
+              Regístrate hoy mismo de forma gratuita y empieza a conectar con el mejor talento de la Universidad Europea en el Campus Turia.
             </p>
             <button
               onClick={() => {
@@ -292,7 +346,7 @@ export default function LandingPage() {
               }}
               className="bg-[#E60000] hover:bg-red-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center gap-2"
             >
-              Comenzar Ahora
+              Comenzar Ahora en Campus Turia
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>

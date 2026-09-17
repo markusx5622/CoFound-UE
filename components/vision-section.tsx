@@ -38,13 +38,13 @@ export default function VisionSection() {
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#E60000]/10 flex items-center justify-center border border-[#E60000]/20">
                   <MapPin className="h-4 w-4 text-[#E60000]" />
                 </div>
-                <span>Primero dominaremos el campus de Valencia.</span>
+                <span>Primero consolidaremos la comunidad en Campus Turia (Valencia).</span>
               </li>
               <li className="flex items-center gap-3">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center border border-zinc-800">
                   <Network className="h-4 w-4 text-zinc-500" />
                 </div>
-                <span className="text-zinc-500">Pronto conectaremos con Madrid y Canarias.</span>
+                <span className="text-zinc-500">Pronto conectaremos con Campus Villaviciosa, Alcobendas y Canarias.</span>
               </li>
             </ul>
             

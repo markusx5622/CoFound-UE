@@ -12,7 +12,7 @@ import Image from "next/image";
 export default function MiPerfil() {
   const [name, setName] = useState("");
   const [degree, setDegree] = useState("");
-  const [campus, setCampus] = useState("Villaviciosa");
+  const [campus, setCampus] = useState("Valencia");
   const [bio, setBio] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   
@@ -36,7 +36,7 @@ export default function MiPerfil() {
             const data = docSnap.data();
             setName(data.name || "");
             setDegree(data.degree || "");
-            setCampus(data.campus || "Villaviciosa");
+            setCampus(data.campus || "Valencia");
             setBio(data.bio || "");
             setSkills(data.skills || []);
             setPhotoURL(data.photoURL || "");
@@ -166,12 +166,12 @@ export default function MiPerfil() {
                   onChange={(e) => setCampus(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all"
                 >
-                  <option value="Villaviciosa">Villaviciosa de Odón</option>
-                  <option value="Alcobendas">Alcobendas</option>
-                  <option value="Valencia">Valencia</option>
-                  <option value="Alicante">Alicante</option>
-                  <option value="Málaga">Málaga</option>
-                  <option value="Canarias">Canarias</option>
+                  <option value="Valencia">Campus Turia (Valencia)</option>
+                  <option value="Villaviciosa">Campus Villaviciosa de Odón (Madrid)</option>
+                  <option value="Alcobendas">Campus Alcobendas (Madrid)</option>
+                  <option value="Alicante">Campus Alicante</option>
+                  <option value="Málaga">Campus Málaga</option>
+                  <option value="Canarias">Campus Canarias</option>
                   <option value="Online">Online</option>
                 </select>
               </div>

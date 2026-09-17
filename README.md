@@ -53,7 +53,7 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 | :--- | :--- | :--- |
 | **🛡️ Auth Restringida** | Registro e inicio de sesión validado mediante expresión regular para asegurar el acceso únicamente a usuarios con correo institucional de la Universidad Europea. | Firebase Auth & TypeScript regex validation |
 | **🎨 Interfaz Inmersiva** | Estética *dark-mode* moderna con canvas de partículas fluidas, efectos glassmorphism (`backdrop-blur`) y acentos de color institucional de la UE (`#E60000`). | Tailwind CSS & HTML5 Canvas |
-| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno: nombre, titulación, selección de campus (*Villaviciosa, Alcobendas, Valencia, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge & Sonner Toasts |
+| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno: nombre, titulación, selección de campus (*Campus Turia / Valencia, Villaviciosa, Alcobendas, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge & Sonner Toasts |
 | **💡 Marketplace de Proyectos** | Tablero central en tiempo real para visualizar proyectos activos, filtrar por tipo de reto y explorar perfiles requeridos. | Firestore Queries & Lucide Icons |
 | **📝 Creador de Proyectos** | Publicador de ideas con categorización, descripción detallada y definidor dinámico de perfiles buscados (*ej: Frontend Developer, Growth Hacker*). | Controlled Dynamic Forms |
 | **🤝 Postulaciones & Matching** | Sistema de un clic para postularse a iniciativas, prevención de autopostulaciones y control de duplicados. | Realtime Firestore Collections |
