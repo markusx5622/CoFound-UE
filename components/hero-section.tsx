@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { MapPin, Rocket, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
+import { Rocket, ShieldCheck, UserPlus } from "lucide-react";
 
 export default function HeroSection() {
   const containerVariants = {
@@ -30,18 +30,6 @@ export default function HeroSection() {
     >
       {/* Background glowing blob */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] md:w-[620px] h-[320px] md:h-[620px] bg-[#E60000]/10 rounded-full blur-[110px] md:blur-[160px] -z-10 pointer-events-none animate-pulse duration-1000"></div>
-
-      {/* Campus Location & Status Badges */}
-      <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-200 backdrop-blur-md shadow-inner">
-          <MapPin className="h-3.5 w-3.5 text-[#E60000]" />
-          <span>Campus Turia • Valencia</span>
-        </div>
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-[#E60000] drop-shadow-[0_0_8px_rgba(230,0,0,0.8)]"></span>
-          <span>Iniciativa de Emprendimiento Universitario</span>
-        </div>
-      </motion.div>
 
       {/* Logo container: squircle curvature without rectangular box-shadow artifacts */}
       <motion.div variants={itemVariants} className="relative inline-block group">
