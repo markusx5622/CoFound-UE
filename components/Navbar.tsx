@@ -10,12 +10,43 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Menu, X } from "lucide-react";
 
+function getTimestampMillis(ts: any): number {
+  if (!ts) return 0;
+  if (typeof ts.toMillis === "function") return ts.toMillis();
+  if (typeof ts.seconds === "number") return ts.seconds * 1000;
+  if (ts instanceof Date) return ts.getTime();
+  return 0;
+}
+
+function hasUnreadMessages(
+  app: {
+    creatorId: string;
+    applicantId: string;
+    lastMessageAt?: any;
+    lastMessageSenderId?: string;
+    lastReadByApplicant?: any;
+    lastReadByCreator?: any;
+  },
+  userId: string
+): boolean {
+  if (!app.lastMessageAt || !app.lastMessageSenderId) return false;
+  if (app.lastMessageSenderId === userId) return false;
+
+  const isCreator = app.creatorId === userId;
+  const lastRead = isCreator ? app.lastReadByCreator : app.lastReadByApplicant;
+
+  if (!lastRead) return true;
+
+  return getTimestampMillis(app.lastMessageAt) > getTimestampMillis(lastRead);
+}
+
 export default function Navbar() {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -31,6 +62,54 @@ export default function Navbar() {
     });
     
     return () => unsubscribe();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadMessagesCount(0);
+      return;
+    }
+
+    const qApplicant = query(
+      collection(db, "applications"),
+      where("applicantId", "==", user.uid)
+    );
+    const qCreator = query(
+      collection(db, "applications"),
+      where("creatorId", "==", user.uid)
+    );
+
+    let applicantApps: any[] = [];
+    let creatorApps: any[] = [];
+
+    const calculateUnread = () => {
+      const allAppsMap = new Map<string, any>();
+      applicantApps.forEach(doc => allAppsMap.set(doc.id, doc));
+      creatorApps.forEach(doc => allAppsMap.set(doc.id, doc));
+
+      let count = 0;
+      allAppsMap.forEach(app => {
+        if (hasUnreadMessages(app, user.uid)) {
+          count++;
+        }
+      });
+      setUnreadMessagesCount(count);
+    };
+
+    const unsubApp = onSnapshot(qApplicant, (snapshot) => {
+      applicantApps = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      calculateUnread();
+    });
+
+    const unsubCreator = onSnapshot(qCreator, (snapshot) => {
+      creatorApps = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      calculateUnread();
+    });
+
+    return () => {
+      unsubApp();
+      unsubCreator();
+    };
   }, [user]);
 
   const handleLogout = async () => {
@@ -82,6 +161,11 @@ export default function Navbar() {
                       {pendingCount}
                     </span>
                   )}
+                  {link.label === "Mensajes" && unreadMessagesCount > 0 && (
+                    <span className="absolute -top-2 -right-4 flex h-4 w-4 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
                 </Link>
               ))}
               <button
@@ -117,6 +201,11 @@ export default function Navbar() {
               {link.label === "Mis Proyectos" && pendingCount > 0 && (
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
                   {pendingCount}
+                </span>
+              )}
+              {link.label === "Mensajes" && unreadMessagesCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
+                  {unreadMessagesCount}
                 </span>
               )}
             </Link>

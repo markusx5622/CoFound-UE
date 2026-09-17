@@ -2,7 +2,7 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect, useRef } from "react";
-import { collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, orderBy, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, addDoc, serverTimestamp, orderBy, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Send, UserCircle, MessageSquare } from "lucide-react";
@@ -21,6 +21,10 @@ interface Conversation {
   projectTitle: string;
   status: string;
   otherUser: UserData;
+  lastMessageAt?: any;
+  lastMessageSenderId?: string;
+  lastReadByApplicant?: any;
+  lastReadByCreator?: any;
 }
 
 interface Message {
@@ -28,6 +32,26 @@ interface Message {
   text: string;
   senderId: string;
   createdAt: any;
+}
+
+function getTimestampMillis(ts: any): number {
+  if (!ts) return 0;
+  if (typeof ts.toMillis === "function") return ts.toMillis();
+  if (typeof ts.seconds === "number") return ts.seconds * 1000;
+  if (ts instanceof Date) return ts.getTime();
+  return 0;
+}
+
+function hasUnreadMessages(convo: Conversation, currentUserId: string): boolean {
+  if (!convo.lastMessageAt || !convo.lastMessageSenderId) return false;
+  if (convo.lastMessageSenderId === currentUserId) return false;
+
+  const isCreator = convo.creatorId === currentUserId;
+  const lastRead = isCreator ? convo.lastReadByCreator : convo.lastReadByApplicant;
+
+  if (!lastRead) return true;
+
+  return getTimestampMillis(convo.lastMessageAt) > getTimestampMillis(lastRead);
 }
 
 export default function Mensajes() {
@@ -42,47 +66,85 @@ export default function Mensajes() {
   useEffect(() => {
     if (!user) return;
 
-    // Fetch applications where user is applicant or creator
-    const fetchConversations = async () => {
+    const qApplicant = query(collection(db, "applications"), where("applicantId", "==", user.uid));
+    const qCreator = query(collection(db, "applications"), where("creatorId", "==", user.uid));
+
+    let applicantDocs: any[] = [];
+    let creatorDocs: any[] = [];
+    const usersCache = new Map<string, UserData>();
+
+    const updateConversationsList = async () => {
       try {
-        const qApplicant = query(collection(db, "applications"), where("applicantId", "==", user.uid));
-        const qCreator = query(collection(db, "applications"), where("creatorId", "==", user.uid));
-        
-        const [snapApp, snapCreator] = await Promise.all([getDocs(qApplicant), getDocs(qCreator)]);
-        
-        let allConvos = [...snapApp.docs, ...snapCreator.docs].map(d => ({ id: d.id, ...d.data() }));
-        
-        // Remove duplicates if any
-        const uniqueConvos = Array.from(new Map(allConvos.map(item => [item.id, item])).values());
-        
-        // Enhance with other user's info
+        const allConvos = [...applicantDocs, ...creatorDocs];
+        const uniqueConvosMap = new Map<string, any>();
+        for (const item of allConvos) {
+          uniqueConvosMap.set(item.id, item);
+        }
+        const uniqueConvos = Array.from(uniqueConvosMap.values());
+
         const enhancedConvos = await Promise.all(uniqueConvos.map(async (convo: any) => {
           const otherUserId = convo.creatorId === user.uid ? convo.applicantId : convo.creatorId;
-          const otherUserDoc = await getDoc(doc(db, "users", otherUserId));
-          const otherUserData = otherUserDoc.exists() ? otherUserDoc.data() : { name: "Usuario Desconocido" };
-          
+          let otherUserData = usersCache.get(otherUserId);
+          if (!otherUserData) {
+            const otherUserDoc = await getDoc(doc(db, "users", otherUserId));
+            const otherData = otherUserDoc.exists() ? otherUserDoc.data() : null;
+            otherUserData = {
+              name: otherData?.name || "Usuario Desconocido",
+              photoURL: otherData?.photoURL
+            };
+            usersCache.set(otherUserId, otherUserData);
+          }
+
           return {
             ...convo,
-            otherUser: {
-              name: otherUserData.name || "Usuario Desconocido",
-              photoURL: otherUserData.photoURL
-            }
+            otherUser: otherUserData
           } as Conversation;
         }));
-        
+
+        enhancedConvos.sort((a, b) => {
+          const timeA = getTimestampMillis(a.lastMessageAt);
+          const timeB = getTimestampMillis(b.lastMessageAt);
+          return timeB - timeA;
+        });
+
         setConversations(enhancedConvos);
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        console.error("Error updating conversations:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchConversations();
+    const unsubApp = onSnapshot(qApplicant, (snapshot) => {
+      applicantDocs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateConversationsList();
+    }, (err) => {
+      console.error("Error listening to applicant convos:", err);
+      setLoading(false);
+    });
+
+    const unsubCreator = onSnapshot(qCreator, (snapshot) => {
+      creatorDocs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateConversationsList();
+    }, (err) => {
+      console.error("Error listening to creator convos:", err);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubApp();
+      unsubCreator();
+    };
   }, [user]);
 
   useEffect(() => {
     if (!activeChat || !user) return;
+
+    const isCreator = activeChat.creatorId === user.uid;
+    const readField = isCreator ? "lastReadByCreator" : "lastReadByApplicant";
+    updateDoc(doc(db, "applications", activeChat.id), {
+      [readField]: serverTimestamp()
+    }).catch(err => console.error("Error updating read status:", err));
 
     const q = query(
       collection(db, "applications", activeChat.id, "messages"),
@@ -92,6 +154,12 @@ export default function Mensajes() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
       setMessages(msgs);
+      const lastMsg = msgs[msgs.length - 1];
+      if (lastMsg && lastMsg.senderId !== user.uid) {
+        updateDoc(doc(db, "applications", activeChat.id), {
+          [readField]: serverTimestamp()
+        }).catch(err => console.error("Error updating read status on new message:", err));
+      }
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
@@ -112,6 +180,14 @@ export default function Mensajes() {
         text: msgText,
         senderId: user.uid,
         createdAt: serverTimestamp()
+      });
+
+      const isCreator = activeChat.creatorId === user.uid;
+      const readField = isCreator ? "lastReadByCreator" : "lastReadByApplicant";
+      await updateDoc(doc(db, "applications", activeChat.id), {
+        lastMessageAt: serverTimestamp(),
+        lastMessageSenderId: user.uid,
+        [readField]: serverTimestamp()
       });
     } catch (error) {
       console.error("Error sending message:", error);
@@ -140,25 +216,33 @@ export default function Mensajes() {
                   Postúlate a proyectos para conectar con otros estudiantes.
                 </div>
               ) : (
-                conversations.map(convo => (
-                  <div 
-                    key={convo.id}
-                    onClick={() => setActiveChat(convo)}
-                    className={`p-4 border-b border-zinc-800/50 cursor-pointer transition-colors flex items-center gap-3 ${activeChat?.id === convo.id ? 'bg-zinc-900 border-l-2 border-l-[#E60000]' : 'hover:bg-zinc-900/50'}`}
-                  >
-                    <div className="relative w-12 h-12 flex-shrink-0">
-                      {convo.otherUser.photoURL ? (
-                        <Image src={convo.otherUser.photoURL} alt={convo.otherUser.name} fill className="rounded-full object-cover" />
-                      ) : (
-                        <UserCircle className="w-12 h-12 text-zinc-600 bg-zinc-900 rounded-full" />
-                      )}
+                conversations.map(convo => {
+                  const isUnread = user ? hasUnreadMessages(convo, user.uid) : false;
+                  return (
+                    <div 
+                      key={convo.id}
+                      onClick={() => setActiveChat(convo)}
+                      className={`p-4 border-b border-zinc-800/50 cursor-pointer transition-colors flex items-center gap-3 ${activeChat?.id === convo.id ? 'bg-zinc-900 border-l-2 border-l-[#E60000]' : 'hover:bg-zinc-900/50'}`}
+                    >
+                      <div className="relative w-12 h-12 flex-shrink-0">
+                        {convo.otherUser.photoURL ? (
+                          <Image src={convo.otherUser.photoURL} alt={convo.otherUser.name} fill className="rounded-full object-cover" />
+                        ) : (
+                          <UserCircle className="w-12 h-12 text-zinc-600 bg-zinc-900 rounded-full" />
+                        )}
+                      </div>
+                      <div className="overflow-hidden flex-grow min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="text-white font-medium truncate">{convo.otherUser.name}</h3>
+                          {isUnread && (
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#E60000] shrink-0" title="Mensajes no leídos" />
+                          )}
+                        </div>
+                        <p className="text-zinc-400 text-xs truncate">Proyecto: {convo.projectTitle}</p>
+                      </div>
                     </div>
-                    <div className="overflow-hidden">
-                      <h3 className="text-white font-medium truncate">{convo.otherUser.name}</h3>
-                      <p className="text-zinc-400 text-xs truncate">Proyecto: {convo.projectTitle}</p>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
