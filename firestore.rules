@@ -13,7 +13,10 @@ service cloud.firestore {
 
     match /projects/{projectId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && request.resource.data.creator_id == request.auth.uid;
+      allow create: if isAuthenticated() 
+        && request.resource.data.creator_id == request.auth.uid
+        && request.resource.data.creatorName is string
+        && request.resource.data.creatorName.size() > 0;
       allow update, delete: if isAuthenticated() && resource.data.creator_id == request.auth.uid;
     }
 

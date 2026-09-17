@@ -2,7 +2,7 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -48,12 +48,25 @@ export default function NuevoProyecto() {
     try {
       if (!user) throw new Error("No user logged in");
 
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      const userData = userDocSnap.exists() ? userDocSnap.data() : null;
+      const creatorName = userData?.name?.trim();
+
+      if (!creatorName) {
+        toast.error("Completa tu perfil antes de publicar");
+        setLoading(false);
+        router.push("/perfil");
+        return;
+      }
+
       await addDoc(collection(db, "projects"), {
         title,
         description,
         category,
         profiles,
         creator_id: user.uid,
+        creatorName,
         createdAt: serverTimestamp()
       });
 

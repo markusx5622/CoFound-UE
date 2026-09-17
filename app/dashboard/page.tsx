@@ -15,6 +15,7 @@ interface Project {
   category: string;
   profiles: string[];
   creator_id: string;
+  creatorName?: string;
 }
 
 export default function Dashboard() {
@@ -156,7 +157,7 @@ export default function Dashboard() {
                     <h2 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#E60000] transition-colors">{project.title}</h2>
                     <div className="flex items-center gap-2 text-sm text-zinc-400 mb-4">
                       <UserCircle className="h-4 w-4" />
-                      <span>Creador ID: {project.creator_id ? project.creator_id.substring(0, 8) : 'Unknown'}...</span>
+                      <span>{project.creatorName || 'Usuario UE'}</span>
                     </div>
                     <p className="text-zinc-400 text-sm mb-6 line-clamp-3">
                       {project.description}
