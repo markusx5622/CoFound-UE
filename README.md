@@ -235,6 +235,20 @@ En el directorio del proyecto, puedes ejecutar:
 
 ---
 
+## 🧪 Pruebas (Testing)
+
+El proyecto cuenta con un entorno de pruebas unitarias configurado con **Vitest** y el Emulador local de Firestore para validar rigurosamente las reglas de seguridad (`firestore.rules`).
+
+### Ejecutar tests localmente
+Asegúrate de haber instalado las dependencias (`npm install`). Para lanzar el emulador y correr la suite de tests, ejecuta:
+```bash
+npx --yes firebase-tools emulators:exec --only firestore --project cofound-ue-test "npm test"
+```
+
+El pipeline de CI en GitHub Actions ejecutará esta suite automáticamente en cada `push` a la rama `main`.
+
+---
+
 ## 🔒 Políticas de Seguridad y Validación Auth
 
 La aplicación incluye un motor de validación para proteger el ecosistema universitario:
