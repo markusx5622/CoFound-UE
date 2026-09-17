@@ -1,21 +1,36 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "sonner";
+import ParticleBackground from "@/components/particle-background";
+import { AuthProvider } from "@/context/AuthContext";
+import { Analytics } from "@vercel/analytics/react";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const viewport: Viewport = {
+  themeColor: "#E60000",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cofound-ue.vercel.app"),
   title: "CoFound UE - Encuentra tu Co-Founder",
   description: "Conecta con talento de ADE, Marketing, Tech y Diseño en el Campus de la Universidad Europea de Valencia para crear tu startup.",
+  appleWebApp: {
+    capable: true,
+    title: "CoFound UE",
+    statusBarStyle: "black-translucent",
+  },
   icons: {
     icon: [
-      { url: "/CoFoundUE_logo.png", sizes: "any" },
-      { url: "/CoFoundUE_logo.png", type: "image/png" }
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/CoFoundUE_logo.png",
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   openGraph: {
     title: "CoFound UE - Conecta con talento en el Campus",
@@ -36,7 +51,7 @@ export const metadata: Metadata = {
         width: 500,
         height: 500,
         alt: "CoFound UE Logo",
-      }
+      },
     ],
   },
   twitter: {
@@ -47,10 +62,6 @@ export const metadata: Metadata = {
   },
 };
 
-import ParticleBackground from "@/components/particle-background";
-import { AuthProvider } from "@/context/AuthContext";
-import { Analytics } from "@vercel/analytics/react";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,15 +71,16 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${inter.className} min-h-screen bg-zinc-950 text-white flex flex-col relative`}>
         <AuthProvider>
+          <ServiceWorkerRegister />
           <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
             <ParticleBackground />
           </div>
-        <Navbar />
-        <main className="flex-grow flex flex-col relative z-10">
-          {children}
-        </main>
-        <Toaster position="top-center" richColors theme="dark" />
-        <Analytics />
+          <Navbar />
+          <main className="flex-grow flex flex-col relative z-10">
+            {children}
+          </main>
+          <Toaster position="top-center" richColors theme="dark" />
+          <Analytics />
         </AuthProvider>
       </body>
     </html>
