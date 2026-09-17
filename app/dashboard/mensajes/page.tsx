@@ -213,6 +213,7 @@ export default function Mensajes() {
                       value={newMessage}
                       onChange={e => setNewMessage(e.target.value)}
                       placeholder="Escribe un mensaje..."
+                      maxLength={1000}
                       className="flex-grow bg-zinc-900 border border-zinc-700 rounded-full px-5 py-3 text-white focus:outline-none focus:border-[#E60000] transition-colors placeholder:text-zinc-500 text-sm"
                     />
                     <button type="submit" disabled={!newMessage.trim()} className="bg-[#E60000] hover:bg-red-700 text-white p-3 rounded-full disabled:opacity-50 transition-colors shadow-md">

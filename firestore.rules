@@ -16,8 +16,19 @@ service cloud.firestore {
       allow create: if isAuthenticated() 
         && request.resource.data.creator_id == request.auth.uid
         && request.resource.data.creatorName is string
-        && request.resource.data.creatorName.size() > 0;
-      allow update, delete: if isAuthenticated() && resource.data.creator_id == request.auth.uid;
+        && request.resource.data.creatorName.size() > 0
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 100
+        && request.resource.data.description is string
+        && request.resource.data.description.size() >= 20 && request.resource.data.description.size() <= 1500
+        && request.resource.data.profiles is list
+        && request.resource.data.profiles.size() >= 1 && request.resource.data.profiles.size() <= 10;
+      allow update: if isAuthenticated() 
+        && resource.data.creator_id == request.auth.uid
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 100))
+        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() >= 20 && request.resource.data.description.size() <= 1500))
+        && (!('profiles' in request.resource.data) || (request.resource.data.profiles is list && request.resource.data.profiles.size() >= 1 && request.resource.data.profiles.size() <= 10));
+      allow delete: if isAuthenticated() && resource.data.creator_id == request.auth.uid;
     }
 
     match /applications/{applicationId} {
@@ -26,9 +37,15 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && (resource.data.applicantId == request.auth.uid || resource.data.creatorId == request.auth.uid);
       
       match /messages/{messageId} {
-        allow read, write: if isAuthenticated() && 
+        allow read: if isAuthenticated() && 
           (get(/databases/$(database)/documents/applications/$(applicationId)).data.applicantId == request.auth.uid || 
            get(/databases/$(database)/documents/applications/$(applicationId)).data.creatorId == request.auth.uid);
+        allow create: if isAuthenticated() && 
+          (get(/databases/$(database)/documents/applications/$(applicationId)).data.applicantId == request.auth.uid || 
+           get(/databases/$(database)/documents/applications/$(applicationId)).data.creatorId == request.auth.uid) &&
+          request.resource.data.text is string &&
+          request.resource.data.text.size() >= 1 &&
+          request.resource.data.text.size() <= 1000;
       }
     }
   }

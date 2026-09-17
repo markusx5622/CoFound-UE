@@ -20,8 +20,13 @@ export default function NuevoProyecto() {
   const router = useRouter();
 
   const handleAddProfile = () => {
-    if (profileInput.trim() !== "" && !profiles.includes(profileInput.trim())) {
-      setProfiles([...profiles, profileInput.trim()]);
+    const trimmed = profileInput.trim();
+    if (trimmed !== "" && !profiles.includes(trimmed)) {
+      if (profiles.length >= 10) {
+        toast.error("Máximo 10 perfiles por proyecto");
+        return;
+      }
+      setProfiles([...profiles, trimmed]);
       setProfileInput("");
     }
   };
@@ -41,6 +46,16 @@ export default function NuevoProyecto() {
     e.preventDefault();
     if (!title || !description || profiles.length === 0) {
       toast.error("Por favor completa todos los campos y añade al menos un perfil buscado.");
+      return;
+    }
+
+    if (title.trim().length < 3) {
+      toast.error("El título debe tener al menos 3 caracteres.");
+      return;
+    }
+
+    if (description.trim().length < 20) {
+      toast.error("La descripción debe tener al menos 20 caracteres.");
       return;
     }
 
@@ -93,11 +108,13 @@ export default function NuevoProyecto() {
                 <input
                   type="text"
                   required
+                  maxLength={100}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
                   placeholder="Ej: Plataforma de economía circular para estudiantes"
                 />
+                <div className="text-right text-xs text-zinc-500 mt-1">{title.length}/100</div>
               </div>
 
               <div>
@@ -105,11 +122,13 @@ export default function NuevoProyecto() {
                 <textarea
                   required
                   rows={5}
+                  maxLength={1500}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all resize-none placeholder:text-zinc-600"
                   placeholder="Explica de qué trata tu proyecto, en qué fase está y qué objetivos tiene..."
                 />
+                <div className="text-right text-xs text-zinc-500 mt-1">{description.length}/1500</div>
               </div>
 
               <div>
@@ -130,6 +149,7 @@ export default function NuevoProyecto() {
                 <div className="flex gap-2 mb-3">
                   <input
                     type="text"
+                    maxLength={40}
                     value={profileInput}
                     onChange={(e) => setProfileInput(e.target.value)}
                     onKeyDown={handleKeyDown}
