@@ -54,7 +54,7 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 | :--- | :--- | :--- |
 | **🛡️ Auth Restringida** | Registro e inicio de sesión validado mediante expresión regular para asegurar el acceso únicamente a usuarios con correo institucional de la Universidad Europea. | Firebase Auth & TypeScript regex validation |
 | **🎨 Interfaz Inmersiva** | Estética *dark-mode* moderna con canvas de partículas fluidas, efectos glassmorphism (`backdrop-blur`) y acentos de color institucional de la UE (`#E60000`). | Tailwind CSS & HTML5 Canvas |
-| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno: nombre, titulación, selección de campus (*Villaviciosa, Alcobendas, Valencia, Alicante, Málaga, Canarias, Online*), biografía, avatar y tags interactivos de habilidades. | Firestore Document Merge, Firebase Storage & Sonner Toasts |
+| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno: nombre, titulación, selección de campus (*Villaviciosa, Alcobendas, Valencia, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge & Sonner Toasts |
 | **💡 Marketplace de Proyectos** | Tablero central en tiempo real para visualizar proyectos activos, filtrar por tipo de reto y explorar perfiles requeridos. | Firestore Queries & Lucide Icons |
 | **📝 Creador de Proyectos** | Publicador de ideas con categorización, descripción detallada y definidor dinámico de perfiles buscados (*ej: Frontend Developer, Growth Hacker*). | Controlled Dynamic Forms |
 | **🤝 Postulaciones & Matching** | Sistema de un clic para postularse a iniciativas, prevención de autopostulaciones y control de duplicados. | Realtime Firestore Collections |
@@ -75,7 +75,6 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 ### Backend & Servicios
 * **[Firebase Auth](https://firebase.google.com/docs/auth):** Manejo de autenticación basada en email y contraseña con control de errores localizado en español.
 * **[Cloud Firestore](https://firebase.google.com/docs/firestore):** Base de datos NoSQL escalable para el almacenamiento en tiempo real de usuarios, proyectos, postulaciones y mensajes.
-* **[Firebase Storage](https://firebase.google.com/docs/storage):** Almacenamiento seguro en la nube para avatares y archivos multimedia de los perfiles de usuario.
 * **[Vercel & Analytics](https://vercel.com/):** Plataforma de despliegue continuo optimizada para Next.js con monitorización de rendimiento y analíticas en tiempo real.
 
 ---
@@ -97,7 +96,7 @@ CoFound-UE/
 │   │   ├── cookies/            # Política de Galletas / Cookies
 │   │   └── privacidad/         # Política de Privacidad de Datos
 │   ├── perfil/                 # Editor del Perfil Universitario del estudiante
-│   │   └── page.tsx            # Gestión de datos personales, campus, avatar y habilidades
+│   │   └── page.tsx            # Gestión de datos personales, campus y habilidades
 │   ├── globals.css             # Estilos globales y extensiones Tailwind
 │   ├── layout.tsx              # Estructura raíz con fondo interactivo y Toaster
 │   └── page.tsx                # Landing Page con formulario de Login/Registro integrados
@@ -115,7 +114,7 @@ CoFound-UE/
 │   └── AuthContext.tsx         # Proveedor y hook de autenticación de usuario
 ├── lib/                        # Lógica de negocio y utilidades
 │   ├── auth-errors.ts          # Mapeo de errores de Firebase Auth a lenguaje amigable (ES)
-│   └── firebase.ts             # Inicialización del SDK de Firebase, Auth, Firestore y Storage
+│   └── firebase.ts             # Inicialización del SDK de Firebase, Auth y Firestore
 ├── public/                     # Recursos estáticos de la marca
 │   ├── CoFoundUE_banner.png    # Banner promocional para OpenGraph (1200x630)
 │   └── CoFoundUE_logo.png      # Logotipo oficial de CoFound UE
@@ -270,7 +269,7 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
 * **Completado:**
   * **Fase 0:** Auth institucional (`@live.uem.es` / `@universidadeuropea.es`), reglas de seguridad de Firestore y borrado de proyectos en cascada.
   * **Fase 1:** Marketplace de proyectos, sistema de postulaciones y perfiles universitarios.
-  * **Fase 2:** Mensajería en tiempo real, avatares de usuario y *skeleton loaders*.
+  * **Fase 2:** Mensajería en tiempo real, perfiles de usuario y *skeleton loaders*.
 
 * **En curso (Fase 3A):**
   * PWA instalable.
