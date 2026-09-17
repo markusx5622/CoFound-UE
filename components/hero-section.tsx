@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { MapPin, Sparkles, Users, Rocket, ShieldCheck } from "lucide-react";
+import { MapPin, Rocket, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 
 export default function HeroSection() {
   const containerVariants = {
@@ -17,7 +17,7 @@ export default function HeroSection() {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 25 },
+    hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
   };
 
@@ -31,15 +31,15 @@ export default function HeroSection() {
       {/* Background glowing blob */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] md:w-[620px] h-[320px] md:h-[620px] bg-[#E60000]/10 rounded-full blur-[110px] md:blur-[160px] -z-10 pointer-events-none animate-pulse duration-1000"></div>
 
-      {/* Live Campus Badge */}
+      {/* Campus Location & Status Badges */}
       <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-200 backdrop-blur-md shadow-inner">
           <MapPin className="h-3.5 w-3.5 text-[#E60000]" />
           <span>Campus Turia • Valencia</span>
         </div>
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-800/40 text-xs font-medium text-emerald-300 backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
-          <span>+18 estudiantes buscando equipo hoy</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-md">
+          <span className="w-2 h-2 rounded-full bg-[#E60000] drop-shadow-[0_0_8px_rgba(230,0,0,0.8)]"></span>
+          <span>Iniciativa de Emprendimiento Universitario</span>
         </div>
       </motion.div>
 
@@ -68,42 +68,35 @@ export default function HeroSection() {
         en el Campus.
       </motion.h1>
       
-      {/* Subtitle with Campus Turia focus */}
+      {/* Subtitle */}
       <motion.p variants={itemVariants} className="text-lg md:text-xl text-zinc-300 max-w-xl leading-relaxed">
-        La red social y profesional exclusiva para conectar talento de <strong className="text-white font-semibold">ADE, Marketing, Tech y Diseño</strong> de la Universidad Europea de Valencia.
+        La plataforma para conectar estudiantes de <strong className="text-white font-semibold">ADE, Marketing, Ingeniería y Diseño</strong> de la Universidad Europea de Valencia.
       </motion.p>
 
-      {/* Social Proof with Active Student Avatars */}
-      <motion.div variants={itemVariants} className="flex items-center gap-3 pt-2">
-        <div className="flex -space-x-2 overflow-hidden">
-          <div className="inline-flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-zinc-950 bg-gradient-to-tr from-red-600 to-rose-400 text-white font-bold text-xs shadow-md">
-            MR
+      {/* Honest Early-Adopter Callout */}
+      <motion.div variants={itemVariants} className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md max-w-lg">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-red-950/60 border border-[#E60000]/30 flex items-center justify-center text-[#E60000] shrink-0 mt-0.5">
+            <UserPlus className="h-4 w-4" />
           </div>
-          <div className="inline-flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-zinc-950 bg-gradient-to-tr from-blue-600 to-indigo-400 text-white font-bold text-xs shadow-md">
-            SL
+          <div>
+            <h3 className="text-sm font-semibold text-white">Lanzamiento en Campus Turia</h3>
+            <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
+              Sé de los primeros en publicar tu idea o registrar tu perfil para formar equipo con compañeros de otras facultades.
+            </p>
           </div>
-          <div className="inline-flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-zinc-950 bg-gradient-to-tr from-amber-600 to-yellow-400 text-white font-bold text-xs shadow-md">
-            JG
-          </div>
-          <div className="inline-flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-zinc-950 bg-gradient-to-tr from-emerald-600 to-teal-400 text-white font-bold text-xs shadow-md">
-            AP
-          </div>
-        </div>
-        <div className="text-xs sm:text-sm">
-          <p className="font-semibold text-white">+180 estudiantes conectados</p>
-          <p className="text-zinc-400">Creando startups y proyectos en Valencia</p>
         </div>
       </motion.div>
       
-      {/* Value Proposition Pills */}
-      <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3 text-zinc-300 text-xs sm:text-sm pt-2">
-        <span className="flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner">
-          <Rocket className="h-3.5 w-3.5 text-[#E60000]" />
-          <span>+45 Proyectos activos</span>
-        </span>
+      {/* Value Proposition Badges */}
+      <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3 text-zinc-300 text-xs sm:text-sm pt-1">
         <span className="flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-          <span>100% Exclusivo Comunidad UE</span>
+          <span>Acceso solo con @live.uem.es</span>
+        </span>
+        <span className="flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner">
+          <Rocket className="h-3.5 w-3.5 text-[#E60000]" />
+          <span>Startups, Hackathons y Proyectos</span>
         </span>
       </motion.div>
     </motion.div>
