@@ -42,8 +42,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/CoFoundUE_banner.png",
-        width: 3164,
-        height: 1086,
+        width: 3168,
+        height: 1344,
         alt: "CoFound UE",
       },
     ],
@@ -55,8 +55,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/CoFoundUE_banner.png",
-        width: 3164,
-        height: 1086,
+        width: 3168,
+        height: 1344,
         alt: "CoFound UE",
       },
     ],
