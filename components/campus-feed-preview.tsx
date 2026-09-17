@@ -65,7 +65,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md shadow-inner">
             <Sparkles className="h-3.5 w-3.5 text-[#E60000]" />
             <span>Colaboración Multidisciplinar • Campus Turia</span>
           </div>
@@ -80,7 +80,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
         </div>
 
         {/* Informative Campus Trust Bar */}
-        <div className="mb-12 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm">
+        <div className="mb-12 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-md">
           <div className="flex items-center gap-2.5 text-zinc-300">
             <ShieldCheck className="h-4 w-4 text-[#E60000] shrink-0" />
             <span className="font-semibold text-white">Comunidad Verificada:</span>
@@ -94,7 +94,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
           </div>
         </div>
 
-        {/* Synergy Cards Grid */}
+        {/* Synergy Cards Grid with Spring Physics and Reactive States */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-14">
           {collaborationModels.map((item, idx) => (
             <motion.div
@@ -102,16 +102,20 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="bg-zinc-900/60 hover:bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 rounded-3xl p-6 sm:p-7 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden backdrop-blur-sm shadow-lg"
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25, delay: idx * 0.08 }}
+              className="bg-zinc-900/70 hover:bg-zinc-900/95 border border-zinc-800/90 hover:border-zinc-700 rounded-3xl p-6 sm:p-7 transition-colors duration-300 flex flex-col justify-between group relative overflow-hidden backdrop-blur-md shadow-xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] cursor-default"
             >
+              {/* Subtle top edge gradient line highlight */}
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#E60000]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
               <div>
                 {/* Icon & Badge Header */}
                 <div className="flex items-center justify-between gap-3 mb-5">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center shadow-inner group-hover:border-[#E60000]/40 transition-colors">
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center shadow-inner group-hover:border-[#E60000]/50 group-hover:bg-[#E60000]/10 group-hover:scale-105 transition-all duration-300">
                     {item.icon}
                   </div>
-                  <span className="text-[11px] font-semibold text-zinc-400 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-800">
+                  <span className="text-[11px] font-semibold text-zinc-400 group-hover:text-zinc-200 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-800 group-hover:border-zinc-700 transition-colors duration-300">
                     {item.synergy}
                   </span>
                 </div>
@@ -121,7 +125,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#E60000]">
                     {item.badge}
                   </span>
-                  <h3 className="text-lg font-bold text-white mt-1 mb-2 group-hover:text-red-400 transition-colors">
+                  <h3 className="text-lg font-bold text-white mt-1 mb-2 group-hover:text-red-400 transition-colors duration-200">
                     {item.title}
                   </h3>
                   <p className="text-xs text-zinc-400 font-medium mb-4">
@@ -131,11 +135,11 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
 
                 {/* What they offer & need */}
                 <div className="space-y-3 mb-5 text-xs">
-                  <div className="p-3 rounded-xl bg-zinc-950/70 border border-zinc-800/80">
+                  <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 group-hover:border-zinc-800 transition-colors duration-200">
                     <p className="font-semibold text-zinc-300 mb-1">Aportación clave:</p>
                     <p className="text-zinc-400 leading-relaxed">{item.whatTheyOffer}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-zinc-950/70 border border-zinc-800/80">
+                  <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 group-hover:border-zinc-800 transition-colors duration-200">
                     <p className="font-semibold text-zinc-300 mb-1">Perfil que busca:</p>
                     <p className="text-zinc-400 leading-relaxed">{item.whatTheyNeed}</p>
                   </div>
@@ -144,7 +148,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {item.tags.map((tag, tIdx) => (
-                    <span key={tIdx} className="text-[10px] text-zinc-500 bg-zinc-950 px-2 py-0.5 rounded-md border border-zinc-800/60">
+                    <span key={tIdx} className="text-[10px] text-zinc-500 group-hover:text-zinc-400 bg-zinc-950 px-2 py-0.5 rounded-md border border-zinc-800/60 transition-colors duration-200">
                       #{tag}
                     </span>
                   ))}
@@ -155,10 +159,10 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
               <div className="pt-4 border-t border-zinc-800/80">
                 <button
                   onClick={handleActionClick}
-                  className="w-full inline-flex items-center justify-between text-xs font-semibold text-zinc-300 hover:text-white py-2 px-3 rounded-xl hover:bg-zinc-800/60 transition-colors"
+                  className="w-full group/btn inline-flex items-center justify-between text-xs font-semibold text-zinc-300 hover:text-white py-2.5 px-3.5 rounded-xl bg-zinc-950/50 hover:bg-zinc-800 border border-zinc-800/60 hover:border-zinc-700 transition-all duration-200 shadow-sm"
                 >
                   <span>Crear iniciativa similar</span>
-                  <ArrowUpRight className="h-4 w-4 text-[#E60000]" />
+                  <ArrowUpRight className="h-4 w-4 text-[#E60000] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-200" />
                 </button>
               </div>
             </motion.div>
@@ -166,16 +170,19 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
         </div>
 
         {/* Bottom Callout Banner */}
-        <div className="text-center p-8 rounded-3xl bg-zinc-900/80 border border-zinc-800 shadow-xl max-w-2xl mx-auto">
-          <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+        <div className="text-center p-8 sm:p-10 rounded-3xl bg-zinc-900/80 border border-zinc-800 shadow-2xl max-w-2xl mx-auto relative overflow-hidden backdrop-blur-md">
+          {/* Ambient subtle glow */}
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#E60000]/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 relative z-10">
             ¿Tienes una idea o quieres unirte a un equipo?
           </h3>
-          <p className="text-zinc-400 text-sm mb-6 max-w-md mx-auto leading-relaxed">
+          <p className="text-zinc-400 text-sm mb-6 max-w-md mx-auto leading-relaxed relative z-10">
             Regístrate con tu correo institucional de la Universidad Europea y publica tu propuesta o perfil para empezar a colaborar.
           </p>
           <button
             onClick={handleActionClick}
-            className="bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center gap-2 text-sm"
+            className="bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-7 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] inline-flex items-center gap-2 text-sm relative z-10"
           >
             <span>Crear mi Cuenta de Estudiante</span>
             <ArrowRight className="h-4 w-4" />

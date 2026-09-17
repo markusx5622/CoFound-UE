@@ -58,7 +58,7 @@ export default function FeaturesSection() {
           <h2 className="text-3xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
             Construye Equipos de <span className="text-[#E60000]">Alto Rendimiento</span>
           </h2>
-          <p className="text-gray-400 text-lg">
+          <p className="text-zinc-400 text-lg">
             Conecta con perfiles complementarios de tu misma universidad y saca adelante proyectos reales.
           </p>
         </motion.div>
@@ -68,38 +68,42 @@ export default function FeaturesSection() {
           {roles.map((role, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 p-8 rounded-2xl transition-all duration-300 hover:border-[#E60000]/50 hover:shadow-[0_0_40px_rgba(230,0,0,0.15)] hover:-translate-y-2 group"
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25, delay: idx * 0.1 }}
+              className="bg-zinc-900/50 hover:bg-zinc-900/90 backdrop-blur-md border border-zinc-800/80 hover:border-zinc-700 p-8 rounded-3xl transition-colors duration-300 shadow-xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] group relative overflow-hidden cursor-default"
             >
-              <div className="bg-zinc-950 p-4 rounded-xl inline-block mb-6 border border-zinc-800 group-hover:border-[#E60000]/50 group-hover:bg-[#E60000]/5 transition-all duration-300">
+              {/* Subtle top edge gradient line */}
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#E60000]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+              <div className="bg-zinc-950 p-4 rounded-2xl inline-block mb-6 border border-zinc-800 group-hover:border-[#E60000]/50 group-hover:bg-[#E60000]/10 group-hover:scale-105 transition-all duration-300 shadow-inner">
                 {role.icon}
               </div>
-              <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-[#E60000] transition-colors">{role.title}</h3>
+              <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-red-400 transition-colors duration-200">{role.title}</h3>
               <p className="text-[#E60000] text-xs font-semibold uppercase tracking-wider mb-4">{role.subtitle}</p>
-              <p className="text-gray-400 text-sm leading-relaxed">{role.description}</p>
+              <p className="text-zinc-400 text-sm leading-relaxed">{role.description}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Beneficios breves */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.7 }}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-12 bg-gradient-to-br from-zinc-900/40 to-zinc-900/10 border border-zinc-800/50 rounded-3xl p-10 lg:p-12 shadow-2xl backdrop-blur-sm"
+          transition={{ duration: 0.6 }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-zinc-900/40 border border-zinc-800/80 rounded-3xl p-8 lg:p-10 shadow-2xl backdrop-blur-md"
         >
           {benefits.map((benefit, idx) => (
-            <div key={idx} className="flex gap-4 items-start group">
-              <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 shrink-0 group-hover:border-zinc-700 transition-colors">
+            <div key={idx} className="flex gap-4 items-start p-3 rounded-2xl hover:bg-zinc-900/60 transition-colors duration-200 group">
+              <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 shrink-0 group-hover:border-[#E60000]/40 group-hover:scale-105 transition-all duration-300 shadow-inner">
                 {benefit.icon}
               </div>
               <div>
-                <h4 className="text-lg font-bold text-white mb-2">{benefit.title}</h4>
-                <p className="text-gray-400 text-sm leading-relaxed">{benefit.description}</p>
+                <h4 className="text-base font-bold text-white mb-1.5 group-hover:text-zinc-200 transition-colors">{benefit.title}</h4>
+                <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">{benefit.description}</p>
               </div>
             </div>
           ))}
