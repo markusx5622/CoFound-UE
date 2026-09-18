@@ -19,19 +19,23 @@ export default function AvisoLegal() {
         </Link>
         
         <h1 className="text-4xl font-extrabold text-white mb-4 tracking-tight">Aviso Legal</h1>
-        <p className="text-zinc-500 mb-10 pb-6 border-b border-zinc-800/50">Última actualización: 17 de Junio de 2026</p>
+        <p className="text-zinc-500 mb-10 pb-6 border-b border-zinc-800/50">Última actualización: 18 de Septiembre de 2026</p>
 
         <div className="space-y-8 text-zinc-300 leading-relaxed">
           <section>
             <h2 className="text-xl font-bold text-white mb-3">1. Datos Identificativos</h2>
             <p className="text-zinc-400">
-              En cumplimiento con el deber de información recogido en artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se hace constar que esta plataforma web ha sido desarrollada operando bajo el nombre de proyecto universitario <strong className="text-white">CoFound UE</strong>.
+              En cumplimiento con el deber de información recogido en el artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se facilitan a continuación los datos identificativos del titular de esta plataforma:
             </p>
             <ul className="list-disc pl-5 mt-4 space-y-2 text-zinc-400">
-              <li><strong className="text-zinc-200">Denominación del proyecto:</strong> CoFound UE</li>
-              <li><strong className="text-zinc-200">Email de contacto:</strong> contacto@cofoundue.com</li>
-              <li><strong className="text-zinc-200">Ubicación orientativa:</strong> Campus Universitario, Universidad Europea</li>
+              <li><strong className="text-zinc-200">Titular:</strong> Marc Cubero Cantavella</li>
+              <li><strong className="text-zinc-200">Nombre del proyecto:</strong> CoFound UE (proyecto universitario independiente)</li>
+              <li><strong className="text-zinc-200">Email de contacto:</strong> cofoundue@gmail.com</li>
+              <li><strong className="text-zinc-200">Ubicación:</strong> Valencia, España</li>
             </ul>
+            <p className="text-zinc-400 mt-4 text-sm bg-zinc-800/40 p-3 rounded-lg border border-zinc-800">
+              <strong className="text-zinc-200">Nota de independencia:</strong> CoFound UE es un proyecto independiente desarrollado por estudiantes. No está afiliado, patrocinado ni respaldado oficialmente por la Universidad Europea.
+            </p>
           </section>
 
           <section>
@@ -63,31 +67,31 @@ export default function AvisoLegal() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Propiedad Intelectual e Industrial</h2>
             <p>
-              CoFound UE por sí o como cesionaria, es titular de todos los derechos de propiedad intelectual e industrial de su página web, así como de los elementos contenidos en la misma (a título enunciativo, imágenes, sonido, audio, vídeo, software o textos; marcas o logotipos, combinaciones de colores, estructura y diseño, selección de materiales usados, etc.).
+              Marc Cubero Cantavella es el titular exclusivo de todos los derechos de propiedad intelectual e industrial de esta plataforma y de los elementos contenidos en ella (software, diseños, textos, logotipos del proyecto, estructura y diseño...). &quot;CoFound UE&quot; es el nombre comercial del proyecto, cuya titularidad corresponde igualmente a Marc Cubero Cantavella.
             </p>
             <p className="mt-2">
-              Todos los derechos reservados. Cualquier uso no autorizado previamente será considerado un incumplimiento grave de los derechos de propiedad intelectual o industrial del autor. Quedan expresamente prohibidas la reproducción, la distribución y la comunicación pública de la totalidad o parte de los contenidos de esta página web, con fines comerciales, en cualquier soporte y por cualquier medio técnico, sin la autorización de CoFound UE.
+              Todos los derechos reservados. Cualquier uso no autorizado previamente será considerado un incumplimiento grave de los derechos de propiedad intelectual o industrial del titular. Quedan expresamente prohibidas la reproducción, la distribución y la comunicación pública de la totalidad o parte de los contenidos de esta página web, con fines comerciales o lucrativos, en cualquier soporte y por cualquier medio técnico, sin la autorización previa, expresa y por escrito de Marc Cubero Cantavella.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Exclusión de Garantías y Responsabilidad</h2>
             <p>
-              CoFound UE no se hace responsable, en ningún caso, de los daños y perjuicios de cualquier naturaleza que pudieran ocasionar, a título enunciativo: errores u omisiones en los contenidos, falta de disponibilidad del portal o la transmisión de virus o programas maliciosos o lesivos en los contenidos, a pesar de haber adoptado todas las medidas tecnológicas necesarias para evitarlo.
+              El titular de CoFound UE no se hace responsable, en ningún caso, de los daños y perjuicios de cualquier naturaleza que pudieran ocasionar, a título enunciativo: errores u omisiones en los contenidos, falta de disponibilidad del portal o la transmisión de virus o programas maliciosos o lesivos en los contenidos, a pesar de haber adoptado todas las medidas tecnológicas necesarias para evitarlo.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">6. Modificaciones</h2>
             <p>
-              CoFound UE se reserva el derecho de efectuar sin previo aviso las modificaciones que considere oportunas en su portal, pudiendo cambiar, suprimir o añadir tanto los contenidos y servicios que se presten a través de la misma como la forma en la que éstos aparezcan presentados o localizados en su portal.
+              El titular de CoFound UE se reserva el derecho de efectuar sin previo aviso las modificaciones que considere oportunas en su portal, pudiendo cambiar, suprimir o añadir tanto los contenidos y servicios que se presten a través de la misma como la forma en la que éstos aparezcan presentados o localizados en su portal.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">7. Legislación Aplicable y Jurisdicción</h2>
             <p>
-              La relación entre CoFound UE y el USUARIO se regirá por la normativa española vigente y cualquier controversia se someterá a los Juzgados y tribunales de la ciudad de Valencia, España.
+              La relación entre el titular de CoFound UE y el USUARIO se regirá por la normativa española vigente y cualquier controversia se someterá a los Juzgados y Tribunales de la ciudad de Valencia, España.
             </p>
           </section>
         </div>

@@ -29,3 +29,6 @@ firebase-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# internal documentation
+Contexto CoFound UE — Handoff.md

@@ -97,8 +97,8 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-[#E60000]" />
-                <a href="mailto:contacto@cofoundue.com" className="hover:text-white transition-colors">
-                  contacto@cofoundue.com
+                <a href="mailto:cofoundue@gmail.com" className="hover:text-white transition-colors">
+                  cofoundue@gmail.com
                 </a>
               </li>
               <li className="mt-4">
@@ -112,9 +112,9 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
-          <p>© {currentYear} CoFound UE. Todos los derechos reservados.</p>
+          <p>© {currentYear} Marc Cubero Cantavella · CoFound UE. Todos los derechos reservados.</p>
           <p className="text-zinc-400 text-sm mb-4 md:mb-0">
-            Diseñado con <span className="text-[#E60000]">♥</span> por el equipo de CoFound UE
+            Diseñado y desarrollado por Marc Cubero Cantavella
           </p>
         </div>
       </div>

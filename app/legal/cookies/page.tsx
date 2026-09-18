@@ -19,7 +19,7 @@ export default function PoliticaCookies() {
         </Link>
         
         <h1 className="text-4xl font-extrabold text-white mb-4 tracking-tight">Política de Cookies</h1>
-        <p className="text-zinc-500 mb-10 pb-6 border-b border-zinc-800/50">Última actualización: 17 de Junio de 2026</p>
+        <p className="text-zinc-500 mb-10 pb-6 border-b border-zinc-800/50">Última actualización: 18 de Septiembre de 2026</p>
 
         <div className="space-y-8 text-zinc-300 leading-relaxed">
           <section>
@@ -32,17 +32,17 @@ export default function PoliticaCookies() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. ¿Qué tipos de cookies utiliza esta página web?</h2>
             <p>
-              CoFound UE utiliza cookies propias y de terceros con los siguientes fines:
+              CoFound UE utiliza cookies y tecnologías de almacenamiento local con los siguientes fines:
             </p>
             <ul className="list-disc pl-5 mt-4 space-y-4 text-zinc-400">
               <li>
-                <strong className="text-zinc-200">Cookies Técnicas (Estrictamente Necesarias):</strong> Son aquellas que permiten al usuario la navegación a través de la página web y la utilización de las diferentes opciones o servicios que en ella existen. Son esenciales, por ejemplo, para mantener tu sesión iniciada de forma segura a través de la tecnología de Firebase Auth. Si desactivas estas cookies, la plataforma no podrá funcionar correctamente.
+                <strong className="text-zinc-200">Cookies Técnicas (Estrictamente Necesarias):</strong> Son aquellas que permiten al usuario la navegación a través de la página web y la utilización de las diferentes opciones o servicios que en ella existen. Son esenciales, por ejemplo, para gestionar la autenticación y mantener tu sesión iniciada de forma segura a través de la tecnología de Firebase Auth. Si desactivas estas tecnologías, la plataforma no podrá funcionar correctamente.
               </li>
               <li>
-                <strong className="text-zinc-200">Cookies de Análisis o Medición:</strong> Son aquellas que, bien tratadas por nosotros o por terceros (como Google Analytics 4), nos permiten cuantificar el número de usuarios y así realizar la medición y análisis estadístico de la utilización que hacen los usuarios de la plataforma. Para ello se analiza su navegación en nuestra página web con el fin de mejorar la oferta de productos o servicios que le ofrecemos.
+                <strong className="text-zinc-200">Métricas y Telemetría de Rendimiento (Análisis):</strong> Son aquellas que nos permiten cuantificar visitas y realizar la medición y análisis estadístico del uso de la plataforma para optimizar su rendimiento. CoFound UE emplea <strong className="text-zinc-200">Vercel Web Analytics</strong>, una solución centrada en la privacidad que recopila métricas agregadas y anónimas sin utilizar cookies de seguimiento invasivas ni generar perfiles cruzados entre sitios.
               </li>
               <li>
-                <strong className="text-zinc-200">Cookies de Personalización:</strong> Son aquéllas que permiten recordar información para que el usuario acceda al servicio con determinadas características que pueden diferenciar su experiencia de la de otros usuarios, como, por ejemplo, las preferencias de interfaz (modo claro/oscuro) en caso de estar disponibles.
+                <strong className="text-zinc-200">Cookies de Personalización:</strong> Son aquéllas que permiten recordar información para que el usuario acceda al servicio con determinadas características de interfaz (por ejemplo, preferencias visuales o modo oscuro).
               </li>
             </ul>
           </section>
@@ -50,7 +50,7 @@ export default function PoliticaCookies() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Consentimiento</h2>
             <p>
-              Al acceder por primera vez a CoFound UE, te informamos sobre el uso de cookies mediante un banner donde puedes elegir aceptar o rechazar las cookies que no son estrictamente necesarias (como las de análisis). Las cookies estrictamente necesarias para el funcionamiento del inicio de sesión y la plataforma no pueden rechazarse si deseas utilizar el servicio, dado que sin ellas es imposible mantener tu cuenta activa y segura de página en página.
+              Al acceder a CoFound UE, las tecnologías estrictamente necesarias para el inicio de sesión y la seguridad del servicio se activan para permitir la funcionalidad requerida por el usuario. Las herramientas analíticas empleadas no recogen datos personales individualizados ni rastrean la actividad fuera de esta plataforma.
             </p>
           </section>
 
@@ -68,9 +68,9 @@ export default function PoliticaCookies() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">5. Modificaciones en la Política de Cookies</h2>
+            <h2 className="text-xl font-bold text-white mb-3">5. Modificaciones y Contacto</h2>
             <p>
-              Es posible que actualicemos la Política de Cookies de nuestro Sitio Web, por ello te recomendamos revisar esta política cada vez que accedas a nuestro Sitio Web con el objetivo de estar adecuadamente informado sobre cómo y para qué usamos las cookies.
+              Es posible que actualicemos la Política de Cookies de nuestro Sitio Web conforme a novedades funcionales o normativas. Para cualquier duda respecto a esta política, puedes contactar con el titular Marc Cubero Cantavella en <strong className="text-white">cofoundue@gmail.com</strong>.
             </p>
           </section>
         </div>
