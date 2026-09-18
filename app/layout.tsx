@@ -41,10 +41,11 @@ export const metadata: Metadata = {
     url: "https://cofound-ue.vercel.app",
     images: [
       {
-        url: "/CoFoundUE_banner.png",
-        width: 3168,
-        height: 1344,
-        alt: "CoFound UE",
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt: "CoFound UE - Plataforma de talento y co-founders",
       },
     ],
   },
@@ -54,10 +55,10 @@ export const metadata: Metadata = {
     description: "La red exclusiva para conectar talento de ADE, Marketing, Tech y Diseño de la Universidad Europea.",
     images: [
       {
-        url: "/CoFoundUE_banner.png",
-        width: 3168,
-        height: 1344,
-        alt: "CoFound UE",
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "CoFound UE - Plataforma de talento y co-founders",
       },
     ],
   },
