@@ -24,14 +24,14 @@
 
   ---
 
-  <img src="public/CoFoundUE_banner.png" alt="CoFound UE Banner" width="100%" style="border-radius: 12px; margin-top: 10px;" />
+  
 
 </div>
 
 <br/>
 
 > [!NOTE]
-> **Proyecto en desarrollo activo:** CoFound UE es la plataforma prioritaria y en desarrollo activo para la comunidad de la Universidad Europea ([cofound-ue.vercel.app](https://cofound-ue.vercel.app)). Match UEV fue el experimento previo del que se heredaron aprendizajes clave (autenticación institucional, reglas de seguridad de Firestore y CI), el cual se encuentra actualmente congelado para focalizar todos los recursos en CoFound UE.
+> **Proyecto en desarrollo activo:** CoFound UE es la plataforma prioritaria y en desarrollo activo para la comunidad de la Universidad Europea ([cofound-ue.vercel.app](https://cofound-ue.vercel.app)).
 
 ## 📌 Visión General
 
