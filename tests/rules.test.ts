@@ -225,6 +225,95 @@ describe("CoFound-UE Firestore Rules", () => {
       const creatorDb = getAuthContext("creator1", "creator@test.com").firestore();
       await assertSucceeds(creatorDb.collection("applications").doc("app1").update({ status: "accepted" }));
     });
+
+    it("get de una application por un tercero ajeno falla", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const adminDb = context.firestore();
+        await adminDb.collection("applications").doc("app1").set({
+          projectId: "proj1",
+          applicantId: "user1",
+          creatorId: "creator1",
+          status: "pending",
+        });
+      });
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore();
+      const user3Db = getAuthContext("user3", "test3@test.com").firestore();
+
+      await assertFails(unauthedDb.collection("applications").doc("app1").get());
+      await assertFails(user3Db.collection("applications").doc("app1").get());
+    });
+
+    it("get por applicant y por creator succeed", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const adminDb = context.firestore();
+        await adminDb.collection("applications").doc("app1").set({
+          projectId: "proj1",
+          applicantId: "user1",
+          creatorId: "creator1",
+          status: "pending",
+        });
+      });
+
+      const applicantDb = getAuthContext("user1", "test1@test.com").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@test.com").firestore();
+
+      await assertSucceeds(applicantDb.collection("applications").doc("app1").get());
+      await assertSucceeds(creatorDb.collection("applications").doc("app1").get());
+    });
+
+    it("list sin filtro de participante falla", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const adminDb = context.firestore();
+        await adminDb.collection("applications").doc("app1").set({
+          projectId: "proj1",
+          applicantId: "user1",
+          creatorId: "creator1",
+          status: "pending",
+        });
+      });
+
+      const applicantDb = getAuthContext("user1", "test1@test.com").firestore();
+      const user3Db = getAuthContext("user3", "test3@test.com").firestore();
+
+      // Query sin filtro de participante
+      await assertFails(applicantDb.collection("applications").get());
+      // Query solo por projectId sin especificar participante
+      await assertFails(applicantDb.collection("applications").where("projectId", "==", "proj1").get());
+      // Query de tercero ajeno sin filtro
+      await assertFails(user3Db.collection("applications").get());
+    });
+
+    it("list filtrando por applicantId == uid o creatorId == uid solo devuelve las suyas", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const adminDb = context.firestore();
+        await adminDb.collection("applications").doc("app1").set({
+          projectId: "proj1",
+          applicantId: "user1",
+          creatorId: "creator1",
+          status: "pending",
+        });
+        await adminDb.collection("applications").doc("app2").set({
+          projectId: "proj1",
+          applicantId: "user2",
+          creatorId: "creator1",
+          status: "pending",
+        });
+      });
+
+      const applicantDb = getAuthContext("user1", "test1@test.com").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@test.com").firestore();
+
+      // List con filtro del propio applicantId succeed
+      await assertSucceeds(applicantDb.collection("applications").where("applicantId", "==", "user1").get());
+
+      // List intentando consultar postulaciones de otro usuario falla
+      await assertFails(applicantDb.collection("applications").where("applicantId", "==", "user2").get());
+
+      // List del creador por creatorId succeed
+      await assertSucceeds(creatorDb.collection("applications").where("creatorId", "==", "creator1").get());
+      await assertSucceeds(creatorDb.collection("applications").where("projectId", "==", "proj1").where("creatorId", "==", "creator1").get());
+    });
   });
 
   describe("Messages Subcollection", () => {

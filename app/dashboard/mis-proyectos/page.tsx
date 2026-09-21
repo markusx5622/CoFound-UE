@@ -96,6 +96,7 @@ export default function MisProyectos() {
   }, [user, authLoading]);
 
   const handleDelete = async (projectId: string) => {
+    if (!user) return;
     if (!window.confirm("¿Estás seguro de que deseas eliminar este proyecto? Se perderán las postulaciones asociadas.")) return;
     
     try {
@@ -103,7 +104,11 @@ export default function MisProyectos() {
       await deleteDoc(doc(db, "projects", projectId));
       
       // 2. Cascade delete applications
-      const qApps = query(collection(db, "applications"), where("projectId", "==", projectId));
+      const qApps = query(
+        collection(db, "applications"),
+        where("projectId", "==", projectId),
+        where("creatorId", "==", user.uid)
+      );
       const appSnapshot = await getDocs(qApps);
       
       const deletePromises = appSnapshot.docs.map(appDoc => deleteDoc(doc(db, "applications", appDoc.id)));
