@@ -49,7 +49,7 @@ export default function LandingPage() {
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
         await sendEmailVerification(userCredential.user);
-        toast.success("Cuenta creada. Por favor revisa tu correo institucional para verificar tu cuenta.");
+        toast.success("Cuenta creada. Para poder acceder al Dashboard, debes verificar tu cuenta haciendo clic en el enlace que hemos enviado a tu correo institucional.", { duration: 8000 });
       }
     } catch (err: any) {
       const friendlyMessage = getFriendlyErrorMessage(err?.code || "");

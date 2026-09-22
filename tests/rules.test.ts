@@ -30,7 +30,7 @@ describe("CoFound-UE Firestore Rules", () => {
   });
 
   const getAuthContext = (uid: string, email: string) => {
-    return testEnv.authenticatedContext(uid, { email });
+    return testEnv.authenticatedContext(uid, { email, email_verified: true });
   };
 
   describe("Users Collection", () => {
