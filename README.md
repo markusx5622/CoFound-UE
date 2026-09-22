@@ -52,13 +52,14 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 | Módulo | Descripción | Tecnología Clave |
 | :--- | :--- | :--- |
 | **🛡️ Auth Restringida** | Registro e inicio de sesión validado mediante expresión regular para asegurar el acceso únicamente a usuarios con correo institucional de la Universidad Europea. | Firebase Auth & TypeScript regex validation |
-| **🎨 Interfaz Inmersiva** | Estética *dark-mode* moderna con canvas de partículas fluidas, efectos glassmorphism (`backdrop-blur`) y acentos de color institucional de la UE (`#E60000`). | Tailwind CSS & HTML5 Canvas |
-| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno: nombre, titulación, selección de campus (*Campus Turia / Valencia, Villaviciosa, Alcobendas, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge & Sonner Toasts |
+| **🎨 Interfaz Inmersiva** | Estética *dark-mode* moderna con canvas de partículas fluidas, efectos glassmorphism (`backdrop-blur`) y acentos de color institucional de la UE (`#E60000`). | Tailwind CSS, Framer Motion & HTML5 Canvas |
+| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno con avatares de iniciales generados localmente (sin almacenamiento de imágenes ni dependencias externas), nombre, titulación, selección de campus (*Campus Turia / Valencia, Villaviciosa, Alcobendas, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge, InitialsAvatar & Sonner Toasts |
 | **💡 Marketplace de Proyectos** | Tablero central en tiempo real para visualizar proyectos activos, filtrar por tipo de reto y explorar perfiles requeridos. | Firestore Queries & Lucide Icons |
 | **📝 Creador de Proyectos** | Publicador de ideas con categorización, descripción detallada y definidor dinámico de perfiles buscados (*ej: Frontend Developer, Growth Hacker*). | Controlled Dynamic Forms |
 | **🤝 Postulaciones & Matching** | Sistema de un clic para postularse a iniciativas, prevención de autopostulaciones y control de duplicados. | Realtime Firestore Collections |
 | **💬 Mensajería en tiempo real** | Chat directo entre el creador del proyecto y los postulantes, con acceso restringido por reglas de Firestore a ambas partes. | Firestore Subcollections & Realtime Listeners (`onSnapshot`) |
 | **📂 Gestión Personal** | Paneles dedicados para administrar *Mis Proyectos* creados y monitorear el estado de *Mis Postulaciones*. | Protected Route System |
+| **📲 PWA Instalable** | Instalación en pantalla de inicio (móvil y escritorio) con iconos maskable, service worker propio y experiencia standalone. | Web App Manifest & Service Worker |
 
 ---
 
@@ -68,6 +69,7 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 * **[Next.js 14](https://nextjs.org/) (App Router):** Framework React para renderizado optimizado, routing basado en el sistema de archivos y metadatos SEO dinámicos.
 * **[TypeScript](https://www.typescriptlang.org/):** Tipado estático estricto para garantizar robustez en props, estado y contratos con la base de datos.
 * **[Tailwind CSS](https://tailwindcss.com/):** Framework de CSS utility-first adaptado con tokens de diseño personalizados, utilidades de filtrado y animaciones.
+* **[Framer Motion](https://www.framer.com/motion/):** Librería para animaciones fluidas, transiciones de interfaz y microinteracciones dinámicas.
 * **[Lucide React](https://lucide.dev/):** Conjunto de iconos vectoriales ligeros y consistentes.
 * **[Sonner](https://sonner.emilkowal.ski/):** Sistema de notificaciones toast elegantes y accesibles.
 
@@ -82,6 +84,9 @@ La aplicación resuelve la fragmentación del talento dentro del campus universi
 
 ```
 CoFound-UE/
+├── .github/                    # Automatización y flujos de trabajo de GitHub
+│   └── workflows/
+│       └── ci.yml              # Pipeline CI: lint, tests con emulador, build
 ├── app/                        # Rutas y páginas principales (Next.js App Router)
 │   ├── dashboard/              # Panel principal del estudiante (Marketplace de proyectos)
 │   │   ├── mensajes/           # Chat y mensajería en tiempo real entre creadores y postulantes
@@ -94,29 +99,40 @@ CoFound-UE/
 │   │   ├── aviso-legal/        # Documentación de Términos y Condiciones
 │   │   ├── cookies/            # Política de Galletas / Cookies
 │   │   └── privacidad/         # Política de Privacidad de Datos
-│   ├── perfil/                 # Editor del Perfil Universitario del estudiante
+│   ├── perfil/                 # Perfil universitario del estudiante
+│   │   ├── [uid]/              # Vista de perfil público de otros estudiantes
 │   │   └── page.tsx            # Gestión de datos personales, campus y habilidades
 │   ├── globals.css             # Estilos globales y extensiones Tailwind
-│   ├── layout.tsx              # Estructura raíz con fondo interactivo y Toaster
+│   ├── layout.tsx              # Estructura raíz con fondo interactivo, PWA y Toaster
+│   ├── manifest.ts             # Generador de metadatos de la PWA (Web App Manifest)
 │   └── page.tsx                # Landing Page con formulario de Login/Registro integrados
 ├── components/                 # Componentes de UI reutilizables
 │   ├── ui/                     # Primitivas y componentes visuales base (Skeleton loaders)
+│   ├── campus-feed-preview.tsx # Muro social interactivo de la Landing
 │   ├── features-section.tsx    # Cuadrícula de características destacadas en Landing
 │   ├── footer.tsx              # Pie de página institucional con enlaces legales
 │   ├── hero-section.tsx        # Sección principal de bienvenida e impacto visual
 │   ├── how-it-works.tsx        # Guía paso a paso sobre el funcionamiento de la red
+│   ├── InitialsAvatar.tsx      # Generador local de avatares con iniciales (privacidad por diseño)
 │   ├── Navbar.tsx              # Barra de navegación adaptativa con estado de usuario
 │   ├── particle-background.tsx # Canvas HTML5 con efecto matricial de partículas
 │   ├── ProtectedRoute.tsx      # HOC / Guardián para proteger rutas privadas
+│   ├── ServiceWorkerRegister.tsx # Registro del Service Worker PWA en entornos de producción
 │   └── vision-section.tsx      # Sección de visión institucional y proyección
 ├── context/                    # Contextos globales de React
 │   └── AuthContext.tsx         # Proveedor y hook de autenticación de usuario
 ├── lib/                        # Lógica de negocio y utilidades
 │   ├── auth-errors.ts          # Mapeo de errores de Firebase Auth a lenguaje amigable (ES)
 │   └── firebase.ts             # Inicialización del SDK de Firebase, Auth y Firestore
-├── public/                     # Recursos estáticos de la marca
-│   ├── CoFoundUE_banner.png    # Banner promocional para OpenGraph (1200x630)
-│   └── CoFoundUE_logo.png      # Logotipo oficial de CoFound UE
+├── public/                     # Recursos estáticos y PWA
+│   ├── icons/                  # Iconos PWA responsivos y maskable para dispositivos
+│   ├── CoFoundUE_banner.png    # Banner de marca (README / landing)
+│   ├── CoFoundUE_logo.png      # Logotipo oficial de CoFound UE
+│   ├── og-image.jpg            # Imagen OpenGraph optimizada para previsualizaciones (1200x630)
+│   └── sw.js                   # Service Worker para capacidades PWA y caché offline
+├── tests/                      # Suite de pruebas automatizadas
+│   └── rules.test.ts           # Tests de reglas Firestore con Vitest y emulador local
+├── firestore.indexes.json      # Definición de índices compuestos de Firestore
 ├── firestore.rules             # Reglas de seguridad de Firestore (Auth, accesos y mensajería)
 ├── LICENSE                     # Licencia propietaria (Todos los derechos reservados)
 ├── next.config.mjs             # Configuración de compilación Next.js
@@ -186,7 +202,6 @@ erDiagram
         string degree
         string campus
         string bio
-        string photoURL
         array skills
         timestamp updatedAt
     }
@@ -198,6 +213,7 @@ erDiagram
         string category
         array profiles
         string creator_id FK
+        string creatorName
         timestamp createdAt
     }
 
@@ -231,6 +247,7 @@ En el directorio del proyecto, puedes ejecutar:
 | `npm run build` | Compila la aplicación optimizada para producción en el directorio `.next`. |
 | `npm run start` | Inicia un servidor de producción de Next.js. |
 | `npm run lint` | Ejecuta el linter de ESLint para detectar errores de código y estilo. |
+| `npm test` | Ejecuta la suite de tests de reglas de Firestore con Vitest (requiere el emulador). |
 
 ---
 
@@ -283,10 +300,9 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
   * **Fase 0:** Auth institucional (`@live.uem.es` / `@universidadeuropea.es`), reglas de seguridad de Firestore y borrado de proyectos en cascada.
   * **Fase 1:** Marketplace de proyectos, sistema de postulaciones y perfiles universitarios.
   * **Fase 2:** Mensajería en tiempo real, perfiles de usuario y *skeleton loaders*.
+  * **Fase 3A:** PWA instalable y CI con tests automatizados de reglas Firestore.
 
-* **En curso (Fase 3A):**
-  * PWA instalable.
-  * CI con tests automatizados de reglas Firestore.
+* **En curso / Próximas fases:**
   * Notificaciones transaccionales por email.
   * Buscador global de proyectos.
   * Dashboard de métricas para creadores.
