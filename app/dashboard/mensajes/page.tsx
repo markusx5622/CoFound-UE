@@ -5,13 +5,12 @@ import { useState, useEffect, useRef } from "react";
 import { collection, query, where, onSnapshot, addDoc, serverTimestamp, orderBy, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Send, UserCircle, MessageSquare } from "lucide-react";
-import Image from "next/image";
+import { Send, MessageSquare } from "lucide-react";
+import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 
 interface UserData {
   name: string;
-  photoURL?: string;
 }
 
 interface Conversation {
@@ -90,7 +89,6 @@ export default function Mensajes() {
             const otherData = otherUserDoc.exists() ? otherUserDoc.data() : null;
             otherUserData = {
               name: otherData?.name || "Usuario Desconocido",
-              photoURL: otherData?.photoURL
             };
             usersCache.set(otherUserId, otherUserData);
           }
@@ -224,13 +222,7 @@ export default function Mensajes() {
                       onClick={() => setActiveChat(convo)}
                       className={`p-4 border-b border-zinc-800/50 cursor-pointer transition-colors flex items-center gap-3 ${activeChat?.id === convo.id ? 'bg-zinc-900 border-l-2 border-l-[#E60000]' : 'hover:bg-zinc-900/50'}`}
                     >
-                      <div className="relative w-12 h-12 flex-shrink-0">
-                        {convo.otherUser.photoURL ? (
-                          <Image src={convo.otherUser.photoURL} alt={convo.otherUser.name} fill className="rounded-full object-cover" />
-                        ) : (
-                          <UserCircle className="w-12 h-12 text-zinc-600 bg-zinc-900 rounded-full" />
-                        )}
-                      </div>
+                      <InitialsAvatar name={convo.otherUser.name} size={48} className="w-12 h-12 text-sm font-semibold" />
                       <div className="overflow-hidden flex-grow min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="text-white font-medium truncate">{convo.otherUser.name}</h3>

@@ -6,6 +6,7 @@ import { collection, query, where, getDocs, doc, deleteDoc, getDoc, updateDoc } 
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Briefcase, UserCircle, Tag, Trash2, Users, X, Check, XCircle, Edit } from "lucide-react";
+import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -32,7 +33,6 @@ interface Application {
     campus: string;
     bio: string;
     skills: string[];
-    photoURL?: string;
   };
 }
 
@@ -76,7 +76,6 @@ export default function MisProyectos() {
               campus: data.campus || "",
               bio: data.bio || "",
               skills: data.skills || [],
-              photoURL: data.photoURL
             };
           }
           return app;
@@ -301,9 +300,7 @@ export default function MisProyectos() {
               <X className="h-5 w-5" />
             </button>
             <div className="text-center mb-6">
-              <div className="w-20 h-20 bg-zinc-800 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <UserCircle className="h-12 w-12 text-zinc-400" />
-              </div>
+              <InitialsAvatar name={selectedApplicant.name} size={80} className="w-20 h-20 mx-auto mb-4 text-2xl font-bold" />
               <h3 className="text-2xl font-bold text-white">{selectedApplicant.name || 'Sin nombre'}</h3>
               <p className="text-[#E60000]">{selectedApplicant.email}</p>
             </div>

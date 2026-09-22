@@ -6,7 +6,7 @@ import { doc, getDoc, collection, query, where, getDocs } from "firebase/firesto
 import { db } from "@/lib/firebase";
 import { UserCircle, Briefcase, Tag, MapPin, GraduationCap } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import InitialsAvatar from "@/components/InitialsAvatar";
 
 interface PublicUser {
   uid: string;
@@ -16,7 +16,6 @@ interface PublicUser {
   campus: string;
   bio: string;
   skills: string[];
-  photoURL?: string;
 }
 
 interface Project {
@@ -98,16 +97,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                 <div className="h-32 bg-gradient-to-r from-zinc-800 to-[#E60000]/20 relative"></div>
                 <div className="px-8 pb-8 relative">
                   <div className="absolute -top-16 left-8 bg-zinc-950 p-2 rounded-full border-4 border-zinc-900 w-32 h-32 flex items-center justify-center">
-                    {profileUser.photoURL ? (
-                      <Image 
-                        src={profileUser.photoURL}
-                        alt={`Avatar de ${profileUser.name}`}
-                        fill
-                        className="object-cover rounded-full"
-                      />
-                    ) : (
-                      <UserCircle className="h-24 w-24 text-zinc-400 bg-zinc-800 rounded-full" />
-                    )}
+                    <InitialsAvatar name={profileUser.name} className="w-full h-full text-3xl font-bold" />
                   </div>
                   
                   <div className="pt-14">

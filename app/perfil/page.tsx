@@ -4,17 +4,16 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { X, Plus, Save, UserCircle } from "lucide-react";
+import { X, Plus, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
-import Image from "next/image";
+import InitialsAvatar from "@/components/InitialsAvatar";
 
 export default function MiPerfil() {
   const [name, setName] = useState("");
   const [degree, setDegree] = useState("");
   const [campus, setCampus] = useState("Valencia");
   const [bio, setBio] = useState("");
-  const [photoURL, setPhotoURL] = useState("");
   
   const [skillInput, setSkillInput] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
@@ -39,7 +38,6 @@ export default function MiPerfil() {
             setCampus(data.campus || "Valencia");
             setBio(data.bio || "");
             setSkills(data.skills || []);
-            setPhotoURL(data.photoURL || "");
           }
         }
       } catch (error) {
@@ -76,20 +74,16 @@ export default function MiPerfil() {
     try {
       if (!user) throw new Error("No user logged in");
 
-      const generatedAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=18181b&color=E60000&size=256&font-size=0.4`;
-
       await setDoc(doc(db, "users", user.uid), {
         name,
         degree,
         campus,
         bio,
         skills,
-        photoURL: generatedAvatar,
         email: user.email,
         updatedAt: new Date()
       }, { merge: true });
 
-      setPhotoURL(generatedAvatar);
       toast.success("Perfil guardado correctamente.");
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -119,18 +113,8 @@ export default function MiPerfil() {
             <form onSubmit={handleSave} className="space-y-6">
               
               <div className="flex flex-col items-center mb-8">
-                <div className="relative w-28 h-28 rounded-full overflow-hidden border-2 border-zinc-700">
-                  {photoURL ? (
-                    <Image 
-                      src={photoURL} 
-                      alt="Avatar de perfil" 
-                      fill 
-                      className="object-cover"
-                    />
-                  ) : (
-                    <UserCircle className="w-full h-full text-zinc-600 bg-zinc-900" />
-                  )}
-                </div>
+                <InitialsAvatar name={name} size={112} className="w-28 h-28 text-3xl font-bold border-2" />
+                <p className="text-xs text-zinc-500 mt-2">Vista previa de tu avatar</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
