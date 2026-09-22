@@ -102,24 +102,57 @@ export default function LandingPage() {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent"></div>
               
               {currentUser ? (
-                <div className="text-center py-6">
-                  <div className="w-14 h-14 bg-red-950/60 border border-[#E60000]/40 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#E60000] shadow-inner">
-                    <ShieldCheck className="h-7 w-7" />
+                currentUser.emailVerified ? (
+                  <div className="text-center py-6">
+                    <div className="w-14 h-14 bg-red-950/60 border border-[#E60000]/40 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#E60000] shadow-inner">
+                      <ShieldCheck className="h-7 w-7" />
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                      ¡Sesión Iniciada!
+                    </h2>
+                    <p className="text-zinc-400 mb-8 text-sm">
+                      Estás conectado con tu cuenta de la Universidad Europea.
+                    </p>
+                    <Link
+                      href="/dashboard"
+                      className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] cursor-pointer"
+                    >
+                      <span>Entrar al Dashboard de Proyectos</span>
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                    ¡Sesión Iniciada!
-                  </h2>
-                  <p className="text-zinc-400 mb-8 text-sm">
-                    Estás conectado con tu cuenta de la Universidad Europea.
-                  </p>
-                  <Link
-                    href="/dashboard"
-                    className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] cursor-pointer"
-                  >
-                    <span>Entrar al Dashboard de Proyectos</span>
-                    <ArrowRight className="h-5 w-5" />
-                  </Link>
-                </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="w-14 h-14 bg-red-950/40 border border-red-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Mail className="h-7 w-7 text-[#E60000]" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">
+                      Verifica tu correo
+                    </h2>
+                    <p className="text-zinc-400 mb-6 text-sm">
+                      Revisa tu bandeja de entrada en <span className="text-white font-medium">{currentUser.email}</span>. Debes hacer clic en el enlace para entrar.
+                    </p>
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)]"
+                      >
+                        <CheckCircle2 className="h-5 w-5" />
+                        <span>Ya lo he verificado</span>
+                      </button>
+                      
+                      <button
+                        onClick={async () => {
+                          const { signOut } = await import("firebase/auth");
+                          await signOut(auth);
+                        }}
+                        className="w-full bg-transparent hover:bg-zinc-800/50 text-zinc-400 hover:text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  </div>
+                )
               ) : isResetPassword ? (
                 <>
                   <div className="mb-6">
