@@ -15,7 +15,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cofound-ue.vercel.app"),
+  metadataBase: new URL("https://cofoundue.es"),
   title: "CoFound UE - Encuentra tu Co-Founder",
   description: "Conecta con talento de ADE, Marketing, Tech y Diseño en el Campus de la Universidad Europea de Valencia para crear tu startup.",
   appleWebApp: {
