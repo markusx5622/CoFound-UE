@@ -31,7 +31,7 @@
 <br/>
 
 > [!NOTE]
-> **Proyecto en desarrollo activo:** CoFound UE es la plataforma prioritaria y en desarrollo activo para la comunidad de la Universidad Europea ([cofound-ue.vercel.app](https://cofound-ue.vercel.app)).
+> **Proyecto en desarrollo activo:** CoFound UE es la plataforma prioritaria y en desarrollo activo para la comunidad de la Universidad Europea ([cofoundue.es](https://cofoundue.es)).
 
 ## 📌 Visión General
 
@@ -288,7 +288,7 @@ La plataforma está optimizada para ser desplegada en **Vercel** o plataformas c
 2. En la configuración del proyecto, agrega las variables de entorno de Firebase (`NEXT_PUBLIC_FIREBASE_*`).
 3. Vercel detectará automáticamente Next.js 14 y ejecutará la compilación.
 
-URL de producción activa: **[https://cofound-ue.vercel.app](https://cofound-ue.vercel.app)**
+URL de producción activa: **[https://cofoundue.es](https://cofoundue.es)**
 
 ---
 
@@ -300,7 +300,7 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
   * **Fase 0:** Auth institucional (`@live.uem.es` / `@universidadeuropea.es`), reglas de seguridad de Firestore y borrado de proyectos en cascada.
   * **Fase 1:** Marketplace de proyectos, sistema de postulaciones y perfiles universitarios.
   * **Fase 2:** Mensajería en tiempo real, perfiles de usuario y *skeleton loaders*.
-  * **Fase 3A:** PWA instalable y CI con tests automatizados de reglas Firestore.
+  * **Fase 3A:** PWA instalable, dominio custom (`cofoundue.es`), SEO técnico (Sitemap, Robots) y CI con tests automatizados de reglas Firestore.
 
 * **En curso / Próximas fases:**
   * Notificaciones transaccionales por email.
