@@ -152,6 +152,101 @@ El siguiente diagrama traza el recorrido funcional del estudiante a través de l
 
 ---
 
+flowchart TD
+
+subgraph group_identity["Identity &amp; access"]
+  node_login["Sign in / register<br/>[page.tsx]"]
+  node_authctx["Auth state<br/>[AuthContext.tsx]"]
+  node_guard["Protected routes<br/>[ProtectedRoute.tsx]"]
+  node_authsvc{{"Firebase Auth"}}
+end
+
+subgraph group_collaboration["Project collaboration"]
+  node_market["Project marketplace<br/>[page.tsx]"]
+  node_newproject["Publish project<br/>[page.tsx]"]
+  node_projectdetail["Project details<br/>[page.tsx]"]
+  node_applications["My applications<br/>[page.tsx]"]
+  node_myprojects["Manage projects<br/>[page.tsx]"]
+  node_messages["Direct messaging<br/>[page.tsx]"]
+end
+
+subgraph group_people["Student profiles"]
+  node_profileedit["Edit profile<br/>[page.tsx]"]
+  node_publicprofile["View profile<br/>[page.tsx]"]
+end
+
+subgraph group_platform["App experience"]
+  node_firestore[("Cloud Firestore")]
+  node_rules["Firestore access rules<br/>[firestore.rules]"]
+  node_firebaseclient["Firebase client<br/>[firebase.ts]"]
+  node_pwa["PWA manifest<br/>[manifest.ts]"]
+  node_swregister["Service worker registration"]
+  node_serviceworker["Static asset caching<br/>[sw.js]"]
+end
+
+node_student(("UE student"))
+
+node_student -->|"opens"| node_login
+node_login -->|"signs in or registers"| node_authsvc
+node_authsvc -->|"notifies auth state"| node_authctx
+node_authctx -->|"provides session"| node_guard
+node_student -->|"browses projects"| node_market
+node_market -->|"uses client"| node_firebaseclient
+node_market -->|"queries projects"| node_firestore
+node_student -->|"publishes idea"| node_newproject
+node_newproject -->|"writes project"| node_firestore
+node_market -->|"opens project"| node_projectdetail
+node_projectdetail -->|"reads project and applies"| node_firestore
+node_student -->|"tracks applications"| node_applications
+node_applications -->|"reads application status"| node_firestore
+node_student -->|"manages projects"| node_myprojects
+node_myprojects -->|"reads and updates records"| node_firestore
+node_myprojects -->|"opens applicant chat"| node_messages
+node_messages -->|"reads and sends messages"| node_firestore
+node_messages -->|"updates read markers"| node_firestore
+node_student -->|"maintains profile"| node_profileedit
+node_profileedit -->|"reads and saves profile"| node_firestore
+node_student -->|"views student"| node_publicprofile
+node_publicprofile -->|"reads profile and projects"| node_firestore
+node_firebaseclient -->|"configures client"| node_authsvc
+node_firebaseclient -->|"configures client"| node_firestore
+node_rules -->|"controls access"| node_firestore
+node_pwa -->|"enables installation"| node_student
+node_swregister -->|"registers"| node_serviceworker
+node_serviceworker -->|"caches static assets"| node_student
+
+click node_login "https://github.com/markusx5622/CoFound-UE/blob/main/app/page.tsx"
+click node_authctx "https://github.com/markusx5622/CoFound-UE/blob/main/context/AuthContext.tsx"
+click node_guard "https://github.com/markusx5622/CoFound-UE/blob/main/components/ProtectedRoute.tsx"
+click node_market "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/page.tsx"
+click node_newproject "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/nuevo/page.tsx"
+click node_projectdetail "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/proyecto/%5Bid%5D/page.tsx"
+click node_applications "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mis-postulaciones/page.tsx"
+click node_myprojects "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mis-proyectos/page.tsx"
+click node_messages "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mensajes/page.tsx"
+click node_profileedit "https://github.com/markusx5622/CoFound-UE/blob/main/app/perfil/page.tsx"
+click node_publicprofile "https://github.com/markusx5622/CoFound-UE/blob/main/app/perfil/%5Buid%5D/page.tsx"
+click node_rules "https://github.com/markusx5622/CoFound-UE/blob/main/firestore.rules"
+click node_firebaseclient "https://github.com/markusx5622/CoFound-UE/blob/main/lib/firebase.ts"
+click node_pwa "https://github.com/markusx5622/CoFound-UE/blob/main/app/manifest.ts"
+click node_swregister "https://github.com/markusx5622/CoFound-UE/blob/main/components/ServiceWorkerRegister.tsx"
+click node_serviceworker "https://github.com/markusx5622/CoFound-UE/blob/main/public/sw.js"
+
+classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
+classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
+class node_login,node_authctx,node_guard,node_authsvc toneBlue
+class node_market,node_newproject,node_projectdetail,node_applications,node_myprojects,node_messages toneAmber
+class node_profileedit,node_publicprofile toneMint
+class node_firestore,node_rules,node_firebaseclient,node_pwa,node_swregister,node_serviceworker toneRose
+class node_student toneIndigo
+
+---
+
 ## ⚡ Instalación y Configuración Local
 
 Sigue estos pasos para ejecutar **CoFound UE** en tu entorno local:
