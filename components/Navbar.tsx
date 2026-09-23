@@ -152,25 +152,36 @@ export default function Navbar() {
         {user && (
           <>
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <Link key={link.href} href={link.href} className="text-sm font-medium text-zinc-300 hover:text-white transition-colors relative">
-                  {link.label}
-                  {link.label === "Mis Proyectos" && pendingCount > 0 && (
-                    <span className="absolute -top-2 -right-4 flex h-4 w-4 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
-                      {pendingCount}
-                    </span>
-                  )}
-                  {link.label === "Mensajes" && unreadMessagesCount > 0 && (
-                    <span className="absolute -top-2 -right-4 flex h-4 w-4 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
-                      {unreadMessagesCount}
-                    </span>
-                  )}
-                </Link>
-              ))}
+            <div className="hidden md:flex items-center gap-2 lg:gap-2.5">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+                return (
+                  <Link 
+                    key={link.href} 
+                    href={link.href} 
+                    className={`text-xs lg:text-sm font-medium px-3.5 py-2 rounded-xl transition-all duration-200 border relative flex items-center shadow-sm select-none ${
+                      isActive
+                        ? "bg-zinc-800 text-white border-zinc-700 shadow-inner"
+                        : "bg-zinc-900/60 text-zinc-300 hover:text-white hover:bg-zinc-800/80 border-zinc-800 hover:border-zinc-700"
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    {link.label === "Mis Proyectos" && pendingCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-md">
+                        {pendingCount}
+                      </span>
+                    )}
+                    {link.label === "Mensajes" && unreadMessagesCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-md">
+                        {unreadMessagesCount}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
               <button
                 onClick={handleLogout}
-                className="bg-zinc-900 border border-zinc-800 text-zinc-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-sm"
+                className="bg-zinc-900 border border-zinc-800 text-zinc-400 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-medium hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-all duration-200 shadow-sm ml-1"
               >
                 Cerrar Sesión
               </button>
@@ -178,7 +189,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden text-zinc-300 hover:text-white p-2"
+              className="md:hidden text-zinc-300 hover:text-white p-2 rounded-xl border border-zinc-800/80 bg-zinc-900/50"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -189,27 +200,36 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {user && isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800 flex flex-col items-center py-4 gap-4 shadow-xl">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.href} 
-              href={link.href} 
-              className="text-sm font-medium text-zinc-300 hover:text-white transition-colors w-full text-center py-2 relative flex justify-center items-center gap-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {link.label}
-              {link.label === "Mis Proyectos" && pendingCount > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
-                  {pendingCount}
-                </span>
-              )}
-              {link.label === "Mensajes" && unreadMessagesCount > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
-                  {unreadMessagesCount}
-                </span>
-              )}
-            </Link>
-          ))}
+        <div className="md:hidden absolute top-full left-0 w-full bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800 flex flex-col items-center py-5 px-4 gap-2.5 shadow-2xl">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+            return (
+              <Link 
+                key={link.href} 
+                href={link.href} 
+                className={`text-sm font-medium transition-all w-full text-center py-2.5 px-4 rounded-xl border relative flex justify-between items-center shadow-sm ${
+                  isActive
+                    ? "bg-zinc-800 text-white border-zinc-700"
+                    : "bg-zinc-900/70 text-zinc-300 hover:text-white hover:bg-zinc-800 border-zinc-800"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>{link.label}</span>
+                <div className="flex items-center gap-1.5">
+                  {link.label === "Mis Proyectos" && pendingCount > 0 && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
+                      {pendingCount}
+                    </span>
+                  )}
+                  {link.label === "Mensajes" && unreadMessagesCount > 0 && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
           <button
             onClick={() => {
               setIsMenuOpen(false);

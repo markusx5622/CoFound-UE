@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { 
   X, 
@@ -17,6 +18,7 @@ import {
 
 export default function PwaInstallPrompt() {
   const { user } = useAuth();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"ios" | "android">("ios");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -61,12 +63,16 @@ export default function PwaInstallPrompt() {
     };
     window.addEventListener("open-pwa-install-modal", handleOpenModal);
 
-    // 5. Mostrar automáticamente al entrar un usuario registrado/verificado que no lo haya cerrado previamente
+    // 5. Mostrar automáticamente solo cuando el usuario ya esté DENTRO de la app (ej. /dashboard o /perfil),
+    // NUNCA en la landing page ni páginas públicas, y tras 3.5 segundos de haber entrado.
+    const isInsideApp = pathname.startsWith("/dashboard") || pathname.startsWith("/perfil");
     const hasDismissed = localStorage.getItem("cofoundue_pwa_dismissed");
-    if (user && user.emailVerified && !hasDismissed) {
+
+    if (isInsideApp && user && user.emailVerified && !hasDismissed) {
       const timer = setTimeout(() => {
         setIsOpen(true);
-      }, 1400); // Retraso suave para permitir la carga visual del dashboard
+      }, 3500); // 3.5 segundos tras entrar propiamente a la app
+
       return () => {
         clearTimeout(timer);
         window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
@@ -78,7 +84,7 @@ export default function PwaInstallPrompt() {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
       window.removeEventListener("open-pwa-install-modal", handleOpenModal);
     };
-  }, [user]);
+  }, [user, pathname]);
 
   // Si ya está ejecutándose como PWA instalada, no renderizamos
   if (isStandalone || !isOpen) return null;
