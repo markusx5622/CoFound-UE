@@ -345,16 +345,8 @@ export default function LandingPage() {
 
       {/* Contenido Adicional con Scroll */}
       <div className="relative z-10">
-        {/* Showcase de Sinergias Multidisciplinares */}
-        <CampusFeedPreview
-          onSelectProject={() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
-            if (emailInput) {
-              emailInput.focus();
-            }
-          }}
-        />
+        {/* Sección de Cómo Funciona (Rápida visualización de onboarding) */}
+        <HowItWorks />
 
         {/* Mobile "Saber más" Toggle */}
         <div className="md:hidden flex justify-center py-8">
@@ -373,8 +365,18 @@ export default function LandingPage() {
 
         {/* Marketing Sections */}
         <div className={`${showMore ? "block" : "hidden"} md:block`}>
+          {/* Showcase de Sinergias Multidisciplinares (Ejemplos densos de proyectos) */}
+          <CampusFeedPreview
+            onSelectProject={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+              if (emailInput) {
+                emailInput.focus();
+              }
+            }}
+          />
+          
           <FeaturesSection />
-          <HowItWorks />
           <VisionSection />
 
           {/* CTA Final */}
