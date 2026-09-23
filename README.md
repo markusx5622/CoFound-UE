@@ -215,22 +215,22 @@ node_pwa -->|"enables installation"| node_student
 node_swregister -->|"registers"| node_serviceworker
 node_serviceworker -->|"caches static assets"| node_student
 
-click node_login "https://github.com/markusx5622/CoFound-UE/blob/main/app/page.tsx"
-click node_authctx "https://github.com/markusx5622/CoFound-UE/blob/main/context/AuthContext.tsx"
-click node_guard "https://github.com/markusx5622/CoFound-UE/blob/main/components/ProtectedRoute.tsx"
-click node_market "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/page.tsx"
-click node_newproject "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/nuevo/page.tsx"
-click node_projectdetail "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/proyecto/%5Bid%5D/page.tsx"
-click node_applications "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mis-postulaciones/page.tsx"
-click node_myprojects "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mis-proyectos/page.tsx"
-click node_messages "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mensajes/page.tsx"
-click node_profileedit "https://github.com/markusx5622/CoFound-UE/blob/main/app/perfil/page.tsx"
-click node_publicprofile "https://github.com/markusx5622/CoFound-UE/blob/main/app/perfil/%5Buid%5D/page.tsx"
-click node_rules "https://github.com/markusx5622/CoFound-UE/blob/main/firestore.rules"
-click node_firebaseclient "https://github.com/markusx5622/CoFound-UE/blob/main/lib/firebase.ts"
-click node_pwa "https://github.com/markusx5622/CoFound-UE/blob/main/app/manifest.ts"
-click node_swregister "https://github.com/markusx5622/CoFound-UE/blob/main/components/ServiceWorkerRegister.tsx"
-click node_serviceworker "https://github.com/markusx5622/CoFound-UE/blob/main/public/sw.js"
+click node_login "https://github.com/markusx5622/cofound-ue/blob/main/app/page.tsx"
+click node_authctx "https://github.com/markusx5622/cofound-ue/blob/main/context/AuthContext.tsx"
+click node_guard "https://github.com/markusx5622/cofound-ue/blob/main/components/ProtectedRoute.tsx"
+click node_market "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/page.tsx"
+click node_newproject "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/nuevo/page.tsx"
+click node_projectdetail "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/proyecto/%5Bid%5D/page.tsx"
+click node_applications "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/mis-postulaciones/page.tsx"
+click node_myprojects "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/mis-proyectos/page.tsx"
+click node_messages "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/mensajes/page.tsx"
+click node_profileedit "https://github.com/markusx5622/cofound-ue/blob/main/app/perfil/page.tsx"
+click node_publicprofile "https://github.com/markusx5622/cofound-ue/blob/main/app/perfil/%5Buid%5D/page.tsx"
+click node_rules "https://github.com/markusx5622/cofound-ue/blob/main/firestore.rules"
+click node_firebaseclient "https://github.com/markusx5622/cofound-ue/blob/main/lib/firebase.ts"
+click node_pwa "https://github.com/markusx5622/cofound-ue/blob/main/app/manifest.ts"
+click node_swregister "https://github.com/markusx5622/cofound-ue/blob/main/components/ServiceWorkerRegister.tsx"
+click node_serviceworker "https://github.com/markusx5622/cofound-ue/blob/main/public/sw.js"
 
 classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
 classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
