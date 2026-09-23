@@ -35,9 +35,9 @@
 
 ## 📌 Visión General
 
-**CoFound UE** es una plataforma web full-stack diseñada específicamente para la comunidad académica y emprendedora de la **Universidad Europea**. 
+En un campus con cientos de estudiantes, la realidad operativa es que los equipos de trabajo se acaban formando por pura proximidad en el aula, no por afinidad de habilidades. El talento de ADE, Ingeniería, Marketing, Diseño y Tech convive a escasos metros en los pasillos, pero rara vez llega a cruzarse de forma productiva. Las grandes ideas nacen a diario en la universidad, pero terminan enfriándose en grupos de chat inactivos por falta de los perfiles técnicos o de negocio adecuados para ejecutarlas.
 
-La aplicación resuelve la fragmentación del talento dentro del campus universitario, permitiendo a estudiantes y graduados de diversas áreas (Business, Ingeniería, Software, Diseño, Marketing, etc.) encontrarse, colaborar en proyectos interdisciplinarios, publicar retos académicos, Trabajos de Fin de Grado (TFG) o lanzar *startups*.
+Ante esta fricción, nace **CoFound UE**: una plataforma web full-stack diseñada específicamente para romper los silos académicos de la **Universidad Europea**. La aplicación funciona como un *marketplace* interno de talento que permite a estudiantes y graduados encontrarse de forma estratégica, colaborar en proyectos interdisciplinares, publicar retos académicos, encontrar socios para el Trabajo de Fin de Grado (TFG) o lanzar *startups* reales directamente desde el campus.
 
 ### 🔑 Propuesta de Valor
 * **Exclusividad Institucional:** Autenticación estricta restringida a dominios de la universidad (`@live.uem.es` y `@universidadeuropea.es`).
@@ -422,11 +422,13 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
 
 ## 📬 Piloto en Campus Turia y Contacto
 
-Cabe destacar que CoFound UE nace bajo la exigente filosofía del *learning by doing* de nuestra universidad. Por lo tanto, el despliegue inicial de la plataforma se plantea como un **piloto exclusivo y acotado al Campus del Turia** durante este cuatrimestre. En este sentido, limitar el alcance en esta primera fase nos permite asegurar la calidad del *matchmaking* y garantizar que los primeros usuarios extraigan un valor real e inmediato para sus proyectos de clase, TFGs o iniciativas emprendedoras.
+Cabe destacar que CoFound UE nace bajo la exigente filosofía del *learning by doing* de nuestra universidad. Por lo tanto, el despliegue inicial de la plataforma se plantea como un **piloto exclusivo y acotado al Campus del Turia** durante este cuatrimestre. Limitar el alcance en esta primera fase nos permite asegurar la calidad del *matchmaking* y garantizar que los primeros usuarios extraigan un valor real e inmediato para sus proyectos y asignaturas.
 
-No obstante, el éxito de cualquier producto digital reside en la iteración constante basada en la experiencia real del usuario. Si eres estudiante y detectas alguna fricción al navegar por la app, o si eres docente y quieres proponer el uso de la plataforma para dinamizar la creación de equipos en tus asignaturas, necesitamos escucharte. 
+Para evaluar la tracción y viabilidad del producto en este entorno real, el piloto se regirá por KPIs estratégicos muy claros. En este sentido, monitorizaremos semanalmente la tasa de usuarios activos (WAU), el ratio de conversión de postulaciones (solicitudes enviadas vs. equipos cerrados) y el *Time-to-Match* (el tiempo medio que tarda una idea publicada en encontrar los perfiles que necesita).
 
-Tu feedback es vital para seguir escalando la herramienta. Puedes compartir tus impresiones, reportar incidencias o proponer alianzas estratégicas escribiendo directamente a: **cofoundue@gmail.com**
+No obstante, el éxito de cualquier producto digital reside en la iteración constante basada en el usuario final. Si eres estudiante y detectas alguna oportunidad de mejora, o si eres docente y quieres proponer el uso de la plataforma como dinámica oficial para formar equipos en tus clases, necesitamos escucharte. 
+
+Tu feedback es vital para seguir escalando la herramienta con criterio. Puedes compartir tus impresiones, reportar incidencias o proponer alianzas estratégicas escribiendo directamente a: **cofoundue@gmail.com**
 
 ---
 
