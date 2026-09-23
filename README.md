@@ -31,7 +31,7 @@
 <br/>
 
 > [!NOTE]
-> **Proyecto en desarrollo activo:** CoFound UE es la plataforma prioritaria y en desarrollo activo para la comunidad de la Universidad Europea ([cofoundue.es](https://cofoundue.es)).
+> **Proyecto en desarrollo activo:** CoFound UE es un proyecto universitario en desarrollo activo para la comunidad de la Universidad Europea ([cofoundue.es](https://cofoundue.es)).
 
 ## 📌 Visión General
 
