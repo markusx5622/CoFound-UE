@@ -152,15 +152,19 @@ El siguiente diagrama traza el recorrido funcional del estudiante a través de l
 
 ---
 
+<details>
+<summary>Ver código fuente Mermaid (para editarlo o regenerar la imagen)</summary>
+  
+```mermaid
 flowchart TD
-
+ 
 subgraph group_identity["Identity &amp; access"]
   node_login["Sign in / register<br/>[page.tsx]"]
   node_authctx["Auth state<br/>[AuthContext.tsx]"]
   node_guard["Protected routes<br/>[ProtectedRoute.tsx]"]
   node_authsvc{{"Firebase Auth"}}
 end
-
+ 
 subgraph group_collaboration["Project collaboration"]
   node_market["Project marketplace<br/>[page.tsx]"]
   node_newproject["Publish project<br/>[page.tsx]"]
@@ -169,12 +173,12 @@ subgraph group_collaboration["Project collaboration"]
   node_myprojects["Manage projects<br/>[page.tsx]"]
   node_messages["Direct messaging<br/>[page.tsx]"]
 end
-
+ 
 subgraph group_people["Student profiles"]
   node_profileedit["Edit profile<br/>[page.tsx]"]
   node_publicprofile["View profile<br/>[page.tsx]"]
 end
-
+ 
 subgraph group_platform["App experience"]
   node_firestore[("Cloud Firestore")]
   node_rules["Firestore access rules<br/>[firestore.rules]"]
@@ -183,9 +187,9 @@ subgraph group_platform["App experience"]
   node_swregister["Service worker registration"]
   node_serviceworker["Static asset caching<br/>[sw.js]"]
 end
-
+ 
 node_student(("UE student"))
-
+ 
 node_student -->|"opens"| node_login
 node_login -->|"signs in or registers"| node_authsvc
 node_authsvc -->|"notifies auth state"| node_authctx
@@ -214,24 +218,24 @@ node_rules -->|"controls access"| node_firestore
 node_pwa -->|"enables installation"| node_student
 node_swregister -->|"registers"| node_serviceworker
 node_serviceworker -->|"caches static assets"| node_student
-
-click node_login "https://github.com/markusx5622/cofound-ue/blob/main/app/page.tsx"
-click node_authctx "https://github.com/markusx5622/cofound-ue/blob/main/context/AuthContext.tsx"
-click node_guard "https://github.com/markusx5622/cofound-ue/blob/main/components/ProtectedRoute.tsx"
-click node_market "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/page.tsx"
-click node_newproject "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/nuevo/page.tsx"
-click node_projectdetail "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/proyecto/%5Bid%5D/page.tsx"
-click node_applications "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/mis-postulaciones/page.tsx"
-click node_myprojects "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/mis-proyectos/page.tsx"
-click node_messages "https://github.com/markusx5622/cofound-ue/blob/main/app/dashboard/mensajes/page.tsx"
-click node_profileedit "https://github.com/markusx5622/cofound-ue/blob/main/app/perfil/page.tsx"
-click node_publicprofile "https://github.com/markusx5622/cofound-ue/blob/main/app/perfil/%5Buid%5D/page.tsx"
-click node_rules "https://github.com/markusx5622/cofound-ue/blob/main/firestore.rules"
-click node_firebaseclient "https://github.com/markusx5622/cofound-ue/blob/main/lib/firebase.ts"
-click node_pwa "https://github.com/markusx5622/cofound-ue/blob/main/app/manifest.ts"
-click node_swregister "https://github.com/markusx5622/cofound-ue/blob/main/components/ServiceWorkerRegister.tsx"
-click node_serviceworker "https://github.com/markusx5622/cofound-ue/blob/main/public/sw.js"
-
+ 
+click node_login "https://github.com/markusx5622/CoFound-UE/blob/main/app/page.tsx"
+click node_authctx "https://github.com/markusx5622/CoFound-UE/blob/main/context/AuthContext.tsx"
+click node_guard "https://github.com/markusx5622/CoFound-UE/blob/main/components/ProtectedRoute.tsx"
+click node_market "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/page.tsx"
+click node_newproject "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/nuevo/page.tsx"
+click node_projectdetail "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/proyecto/%5Bid%5D/page.tsx"
+click node_applications "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mis-postulaciones/page.tsx"
+click node_myprojects "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mis-proyectos/page.tsx"
+click node_messages "https://github.com/markusx5622/CoFound-UE/blob/main/app/dashboard/mensajes/page.tsx"
+click node_profileedit "https://github.com/markusx5622/CoFound-UE/blob/main/app/perfil/page.tsx"
+click node_publicprofile "https://github.com/markusx5622/CoFound-UE/blob/main/app/perfil/%5Buid%5D/page.tsx"
+click node_rules "https://github.com/markusx5622/CoFound-UE/blob/main/firestore.rules"
+click node_firebaseclient "https://github.com/markusx5622/CoFound-UE/blob/main/lib/firebase.ts"
+click node_pwa "https://github.com/markusx5622/CoFound-UE/blob/main/app/manifest.ts"
+click node_swregister "https://github.com/markusx5622/CoFound-UE/blob/main/components/ServiceWorkerRegister.tsx"
+click node_serviceworker "https://github.com/markusx5622/CoFound-UE/blob/main/public/sw.js"
+ 
 classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
 classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
 classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
@@ -244,6 +248,10 @@ class node_market,node_newproject,node_projectdetail,node_applications,node_mypr
 class node_profileedit,node_publicprofile toneMint
 class node_firestore,node_rules,node_firebaseclient,node_pwa,node_swregister,node_serviceworker toneRose
 class node_student toneIndigo
+```
+ 
+</details>
+
 
 ---
 
