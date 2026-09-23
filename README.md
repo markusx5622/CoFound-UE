@@ -144,8 +144,13 @@ CoFound-UE/
 
 ## 🔄 Flujo de la Aplicación
  
-El siguiente diagrama traza el recorrido funcional del estudiante a través de la plataforma, agrupado por dominio (identidad, colaboración en proyectos, perfiles y experiencia de la app), junto con los ficheros que implementan cada nodo:
+El siguiente diagrama traza el recorrido funcional del estudiante a través de la plataforma, agrupado por dominio (identidad, colaboración en proyectos, perfiles y experiencia de la app), junto con los ficheros que implementan cada nodo. Se muestra como imagen pre-renderizada porque el grafo tiene demasiadas conexiones cruzadas de largo alcance para que el motor de layout de Mermaid lo ajuste con fidelidad al ancho fijo del visor de GitHub; el código fuente sigue disponible más abajo para poder editarlo:
  
+<p align="center">
+  <img src="public/CoFoundUE_flujo.png" alt="Diagrama de flujo de la aplicación CoFound UE" width="100%" />
+</p>
+<details>
+<summary>Ver código fuente Mermaid (para editarlo o regenerar la imagen)</summary>
 ```mermaid
 flowchart TD
  
@@ -240,7 +245,8 @@ class node_profileedit,node_publicprofile toneMint
 class node_firestore,node_rules,node_firebaseclient,node_pwa,node_swregister,node_serviceworker toneRose
 class node_student toneIndigo
 ```
-
+ 
+</details>
 ---
 
 ## ⚡ Instalación y Configuración Local
