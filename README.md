@@ -420,6 +420,16 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
 
 ---
 
+## 📬 Piloto en Campus Turia y Contacto
+
+Cabe destacar que CoFound UE nace bajo la exigente filosofía del *learning by doing* de nuestra universidad. Por lo tanto, el despliegue inicial de la plataforma se plantea como un **piloto exclusivo y acotado al Campus del Turia** durante este cuatrimestre. En este sentido, limitar el alcance en esta primera fase nos permite asegurar la calidad del *matchmaking* y garantizar que los primeros usuarios extraigan un valor real e inmediato para sus proyectos de clase, TFGs o iniciativas emprendedoras.
+
+No obstante, el éxito de cualquier producto digital reside en la iteración constante basada en la experiencia real del usuario. Si eres estudiante y detectas alguna fricción al navegar por la app, o si eres docente y quieres proponer el uso de la plataforma para dinamizar la creación de equipos en tus asignaturas, necesitamos escucharte. 
+
+Tu feedback es vital para seguir escalando la herramienta. Puedes compartir tus impresiones, reportar incidencias o proponer alianzas estratégicas escribiendo directamente a: **cofoundue@gmail.com**
+
+---
+
 ## 📄 Licencia
 
 **Copyright © 2026 Marc Cubero Cantavella — Todos los derechos reservados.**
