@@ -19,6 +19,7 @@ import { getFriendlyErrorMessage } from "@/lib/auth-errors";
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [isResetPassword, setIsResetPassword] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -91,13 +92,13 @@ export default function LandingPage() {
           <div className="absolute bottom-[-10%] right-[-10%] w-[35%] h-[35%] bg-white rounded-full blur-[150px] opacity-5"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-12 md:py-16 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10 flex-grow">
+        <div className="max-w-7xl mx-auto px-6 py-4 md:py-16 w-full grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-center relative z-10 flex-grow">
           {/* Hero Content */}
           <HeroSection />
 
           {/* Formulario de Auth Estilo App Social */}
           <div className="w-full max-w-md mx-auto">
-            <div className="bg-zinc-900/90 backdrop-blur-2xl p-7 sm:p-8 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] relative overflow-hidden border border-zinc-800/90 transition-all duration-300">
+            <div className="bg-zinc-900/90 backdrop-blur-2xl p-5 sm:p-8 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] relative overflow-hidden border border-zinc-800/90 transition-all duration-300">
               {/* Subtle top accent gradient */}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent"></div>
               
@@ -355,34 +356,52 @@ export default function LandingPage() {
           }}
         />
 
-        <FeaturesSection />
-        <HowItWorks />
-        <VisionSection />
+        {/* Mobile "Saber más" Toggle */}
+        <div className="md:hidden flex justify-center py-8">
+          <button
+            onClick={() => setShowMore(!showMore)}
+            className="flex flex-col items-center gap-2 text-zinc-400 hover:text-white transition-colors p-4 rounded-xl border border-zinc-800/50 hover:bg-zinc-900/50 active:scale-95"
+          >
+            <span className="text-xs font-semibold uppercase tracking-wider">{showMore ? "Ocultar información" : "Saber más de CoFound UE"}</span>
+            <div className={`transition-transform duration-300 ${showMore ? "rotate-180" : ""}`}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 9L12 16L5 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </button>
+        </div>
 
-        {/* CTA Final */}
-        <section className="py-24 border-t border-zinc-900 text-center bg-transparent relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#E60000] rounded-full blur-[120px] opacity-10 pointer-events-none"></div>
-          
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <h3 className="text-3xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight">
-              ¿Listo para encontrar a tu <span className="text-[#E60000]">Co-Founder</span>?
-            </h3>
-            <p className="text-zinc-400 max-w-xl mx-auto mb-8 text-base leading-relaxed">
-              Regístrate hoy mismo de forma gratuita y empieza a conectar con el mejor talento de la Universidad Europea en el Campus Turia.
-            </p>
-            <button
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
-                if (emailInput) emailInput.focus();
-              }}
-              className="bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_30px_rgba(230,0,0,0.45)] inline-flex items-center gap-2 cursor-pointer text-sm sm:text-base"
-            >
-              <span>Comenzar Ahora en Campus Turia</span>
-              <ArrowRight className="h-5 w-5" />
-            </button>
-          </div>
-        </section>
+        {/* Marketing Sections */}
+        <div className={`${showMore ? "block" : "hidden"} md:block`}>
+          <FeaturesSection />
+          <HowItWorks />
+          <VisionSection />
+
+          {/* CTA Final */}
+          <section className="py-24 border-t border-zinc-900 text-center bg-transparent relative overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#E60000] rounded-full blur-[120px] opacity-10 pointer-events-none"></div>
+            
+            <div className="max-w-4xl mx-auto px-6 relative z-10">
+              <h3 className="text-3xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight">
+                ¿Listo para encontrar a tu <span className="text-[#E60000]">Co-Founder</span>?
+              </h3>
+              <p className="text-zinc-400 max-w-xl mx-auto mb-8 text-base leading-relaxed">
+                Regístrate hoy mismo de forma gratuita y empieza a conectar con el mejor talento de la Universidad Europea en el Campus Turia.
+              </p>
+              <button
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+                  if (emailInput) emailInput.focus();
+                }}
+                className="bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_30px_rgba(230,0,0,0.45)] inline-flex items-center gap-2 cursor-pointer text-sm sm:text-base"
+              >
+                <span>Comenzar Ahora en Campus Turia</span>
+                <ArrowRight className="h-5 w-5" />
+              </button>
+            </div>
+          </section>
+        </div>
         
         <Footer />
       </div>
