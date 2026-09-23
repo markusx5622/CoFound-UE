@@ -8,7 +8,7 @@ import { signOut } from "firebase/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 
 function getTimestampMillis(ts: any): number {
   if (!ts) return 0;
@@ -181,9 +181,10 @@ export default function Navbar() {
               })}
               <button
                 onClick={handleLogout}
-                className="bg-zinc-900 border border-zinc-800 text-zinc-400 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-medium hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-all duration-200 shadow-sm ml-1"
+                className="bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 shadow-sm ml-1.5 flex items-center gap-1.5 group select-none"
               >
-                Cerrar Sesión
+                <LogOut className="w-3.5 h-3.5 text-red-400 group-hover:text-white transition-colors" />
+                <span>Cerrar Sesión</span>
               </button>
             </div>
 
@@ -245,9 +246,10 @@ export default function Navbar() {
               setIsMenuOpen(false);
               handleLogout();
             }}
-            className="mt-1 bg-zinc-900 border border-zinc-800 text-zinc-300 px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-sm"
+            className="mt-1 w-full bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
           >
-            Cerrar Sesión
+            <LogOut className="w-4 h-4" />
+            <span>Cerrar Sesión</span>
           </button>
         </div>
       )}
