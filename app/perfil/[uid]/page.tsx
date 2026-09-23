@@ -72,14 +72,14 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
 
   return (
     <ProtectedRoute>
-      <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
+      <div className="bg-transparent flex-grow py-8 sm:py-12 px-4 sm:px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
           {loading ? (
             <div className="flex justify-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
             </div>
           ) : error || !profileUser ? (
-            <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
+            <div className="bg-zinc-900/60 backdrop-blur-md p-6 sm:p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
               <UserCircle className="h-16 w-16 text-zinc-500 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-white mb-2">Usuario no encontrado</h3>
               <p className="text-zinc-400 mb-6">El perfil que buscas no existe o ha sido eliminado.</p>
@@ -95,7 +95,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
               {/* Profile Card */}
               <div className="bg-zinc-900/60 backdrop-blur-md rounded-2xl border border-zinc-800 overflow-hidden mb-10">
                 <div className="h-32 bg-gradient-to-r from-zinc-800 to-[#E60000]/20 relative"></div>
-                <div className="px-8 pb-8 relative">
+                <div className="px-5 sm:px-8 pb-6 sm:pb-8 relative">
                   <div className="absolute -top-16 left-8 bg-zinc-950 p-2 rounded-full border-4 border-zinc-900 w-32 h-32 flex items-center justify-center">
                     <InitialsAvatar name={profileUser.name} className="w-full h-full text-3xl font-bold" />
                   </div>

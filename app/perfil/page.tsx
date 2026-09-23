@@ -105,11 +105,11 @@ export default function MiPerfil() {
 
   return (
     <ProtectedRoute>
-      <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
+      <div className="bg-transparent flex-grow py-8 sm:py-12 px-4 sm:px-6 relative z-10">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-8">Mi Perfil</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">Mi Perfil</h1>
           
-          <div className="bg-zinc-900/60 backdrop-blur-md p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)] border border-zinc-800">
+          <div className="bg-zinc-900/60 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)] border border-zinc-800">
             <form onSubmit={handleSave} className="space-y-6">
               
               <div className="flex flex-col items-center mb-8">
@@ -179,16 +179,16 @@ export default function MiPerfil() {
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="flex-grow px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
+                    className="flex-1 min-w-0 px-3.5 sm:px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm sm:text-base"
                     placeholder="Ej: React, Finanzas, SEO, Figma..."
                   />
                   <button
                     type="button"
                     onClick={handleAddSkill}
-                    className="px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
+                    className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                   >
-                    <Plus className="h-5 w-5" />
-                    Añadir
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                    <span>Añadir</span>
                   </button>
                 </div>
                 
