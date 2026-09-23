@@ -213,9 +213,19 @@ export default function Navbar() {
           <button
             onClick={() => {
               setIsMenuOpen(false);
+              window.dispatchEvent(new CustomEvent("open-pwa-install-modal"));
+            }}
+            className="text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-900/80 border border-zinc-800 hover:border-red-500/40 px-4 py-2 rounded-xl transition-all flex items-center gap-2"
+          >
+            <span>📱</span>
+            <span>Instalar App en tu móvil</span>
+          </button>
+          <button
+            onClick={() => {
+              setIsMenuOpen(false);
               handleLogout();
             }}
-            className="mt-2 bg-zinc-900 border border-zinc-800 text-zinc-300 px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-sm"
+            className="mt-1 bg-zinc-900 border border-zinc-800 text-zinc-300 px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-sm"
           >
             Cerrar Sesión
           </button>

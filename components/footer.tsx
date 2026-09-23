@@ -52,10 +52,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link 
-                  href="/#features"
+                  href="/#faq"
                   className="hover:text-white transition-colors block"
                 >
-                  Beneficios y Perfiles
+                  Preguntas frecuentes
                 </Link>
               </li>
               <li>

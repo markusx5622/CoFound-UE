@@ -92,12 +92,16 @@ export default function HeroSection() {
       {/* Value Proposition Badges */}
       <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3 text-zinc-300 text-xs sm:text-sm pt-1">
         <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">
+          <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+          <span>100% Gratuito</span>
+        </span>
+        <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-          <span>Acceso solo con @live.uem.es</span>
+          <span>Solo alumnos UE</span>
         </span>
         <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">
           <Rocket className="h-3.5 w-3.5 text-[#E60000]" />
-          <span>Startups, Hackathons y Proyectos</span>
+          <span>Startups y Proyectos</span>
         </span>
       </motion.div>
     </motion.div>

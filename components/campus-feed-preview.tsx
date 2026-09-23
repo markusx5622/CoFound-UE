@@ -79,12 +79,12 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
           </p>
         </div>
 
-        {/* Informative Campus Trust Bar */}
+        {/* Informative Dual-Profile Trust Bar */}
         <div className="mb-12 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-md">
           <div className="flex items-center gap-2.5 text-zinc-300">
-            <ShieldCheck className="h-4 w-4 text-[#E60000] shrink-0" />
-            <span className="font-semibold text-white">Comunidad Verificada:</span>
-            <span className="text-zinc-400">Acceso restringido a estudiantes de la Universidad Europea</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+            <span className="font-semibold text-white">¿Tienes idea o buscas colaborar?</span>
+            <span className="text-zinc-400">Ambos perfiles tienen su espacio en la plataforma</span>
           </div>
           <div className="flex items-center gap-3 text-zinc-400 text-xs">
             <span className="flex items-center gap-1.5 text-zinc-300">

@@ -7,12 +7,11 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, Sparkles } from "lucide-react";
 import HeroSection from "@/components/hero-section";
 import CampusFeedPreview from "@/components/campus-feed-preview";
-import FeaturesSection from "@/components/features-section";
 import HowItWorks from "@/components/how-it-works";
-import VisionSection from "@/components/vision-section";
+import StudentFaq from "@/components/student-faq";
 import Footer from "@/components/footer";
 import { getFriendlyErrorMessage } from "@/lib/auth-errors";
 
@@ -348,17 +347,36 @@ export default function LandingPage() {
         {/* Sección de Cómo Funciona (Rápida visualización de onboarding) */}
         <HowItWorks />
 
-        {/* Mobile "Saber más" Toggle */}
-        <div className="md:hidden flex justify-center py-8">
+        {/* Mobile "Saber más" Toggle con alta reactividad táctil */}
+        <div className="md:hidden flex justify-center py-6 px-4">
           <button
             onClick={() => setShowMore(!showMore)}
-            className="flex flex-col items-center gap-2 text-zinc-400 hover:text-white transition-colors p-4 rounded-xl border border-zinc-800/50 hover:bg-zinc-900/50 active:scale-95"
+            className="group relative flex items-center justify-between gap-4 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-zinc-900/95 via-zinc-900/90 to-zinc-900/95 hover:bg-zinc-850 active:scale-[0.97] transition-all duration-200 border border-zinc-800 hover:border-red-500/40 shadow-lg shadow-black/60 hover:shadow-[0_0_25px_rgba(230,0,0,0.18)] cursor-pointer w-full max-w-xs backdrop-blur-md"
+            aria-expanded={showMore}
           >
-            <span className="text-xs font-semibold uppercase tracking-wider">{showMore ? "Ocultar información" : "Saber más de CoFound UE"}</span>
-            <div className={`transition-transform duration-300 ${showMore ? "rotate-180" : ""}`}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 9L12 16L5 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            <div className="flex items-center gap-3 text-left">
+              {/* Micro-baliza de actividad viva */}
+              {!showMore ? (
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E60000]"></span>
+                </span>
+              ) : (
+                <span className="h-2.5 w-2.5 rounded-full bg-zinc-600 shrink-0"></span>
+              )}
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-200 group-hover:text-white transition-colors">
+                  {showMore ? "Ocultar información" : "Saber más de CoFound UE"}
+                </span>
+                <span className="text-[10px] text-zinc-400 font-normal">
+                  {showMore ? "Plegar secciones de detalle" : "Explorar proyectos & ventajas"}
+                </span>
+              </div>
+            </div>
+
+            {/* Chevron interactivo con micro-rebote al hover */}
+            <div className={`w-7 h-7 rounded-xl bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-red-500/40 transition-all duration-300 shrink-0 ${showMore ? "rotate-180 bg-zinc-800 text-white" : "group-hover:translate-y-0.5"}`}>
+              <ChevronDown className="w-4 h-4 transition-transform duration-300" />
             </div>
           </button>
         </div>
@@ -376,33 +394,8 @@ export default function LandingPage() {
             }}
           />
           
-          <FeaturesSection />
-          <VisionSection />
-
-          {/* CTA Final */}
-          <section className="py-24 border-t border-zinc-900 text-center bg-transparent relative overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#E60000] rounded-full blur-[120px] opacity-10 pointer-events-none"></div>
-            
-            <div className="max-w-4xl mx-auto px-6 relative z-10">
-              <h3 className="text-3xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight">
-                ¿Listo para encontrar a tu <span className="text-[#E60000]">Co-Founder</span>?
-              </h3>
-              <p className="text-zinc-400 max-w-xl mx-auto mb-8 text-base leading-relaxed">
-                Regístrate hoy mismo de forma gratuita y empieza a conectar con el mejor talento de la Universidad Europea en el Campus Turia.
-              </p>
-              <button
-                onClick={() => {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                  const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
-                  if (emailInput) emailInput.focus();
-                }}
-                className="bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_30px_rgba(230,0,0,0.45)] inline-flex items-center gap-2 cursor-pointer text-sm sm:text-base"
-              >
-                <span>Comenzar Ahora en Campus Turia</span>
-                <ArrowRight className="h-5 w-5" />
-              </button>
-            </div>
-          </section>
+          {/* Preguntas frecuentes y resolución de objeciones para estudiantes */}
+          <StudentFaq />
         </div>
         
         <Footer />
