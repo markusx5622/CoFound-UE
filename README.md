@@ -10,13 +10,14 @@
   [![Firebase](https://img.shields.io/badge/Firebase-10.12-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
   [![License: Propietaria](https://img.shields.io/badge/License-Propietaria-red.svg?style=for-the-badge)](LICENSE)
   ![Estado](https://img.shields.io/badge/Estado-En_desarrollo_activo-brightgreen?style=for-the-badge)
-
+ 
   <p align="center">
     <strong>Conecta con estudiantes de ADE, Marketing, Tech y Diseño para transformar ideas universitarias en startups de alto impacto.</strong>
   </p>
-
+  [Vídeo de Presentación](#-vídeo-de-presentación-1-min) •
   [Explorar Características](#-características-principales) •
   [Arquitectura](#-arquitectura-del-proyecto) •
+  [Flujo de la Aplicación](#-flujo-de-la-aplicación) •
   [Instalación](#-instalación-y-configuración-local) •
   [Modelo de Datos](#-modelo-de-datos-firestore) •
   [Roadmap](#-roadmap) •
