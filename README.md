@@ -30,6 +30,14 @@
 
 <br/>
 
+## 🎬 Vídeo de Presentación (1 min)
+ 
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/72fc2bfa-cadf-4fb2-82eb-405d10ed539b" width="100%" controls></video>
+</p>
+<p align="center"><em>¿Prefieres verlo directamente? <a href="https://gitdiagram.com/markusx5622/cofound-ue/video">Ábrelo en GitDiagram</a></em></p>
+<br/>
+
 > [!NOTE]
 > **Proyecto en desarrollo activo:** CoFound UE es un proyecto universitario en desarrollo activo para la comunidad de la Universidad Europea ([cofoundue.es](https://cofoundue.es)).
 
