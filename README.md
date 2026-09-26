@@ -14,10 +14,10 @@
   <p align="center">
     <strong>Conecta con estudiantes de ADE, Marketing, Tech y Diseño para transformar ideas universitarias en startups de alto impacto.</strong>
   
-  [Vídeo de Presentación](#-vídeo-de-presentación-1-min) •
   [Explorar Características](#-características-principales) •
   [Arquitectura](#-arquitectura-del-proyecto) •
   [Flujo de la Aplicación](#-flujo-de-la-aplicación) •
+  [Vídeo Explicativo Breve](#-vídeo-de-presentación-1-min) •
   [Instalación](#-instalación-y-configuración-local) •
   [Modelo de Datos](#-modelo-de-datos-firestore) •
   [Roadmap](#-roadmap) •
@@ -31,14 +31,6 @@
 
 </div>
 
-<br/>
-
-## 🎬 Vídeo de Presentación (1 min)
- 
-<p align="center">
-  <video src="https://github.com/user-attachments/assets/72fc2bfa-cadf-4fb2-82eb-405d10ed539b" width="100%" controls></video>
-</p>
-<p align="center"><em>¿Prefieres verlo directamente? <a href="https://gitdiagram.com/markusx5622/cofound-ue/video">Ábrelo en GitDiagram</a></em></p>
 <br/>
 
 > [!NOTE]
@@ -152,6 +144,14 @@ CoFound-UE/
 ├── tailwind.config.ts          # Configuración del tema Tailwind
 └── tsconfig.json               # Reglas del compilador de TypeScript
 ```
+
+## 🎬 Vídeo de Presentación (1 min)
+ 
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/72fc2bfa-cadf-4fb2-82eb-405d10ed539b" width="100%" controls></video>
+</p>
+<p align="center"><em>¿Prefieres verlo directamente? <a href="https://gitdiagram.com/markusx5622/cofound-ue/video">Ábrelo en GitDiagram</a></em></p>
+<br/>
 
 ## 🔄 Flujo de la Aplicación
  
