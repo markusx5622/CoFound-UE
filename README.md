@@ -13,7 +13,7 @@
  
   <p align="center">
     <strong>Conecta con estudiantes de ADE, Marketing, Tech y Diseño para transformar ideas universitarias en startups de alto impacto.</strong>
-  </p>
+  
   [Vídeo de Presentación](#-vídeo-de-presentación-1-min) •
   [Explorar Características](#-características-principales) •
   [Arquitectura](#-arquitectura-del-proyecto) •
@@ -22,6 +22,8 @@
   [Modelo de Datos](#-modelo-de-datos-firestore) •
   [Roadmap](#-roadmap) •
   [Despliegue](#-despliegue)
+  
+  </p>
 
   ---
 
