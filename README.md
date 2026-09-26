@@ -147,7 +147,7 @@ CoFound-UE/
 El siguiente diagrama traza el recorrido funcional del estudiante a través de la plataforma, agrupado por dominio (identidad, colaboración en proyectos, perfiles y experiencia de la app), junto con los ficheros que implementan cada nodo. Se muestra como imagen pre-renderizada porque el grafo tiene demasiadas conexiones cruzadas de largo alcance para que el motor de layout de Mermaid lo ajuste con fidelidad al ancho fijo del visor de GitHub; el código fuente sigue disponible más abajo para poder editarlo:
  
 <p align="center">
-  <img src="public/CoFoundUE_flujo.png" alt="Diagrama de flujo de la aplicación CoFound UE" width="100%" />
+  <img src="public/Diagrama_CoFoundUE.png" alt="Diagrama de flujo de la aplicación CoFound UE" width="100%" />
 </p>
 
 ---
