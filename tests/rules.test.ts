@@ -33,6 +33,10 @@ describe("CoFound-UE Firestore Rules", () => {
     return testEnv.authenticatedContext(uid, { email, email_verified: true });
   };
 
+  const getUnverifiedAuthContext = (uid: string, email: string) => {
+    return testEnv.authenticatedContext(uid, { email, email_verified: false });
+  };
+
   describe("Users Collection", () => {
     it("lectura requiere auth", async () => {
       const unauthedDb = testEnv.unauthenticatedContext().firestore();
@@ -362,6 +366,70 @@ describe("CoFound-UE Firestore Rules", () => {
         text: "a".repeat(1001),
         senderId: "user1",
       }));
+    });
+  });
+
+  describe("usuarios no verificados", () => {
+    it("no puede leer documentos de users", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection("users").doc("user1").set({
+          name: "User 1",
+          email: "user1@live.uem.es",
+        });
+      });
+
+      const unverifiedDb = getUnverifiedAuthContext("unverified1", "unverified@live.uem.es").firestore();
+      await assertFails(unverifiedDb.collection("users").doc("user1").get());
+    });
+
+    it("no puede crear un proyecto", async () => {
+      const unverifiedDb = getUnverifiedAuthContext("unverified1", "unverified@live.uem.es").firestore();
+      await assertFails(unverifiedDb.collection("projects").doc("proj1").set({
+        creator_id: "unverified1",
+        creatorName: "User",
+        title: "Valid title",
+        description: "Valid description with enough length",
+        profiles: ["Developer"],
+      }));
+    });
+
+    it("no puede crear una postulación", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection("projects").doc("proj1").set({
+          creator_id: "creator1",
+          creatorName: "Creator",
+          title: "Valid title",
+          description: "Valid description with enough length",
+          profiles: ["Developer"],
+        });
+      });
+
+      const unverifiedDb = getUnverifiedAuthContext("unverified1", "unverified@live.uem.es").firestore();
+      await assertFails(unverifiedDb.collection("applications").doc("app1").set({
+        projectId: "proj1",
+        applicantId: "unverified1",
+        creatorId: "creator1",
+        status: "pending",
+      }));
+    });
+
+    it("no puede leer mensajes de una postulación en la que participa", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const adminDb = context.firestore();
+        await adminDb.collection("applications").doc("app1").set({
+          projectId: "proj1",
+          applicantId: "unverified1",
+          creatorId: "creator1",
+          status: "pending",
+        });
+        await adminDb.collection("applications").doc("app1").collection("messages").doc("msg1").set({
+          text: "Hola unverified",
+          senderId: "creator1",
+        });
+      });
+
+      const unverifiedDb = getUnverifiedAuthContext("unverified1", "unverified@live.uem.es").firestore();
+      await assertFails(unverifiedDb.collection("applications").doc("app1").collection("messages").doc("msg1").get());
     });
   });
 });
