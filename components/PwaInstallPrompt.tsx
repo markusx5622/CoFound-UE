@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -10,11 +10,37 @@ import {
   PlusSquare, 
   CheckCircle2, 
   Download, 
-  MoreVertical, 
-  Sparkles,
-  Zap,
-  Maximize2
+  MoreVertical
 } from "lucide-react";
+
+const DISMISSED_KEY = "cofoundue_pwa_prompt_dismissed";
+const LEGACY_DISMISSED_KEY = "cofoundue_pwa_dismissed";
+const INSTALLED_KEY = "cofoundue_pwa_installed";
+const SESSION_SHOWN_KEY = "cofoundue_pwa_session_shown";
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+function isStandaloneMode(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+    (window.navigator as any).standalone === true ||
+    localStorage.getItem(INSTALLED_KEY) === "true"
+  );
+}
+
+function isDismissedWithin30Days(): boolean {
+  if (typeof window === "undefined") return false;
+  const dismissed = localStorage.getItem(DISMISSED_KEY) || localStorage.getItem(LEGACY_DISMISSED_KEY);
+  if (!dismissed) return false;
+  const ts = Number(dismissed);
+  if (isNaN(ts)) return true; // Si es el valor legado "true", se respeta como descartado
+  return Date.now() - ts < THIRTY_DAYS_MS;
+}
+
+function isShownInCurrentSession(): boolean {
+  if (typeof window === "undefined") return false;
+  return sessionStorage.getItem(SESSION_SHOWN_KEY) === "true";
+}
 
 export default function PwaInstallPrompt() {
   const { user } = useAuth();
@@ -23,18 +49,12 @@ export default function PwaInstallPrompt() {
   const [activeTab, setActiveTab] = useState<"ios" | "android">("ios");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isStandalone, setIsStandalone] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // 1. Comprobar si ya está instalada en modo standalone
-    const checkStandalone = () => {
-      const isStandaloneMode = 
-        (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
-        (window.navigator as any).standalone === true;
-      setIsStandalone(isStandaloneMode);
-      return isStandaloneMode;
-    };
-
-    if (checkStandalone()) {
+    // 1. Comprobar si ya está instalada en modo standalone o marcada como instalada
+    if (isStandaloneMode()) {
+      setIsStandalone(true);
       return;
     }
 
@@ -54,47 +74,84 @@ export default function PwaInstallPrompt() {
       e.preventDefault();
       setDeferredPrompt(e);
     };
-
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
 
-    // 4. Permitir abrir el modal manualmente desde cualquier lugar con un evento personalizado
+    // 4. Capturar evento appinstalled para marcar permanentemente
+    const handleAppInstalled = () => {
+      localStorage.setItem(INSTALLED_KEY, "true");
+      setIsStandalone(true);
+      setIsOpen(false);
+    };
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    // 5. Permitir abrir el modal manualmente desde cualquier lugar con un evento personalizado
     const handleOpenModal = () => {
       setIsOpen(true);
     };
     window.addEventListener("open-pwa-install-modal", handleOpenModal);
 
-    // 5. Mostrar automáticamente solo cuando el usuario ya esté DENTRO de la app (ej. /dashboard o /perfil),
-    // NUNCA en la landing page ni páginas públicas, y tras 3.5 segundos de haber entrado.
-    const isInsideApp = pathname.startsWith("/dashboard") || pathname.startsWith("/perfil");
-    const hasDismissed = localStorage.getItem("cofoundue_pwa_dismissed");
-
-    if (isInsideApp && user && user.emailVerified && !hasDismissed) {
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 3500); // 3.5 segundos tras entrar propiamente a la app
-
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-        window.removeEventListener("open-pwa-install-modal", handleOpenModal);
-      };
-    }
-
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+      window.removeEventListener("appinstalled", handleAppInstalled);
       window.removeEventListener("open-pwa-install-modal", handleOpenModal);
     };
+  }, []);
+
+  useEffect(() => {
+    // Si ya está instalada, descartada hace menos de 30 días o mostrada en esta sesión -> no programar
+    if (isStandaloneMode()) {
+      setIsStandalone(true);
+      return;
+    }
+
+    if (isDismissedWithin30Days() || isShownInCurrentSession()) {
+      return;
+    }
+
+    const isInsideApp = pathname.startsWith("/dashboard") || pathname.startsWith("/perfil");
+
+    if (isInsideApp && user && user.emailVerified) {
+      // Si ya hay un timer corriendo (ej. navegación rápida entre /dashboard y /perfil), lo mantenemos
+      if (!timerRef.current) {
+        timerRef.current = setTimeout(() => {
+          if (!isStandaloneMode() && !isDismissedWithin30Days() && !isShownInCurrentSession()) {
+            sessionStorage.setItem(SESSION_SHOWN_KEY, "true");
+            setIsOpen(true);
+          }
+          timerRef.current = null;
+        }, 3500);
+      }
+    } else if (!isInsideApp) {
+      // Si el usuario sale de la app a una página pública antes de cumplirse el timer, lo cancelamos
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
   }, [user, pathname]);
+
+  // Limpieza del timer al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   // Si ya está ejecutándose como PWA instalada, no renderizamos
   if (isStandalone || !isOpen) return null;
 
-  const handleDismissPermanent = () => {
-    localStorage.setItem("cofoundue_pwa_dismissed", "true");
+  const handleDismiss = () => {
+    localStorage.setItem(DISMISSED_KEY, Date.now().toString());
+    sessionStorage.setItem(SESSION_SHOWN_KEY, "true");
     setIsOpen(false);
   };
 
-  const handleDismissLater = () => {
+  const handleDismissPermanent = () => {
+    localStorage.setItem(INSTALLED_KEY, "true");
+    localStorage.setItem(DISMISSED_KEY, Date.now().toString());
+    sessionStorage.setItem(SESSION_SHOWN_KEY, "true");
     setIsOpen(false);
   };
 
@@ -103,7 +160,9 @@ export default function PwaInstallPrompt() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
-      localStorage.setItem("cofoundue_pwa_dismissed", "true");
+      localStorage.setItem(INSTALLED_KEY, "true");
+      localStorage.setItem(DISMISSED_KEY, Date.now().toString());
+      sessionStorage.setItem(SESSION_SHOWN_KEY, "true");
       setIsOpen(false);
     }
     setDeferredPrompt(null);
@@ -114,7 +173,7 @@ export default function PwaInstallPrompt() {
       {/* Click outside to close (recordar más tarde) */}
       <div 
         className="absolute inset-0 cursor-pointer" 
-        onClick={handleDismissLater}
+        onClick={handleDismiss}
         aria-hidden="true"
       />
 
@@ -139,7 +198,7 @@ export default function PwaInstallPrompt() {
             </div>
           </div>
           <button
-            onClick={handleDismissLater}
+            onClick={handleDismiss}
             className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800/80 transition-colors"
             aria-label="Cerrar ventana"
           >
@@ -255,7 +314,7 @@ export default function PwaInstallPrompt() {
             ¡Entendido, ya la tengo!
           </button>
           <button
-            onClick={handleDismissLater}
+            onClick={handleDismiss}
             className="py-2 px-3 text-xs text-zinc-400 hover:text-zinc-200 transition-colors text-center"
           >
             Ahora no
