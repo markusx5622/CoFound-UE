@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -7,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/dashboard/", "/api/"],
     },
-    sitemap: "https://cofoundue.es/sitemap.xml",
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

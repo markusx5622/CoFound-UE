@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Analytics } from "@vercel/analytics/react";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import PwaInstallPrompt from "@/components/PwaInstallPrompt";
+import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,9 +17,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cofoundue.es"),
+  metadataBase: new URL(SITE_URL),
   title: "CoFound UE - Encuentra tu Co-Founder",
   description: "Conecta con talento de ADE, Marketing, Tech y Diseño en el Campus de la Universidad Europea de Valencia para crear tu startup.",
+  alternates: {
+    canonical: "/",
+  },
   appleWebApp: {
     capable: true,
     title: "CoFound UE",
@@ -42,7 +46,7 @@ export const metadata: Metadata = {
     siteName: "CoFound UE",
     title: "CoFound UE - Conecta con talento en el Campus",
     description: "La red exclusiva para conectar talento de ADE, Marketing, Tech y Diseño de la Universidad Europea.",
-    url: "https://cofound-ue.vercel.app",
+    url: SITE_URL,
     images: [
       {
         url: "/og-image.jpg",
