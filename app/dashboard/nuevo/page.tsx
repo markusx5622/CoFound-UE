@@ -8,8 +8,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { X, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/context/LanguageContext";
+import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
 
 export default function NuevoProyecto() {
+  const { t } = useLanguage();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Reto Académico");
@@ -23,7 +26,7 @@ export default function NuevoProyecto() {
     const trimmed = profileInput.trim();
     if (trimmed !== "" && !profiles.includes(trimmed)) {
       if (profiles.length >= 10) {
-        toast.error("Máximo 10 perfiles por proyecto");
+        toast.error(t("projectNew.maxProfilesError"));
         return;
       }
       setProfiles([...profiles, trimmed]);
@@ -45,17 +48,17 @@ export default function NuevoProyecto() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !description || profiles.length === 0) {
-      toast.error("Por favor completa todos los campos y añade al menos un perfil buscado.");
+      toast.error(t("projectNew.allFieldsRequiredError"));
       return;
     }
 
     if (title.trim().length < 3) {
-      toast.error("El título debe tener al menos 3 caracteres.");
+      toast.error(t("projectNew.titleMinLengthError"));
       return;
     }
 
     if (description.trim().length < 20) {
-      toast.error("La descripción debe tener al menos 20 caracteres.");
+      toast.error(t("projectNew.descMinLengthError"));
       return;
     }
 
@@ -69,7 +72,7 @@ export default function NuevoProyecto() {
       const creatorName = userData?.name?.trim();
 
       if (!creatorName) {
-        toast.error("Completa tu perfil antes de publicar");
+        toast.error(t("projectNew.completeProfileError"));
         setLoading(false);
         router.push("/perfil");
         return;
@@ -85,11 +88,11 @@ export default function NuevoProyecto() {
         createdAt: serverTimestamp()
       });
 
-      toast.success("Proyecto publicado correctamente.");
+      toast.success(t("projectNew.successToast"));
       router.push("/dashboard");
     } catch (error) {
       console.error("Error creating project:", error);
-      toast.error("Hubo un error al publicar el proyecto.");
+      toast.error(t("projectNew.errorToast"));
       setLoading(false);
     }
   };
@@ -98,13 +101,13 @@ export default function NuevoProyecto() {
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-8 sm:py-12 px-4 sm:px-6 relative z-10">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">Publicar Nuevo Proyecto</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">{t("projectNew.title")}</h1>
           
           <div className="bg-zinc-900/60 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)] border border-zinc-800">
             <form onSubmit={handleSubmit} className="space-y-6">
               
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Título del Proyecto</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectNew.titleLabel")}</label>
                 <input
                   type="text"
                   required
@@ -112,13 +115,13 @@ export default function NuevoProyecto() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
-                  placeholder="Ej: Plataforma de economía circular para estudiantes"
+                  placeholder={t("projectNew.titlePlaceholder")}
                 />
                 <div className="text-right text-xs text-zinc-500 mt-1">{title.length}/100</div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Descripción</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectNew.descLabel")}</label>
                 <textarea
                   required
                   rows={5}
@@ -126,26 +129,28 @@ export default function NuevoProyecto() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all resize-none placeholder:text-zinc-600"
-                  placeholder="Explica de qué trata tu proyecto, en qué fase está y qué objetivos tiene..."
+                  placeholder={t("projectNew.descPlaceholder")}
                 />
                 <div className="text-right text-xs text-zinc-500 mt-1">{description.length}/1500</div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Categoría</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectNew.categoryLabel")}</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all"
                 >
-                  <option value="Reto Académico">Reto Académico</option>
-                  <option value="TFG">TFG (Trabajo Fin de Grado)</option>
-                  <option value="Startup Real">Startup Real</option>
+                  {CANONICAL_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {getCategoryLabel(cat, t)}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Perfiles Buscados</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectNew.profilesLabel")}</label>
                 <div className="flex gap-2 mb-3">
                   <input
                     type="text"
@@ -154,7 +159,7 @@ export default function NuevoProyecto() {
                     onChange={(e) => setProfileInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     className="flex-1 min-w-0 px-3.5 sm:px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm sm:text-base"
-                    placeholder="Ej: Frontend Developer, Marketing Manager..."
+                    placeholder={t("projectNew.profilePlaceholder")}
                   />
                   <button
                     type="button"
@@ -162,7 +167,7 @@ export default function NuevoProyecto() {
                     className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                   >
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                    <span>Añadir</span>
+                    <span>{t("projectNew.addBtn")}</span>
                   </button>
                 </div>
                 
@@ -190,7 +195,7 @@ export default function NuevoProyecto() {
                   disabled={loading}
                   className="w-full bg-[#E60000] text-white hover:bg-red-700 font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70"
                 >
-                  {loading ? "Publicando..." : "Publicar Proyecto"}
+                  {loading ? t("projectNew.publishing") : t("projectNew.publishBtn")}
                 </button>
               </div>
             </form>

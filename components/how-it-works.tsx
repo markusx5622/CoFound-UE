@@ -2,26 +2,28 @@
 
 import { UserCheck, PlusCircle, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function HowItWorks() {
+  const { t } = useLanguage();
   const steps = [
     {
       num: "01",
       icon: <UserCheck className="h-6 w-6 text-[#E60000]" />,
-      title: "Regístrate en Segundos",
-      description: "Crea tu cuenta usando tu correo institucional de la Universidad Europea. Filtro seguro y exclusivo de comunidad.",
+      title: t("howItWorks.step1Title"),
+      description: t("howItWorks.step1Desc"),
     },
     {
       num: "02",
       icon: <PlusCircle className="h-6 w-6 text-[#E60000]" />,
-      title: "Publica tu Proyecto o Perfil",
-      description: "Describe tu iniciativa o detalla tus habilidades (código, diseño, marketing) para conectar con otros alumnos.",
+      title: t("howItWorks.step2Title"),
+      description: t("howItWorks.step2Desc"),
     },
     {
       num: "03",
       icon: <Users className="h-6 w-6 text-[#E60000]" />,
-      title: "Conecta y Emprende",
-      description: "Explora perfiles del campus, coordina reuniones y forma el equipo fundador adecuado para tu proyecto.",
+      title: t("howItWorks.step3Title"),
+      description: t("howItWorks.step3Desc"),
     },
   ];
 
@@ -38,10 +40,10 @@ export default function HowItWorks() {
           className="text-center max-w-3xl mx-auto mb-20"
         >
           <h2 className="text-3xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
-            ¿Cómo Funciona <span className="text-[#E60000]">CoFound UE</span>?
+            {t("howItWorks.title1")}<span className="text-[#E60000]">{t("howItWorks.titleHighlight")}</span>{t("howItWorks.title2")}
           </h2>
           <p className="text-zinc-400 text-lg">
-            De la idea al equipo en tres sencillos pasos. Diseñado específicamente para el ecosistema universitario.
+            {t("howItWorks.subtitle")}
           </p>
         </motion.div>
 

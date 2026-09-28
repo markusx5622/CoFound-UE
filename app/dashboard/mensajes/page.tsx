@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Send, MessageSquare } from "lucide-react";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface UserData {
   name: string;
@@ -54,6 +55,7 @@ function hasUnreadMessages(convo: Conversation, currentUserId: string): boolean 
 }
 
 export default function Mensajes() {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeChat, setActiveChat] = useState<Conversation | null>(null);
@@ -200,7 +202,7 @@ export default function Mensajes() {
           {/* Sidebar */}
           <div className={`w-full md:w-1/3 bg-zinc-950/80 backdrop-blur-md border-r border-zinc-800 flex flex-col h-full ${activeChat ? 'hidden md:flex' : 'flex'}`}>
             <div className="p-4 border-b border-zinc-800">
-              <h2 className="text-xl font-bold text-white">Mensajes</h2>
+              <h2 className="text-xl font-bold text-white">{t("messages.title")}</h2>
             </div>
             <div className="overflow-y-auto flex-grow custom-scrollbar">
               {loading ? (
@@ -209,9 +211,9 @@ export default function Mensajes() {
                 </div>
               ) : conversations.length === 0 ? (
                 <div className="p-8 text-center text-zinc-500 text-sm">
-                  No tienes conversaciones activas. 
+                  {t("messages.noConversationsTitle")}
                   <br /><br />
-                  Postúlate a proyectos para conectar con otros estudiantes.
+                  {t("messages.noConversationsDesc")}
                 </div>
               ) : (
                 conversations.map(convo => {
@@ -227,10 +229,10 @@ export default function Mensajes() {
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="text-white font-medium truncate">{convo.otherUser.name}</h3>
                           {isUnread && (
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#E60000] shrink-0" title="Mensajes no leídos" />
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#E60000] shrink-0" title={t("messages.unreadTooltip")} />
                           )}
                         </div>
-                        <p className="text-zinc-400 text-xs truncate">Proyecto: {convo.projectTitle}</p>
+                        <p className="text-zinc-400 text-xs truncate">{t("messages.projectPrefix")}: {convo.projectTitle}</p>
                       </div>
                     </div>
                   );
@@ -247,15 +249,15 @@ export default function Mensajes() {
                 <div className="p-4 border-b border-zinc-800 bg-zinc-950/60 backdrop-blur-md flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <button className="md:hidden text-zinc-400 hover:text-white" onClick={() => setActiveChat(null)}>
-                      ← Volver
+                      {t("messages.back")}
                     </button>
                     <div className="flex flex-col">
                       <h3 className="text-white font-bold">{activeChat.otherUser.name}</h3>
-                      <span className="text-xs text-zinc-400 truncate max-w-[200px] md:max-w-sm">Proyecto: {activeChat.projectTitle}</span>
+                      <span className="text-xs text-zinc-400 truncate max-w-[200px] md:max-w-sm">{t("messages.projectPrefix")}: {activeChat.projectTitle}</span>
                     </div>
                   </div>
                   <Link href={`/perfil/${activeChat.creatorId === user?.uid ? activeChat.applicantId : activeChat.creatorId}`} className="text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors border border-zinc-700">
-                    Ver Perfil
+                    {t("messages.viewProfile")}
                   </Link>
                 </div>
 
@@ -264,7 +266,7 @@ export default function Mensajes() {
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-zinc-500 gap-2">
                       <MessageSquare className="h-8 w-8 opacity-50" />
-                      <p className="text-sm">No hay mensajes aún. ¡Rompe el hielo!</p>
+                      <p className="text-sm">{t("messages.emptyChat")}</p>
                     </div>
                   ) : (
                     messages.map(msg => {
@@ -288,7 +290,7 @@ export default function Mensajes() {
                       type="text" 
                       value={newMessage}
                       onChange={e => setNewMessage(e.target.value)}
-                      placeholder="Escribe un mensaje..."
+                      placeholder={t("messages.inputPlaceholder")}
                       maxLength={1000}
                       className="flex-grow bg-zinc-900 border border-zinc-700 rounded-full px-5 py-3 text-white focus:outline-none focus:border-[#E60000] transition-colors placeholder:text-zinc-500 text-sm"
                     />
@@ -301,7 +303,7 @@ export default function Mensajes() {
             ) : (
               <div className="flex-grow flex flex-col items-center justify-center text-zinc-600 gap-4">
                 <MessageSquare className="h-12 w-12 opacity-30" />
-                <p className="text-sm font-medium">Selecciona una conversación para empezar a chatear.</p>
+                <p className="text-sm font-medium">{t("messages.selectConversation")}</p>
               </div>
             )}
           </div>

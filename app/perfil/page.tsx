@@ -8,8 +8,10 @@ import { X, Plus, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import InitialsAvatar from "@/components/InitialsAvatar";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function MiPerfil() {
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [degree, setDegree] = useState("");
   const [campus, setCampus] = useState("Valencia");
@@ -90,10 +92,10 @@ export default function MiPerfil() {
         updatedAt: new Date()
       }, { merge: true });
 
-      toast.success("Perfil guardado correctamente.");
+      toast.success(t("profile.saveSuccess"));
     } catch (error) {
       console.error("Error saving profile:", error);
-      toast.error("Hubo un error al guardar el perfil.");
+      toast.error(t("profile.saveError"));
     } finally {
       setLoading(false);
     }
@@ -113,44 +115,44 @@ export default function MiPerfil() {
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-8 sm:py-12 px-4 sm:px-6 relative z-10">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">Mi Perfil</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">{t("profile.title")}</h1>
           
           <div className="bg-zinc-900/60 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)] border border-zinc-800">
             <form onSubmit={handleSave} className="space-y-6">
               
               <div className="flex flex-col items-center mb-8">
                 <InitialsAvatar name={name} size={112} className="w-28 h-28 text-3xl font-bold border-2" />
-                <p className="text-xs text-zinc-500 mt-2">Vista previa de tu avatar</p>
+                <p className="text-xs text-zinc-500 mt-2">{t("profile.avatarPreview")}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-zinc-300 mb-2">Nombre Completo</label>
+                  <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("profile.fullName")}</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
-                    placeholder="Tu nombre y apellidos"
+                    placeholder={t("profile.fullNamePlaceholder")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-zinc-300 mb-2">Titulación</label>
+                  <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("profile.degree")}</label>
                   <input
                     type="text"
                     required
                     value={degree}
                     onChange={(e) => setDegree(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
-                    placeholder="Ej: Grado en ADE"
+                    placeholder={t("profile.degreePlaceholder")}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Campus</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("profile.campus")}</label>
                 <select
                   value={campus}
                   onChange={(e) => setCampus(e.target.value)}
@@ -162,18 +164,18 @@ export default function MiPerfil() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Biografía</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("profile.bio")}</label>
                 <textarea
                   rows={4}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all resize-none placeholder:text-zinc-600"
-                  placeholder="Cuéntanos un poco sobre ti, tus intereses y qué tipo de proyectos buscas..."
+                  placeholder={t("profile.bioPlaceholder")}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Habilidades (Tags)</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("profile.skills")}</label>
                 <div className="flex gap-2 mb-3">
                   <input
                     type="text"
@@ -181,7 +183,7 @@ export default function MiPerfil() {
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     className="flex-1 min-w-0 px-3.5 sm:px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm sm:text-base"
-                    placeholder="Ej: React, Finanzas, SEO, Figma..."
+                    placeholder={t("profile.skillsPlaceholder")}
                   />
                   <button
                     type="button"
@@ -189,7 +191,7 @@ export default function MiPerfil() {
                     className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                   >
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                    <span>Añadir</span>
+                    <span>{t("profile.addSkill")}</span>
                   </button>
                 </div>
                 
@@ -218,7 +220,7 @@ export default function MiPerfil() {
                   className="w-full bg-[#E60000] text-white hover:bg-red-700 font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70 flex items-center justify-center gap-2"
                 >
                   <Save className="h-5 w-5" />
-                  {loading ? "Guardando..." : "Guardar Cambios"}
+                  {loading ? t("profile.saving") : t("profile.saveBtn")}
                 </button>
               </div>
             </form>

@@ -2,45 +2,48 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Code2, TrendingUp, Palette, CheckCircle2, ShieldCheck, ArrowUpRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CampusFeedPreviewProps {
   onSelectProject?: () => void;
 }
 
 export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreviewProps) {
+  const { t } = useLanguage();
+
   const collaborationModels = [
     {
       id: "model-1",
       icon: <Code2 className="h-6 w-6 text-[#E60000]" />,
-      badge: "Tecnología & Software",
-      title: "Desarrollo técnico busca visión de negocio",
-      faculty: "Ingeniería Informática / Tech",
-      whatTheyOffer: "Desarrollo web y móvil, bases de datos, APIs y arquitectura de software funcional.",
-      whatTheyNeed: "Estudiantes de ADE o Marketing para validar el modelo de negocio, diseñar la estrategia comercial y liderar la captación.",
-      tags: ["Desarrollo Web", "Apps", "IA", "MVP"],
-      synergy: "Informática + ADE",
+      badge: t("feedPreview.model1Badge"),
+      title: t("feedPreview.model1Title"),
+      faculty: t("feedPreview.model1Faculty"),
+      whatTheyOffer: t("feedPreview.model1Offer"),
+      whatTheyNeed: t("feedPreview.model1Need"),
+      tags: (t("feedPreview.model1Tags", { returnObjects: true }) as string[]) || ["Desarrollo Web", "Apps", "IA", "MVP"],
+      synergy: t("feedPreview.model1Synergy"),
     },
     {
       id: "model-2",
       icon: <TrendingUp className="h-6 w-6 text-[#E60000]" />,
-      badge: "Negocio & Validación",
-      title: "Idea de mercado busca equipo técnico",
-      faculty: "ADE / Marketing / IOI",
-      whatTheyOffer: "Validación de mercado, modelo financiero, análisis de competencia, pitch y estrategia de lanzamiento.",
-      whatTheyNeed: "Desarrolladores y diseñadores para construir el prototipo funcional y llevar la idea de la teoría a la realidad.",
-      tags: ["Finanzas", "Marketing", "Estrategia", "Startups"],
-      synergy: "ADE + Ingeniería",
+      badge: t("feedPreview.model2Badge"),
+      title: t("feedPreview.model2Title"),
+      faculty: t("feedPreview.model2Faculty"),
+      whatTheyOffer: t("feedPreview.model2Offer"),
+      whatTheyNeed: t("feedPreview.model2Need"),
+      tags: (t("feedPreview.model2Tags", { returnObjects: true }) as string[]) || ["Finanzas", "Marketing", "Estrategia", "Startups"],
+      synergy: t("feedPreview.model2Synergy"),
     },
     {
       id: "model-3",
       icon: <Palette className="h-6 w-6 text-[#E60000]" />,
-      badge: "Diseño & Experiencia",
-      title: "Diseño UX/UI busca proyectos que escalar",
-      faculty: "Diseño Digital / Comunicación",
-      whatTheyOffer: "Diseño de interfaces intuitivas, prototipos en Figma, experiencia de usuario (UX) e identidad visual sólida.",
-      whatTheyNeed: "Equipos de desarrollo y negocio que busquen profesionalizar su producto antes de presentarlo a concursos o inversores.",
-      tags: ["UI/UX", "Figma", "Branding", "Multimedia"],
-      synergy: "Diseño + Tech",
+      badge: t("feedPreview.model3Badge"),
+      title: t("feedPreview.model3Title"),
+      faculty: t("feedPreview.model3Faculty"),
+      whatTheyOffer: t("feedPreview.model3Offer"),
+      whatTheyNeed: t("feedPreview.model3Need"),
+      tags: (t("feedPreview.model3Tags", { returnObjects: true }) as string[]) || ["UI/UX", "Figma", "Branding", "Multimedia"],
+      synergy: t("feedPreview.model3Synergy"),
     },
   ];
 
@@ -67,15 +70,15 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md shadow-inner">
             <Sparkles className="h-3.5 w-3.5 text-[#E60000]" />
-            <span>Colaboración Multidisciplinar • Campus Turia y Alameda</span>
+            <span>{t("feedPreview.tag")}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            Sinergias reales entre <span className="text-[#E60000]">Titulaciones</span>
+            {t("feedPreview.title1")}<span className="text-[#E60000]">{t("feedPreview.titleHighlight")}</span>
           </h2>
 
           <p className="text-zinc-400 text-base sm:text-lg leading-relaxed">
-            En la universidad, el talento suele quedar aislado en sus propias aulas. CoFound UE nace para conectar perfiles complementarios y formar equipos de trabajo sólidos.
+            {t("feedPreview.subtitle")}
           </p>
         </div>
 
@@ -83,13 +86,13 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
         <div className="mb-12 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-md">
           <div className="flex items-center gap-2.5 text-zinc-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-            <span className="font-semibold text-white">¿Tienes idea o buscas colaborar?</span>
-            <span className="text-zinc-400">Ambos perfiles tienen su espacio en la plataforma</span>
+            <span className="font-semibold text-white">{t("feedPreview.trustBarQ")}</span>
+            <span className="text-zinc-400">{t("feedPreview.trustBarA")}</span>
           </div>
           <div className="flex items-center gap-3 text-zinc-400 text-xs">
             <span className="flex items-center gap-1.5 text-zinc-300">
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Campus Turia y Alameda (Valencia)</span>
+              <span>{t("feedPreview.trustBarLoc")}</span>
             </span>
           </div>
         </div>
@@ -129,18 +132,18 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
                     {item.title}
                   </h3>
                   <p className="text-xs text-zinc-400 font-medium mb-4">
-                    Área: {item.faculty}
+                    {t("feedPreview.cardArea")}{item.faculty}
                   </p>
                 </div>
 
                 {/* What they offer & need */}
                 <div className="space-y-3 mb-5 text-xs">
                   <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 group-hover:border-zinc-800 transition-colors duration-200">
-                    <p className="font-semibold text-zinc-300 mb-1">Aportación clave:</p>
+                    <p className="font-semibold text-zinc-300 mb-1">{t("feedPreview.cardOfferTitle")}</p>
                     <p className="text-zinc-400 leading-relaxed">{item.whatTheyOffer}</p>
                   </div>
                   <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 group-hover:border-zinc-800 transition-colors duration-200">
-                    <p className="font-semibold text-zinc-300 mb-1">Perfil que busca:</p>
+                    <p className="font-semibold text-zinc-300 mb-1">{t("feedPreview.cardNeedTitle")}</p>
                     <p className="text-zinc-400 leading-relaxed">{item.whatTheyNeed}</p>
                   </div>
                 </div>
@@ -161,7 +164,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
                   onClick={handleActionClick}
                   className="w-full group/btn inline-flex items-center justify-between text-xs font-semibold text-zinc-300 hover:text-white py-2.5 px-3.5 rounded-xl bg-zinc-950/50 hover:bg-zinc-800 border border-zinc-800/60 hover:border-zinc-700 transition-all duration-200 shadow-sm"
                 >
-                  <span>Crear iniciativa similar</span>
+                  <span>{t("feedPreview.createSimilarBtn")}</span>
                   <ArrowUpRight className="h-4 w-4 text-[#E60000] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-200" />
                 </button>
               </div>
@@ -175,16 +178,16 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
           <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#E60000]/10 rounded-full blur-3xl pointer-events-none" />
           
           <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 relative z-10">
-            ¿Tienes una idea o quieres unirte a un equipo?
+            {t("feedPreview.bottomTitle")}
           </h3>
           <p className="text-zinc-400 text-sm mb-6 max-w-md mx-auto leading-relaxed relative z-10">
-            Regístrate con tu correo institucional de la Universidad Europea y publica tu propuesta o perfil para empezar a colaborar.
+            {t("feedPreview.bottomDesc")}
           </p>
           <button
             onClick={handleActionClick}
             className="bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-7 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] inline-flex items-center gap-2 text-sm relative z-10"
           >
-            <span>Crear mi Cuenta de Estudiante</span>
+            <span>{t("feedPreview.bottomBtn")}</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>

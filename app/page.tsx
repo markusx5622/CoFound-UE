@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -13,7 +12,9 @@ import CampusFeedPreview from "@/components/campus-feed-preview";
 import HowItWorks from "@/components/how-it-works";
 import StudentFaq from "@/components/student-faq";
 import Footer from "@/components/footer";
-import { getFriendlyErrorMessage } from "@/lib/auth-errors";
+import LanguageSelector from "@/components/LanguageSelector";
+import { getAuthErrorKey } from "@/lib/auth-errors";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,7 +25,7 @@ export default function LandingPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { user: currentUser } = useAuth();
-  const router = useRouter();
+  const { t, language } = useLanguage();
 
   const validateEmail = (email: string) => {
     const domainCheck = email.endsWith("@live.uem.es") || email.endsWith("@universidadeuropea.es");
@@ -38,7 +39,7 @@ export default function LandingPage() {
     const normalizedEmail = email.toLowerCase().trim();
 
     if (!validateEmail(normalizedEmail)) {
-      setError("Acceso restringido. Utiliza tu correo institucional de la Universidad Europea.");
+      setError(t("landing.auth.restrictedEmail"));
       return;
     }
 
@@ -48,12 +49,13 @@ export default function LandingPage() {
         await signInWithEmailAndPassword(auth, normalizedEmail, password);
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
+        auth.languageCode = language;
         await sendEmailVerification(userCredential.user);
-        toast.success("Cuenta creada. Para poder acceder al Dashboard, debes verificar tu cuenta haciendo clic en el enlace que hemos enviado a tu correo institucional.", { duration: 8000 });
+        toast.success(t("landing.auth.accountCreated"), { duration: 8000 });
       }
     } catch (err: any) {
-      const friendlyMessage = getFriendlyErrorMessage(err?.code || "");
-      setError(friendlyMessage);
+      const errorKey = getAuthErrorKey(err?.code || "");
+      setError(t(errorKey));
     } finally {
       setLoading(false);
     }
@@ -65,17 +67,18 @@ export default function LandingPage() {
     const normalizedEmail = email.toLowerCase().trim();
 
     if (!normalizedEmail) {
-      setError("Por favor, introduce tu correo institucional.");
+      setError(t("landing.auth.enterInstitutionalEmail"));
       return;
     }
 
     setLoading(true);
     try {
+      auth.languageCode = language;
       await sendPasswordResetEmail(auth, normalizedEmail);
-      setError("Correo de recuperación enviado. Revisa tu bandeja de entrada.");
+      setError(t("landing.auth.recoveryEmailSent"));
     } catch (err: any) {
-      const friendlyMessage = getFriendlyErrorMessage(err?.code || "");
-      setError(friendlyMessage);
+      const errorKey = getAuthErrorKey(err?.code || "");
+      setError(t(errorKey));
     } finally {
       setLoading(false);
     }
@@ -85,6 +88,12 @@ export default function LandingPage() {
     <div className="min-h-screen bg-transparent text-white relative">
       {/* Sección Hero + Formulario */}
       <div id="join" className="relative z-10 flex flex-col justify-center min-h-[calc(100vh-80px)] overflow-hidden">
+        
+        {/* Language Selector Flotante */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50">
+          <LanguageSelector />
+        </div>
+
         {/* Glows de ambientación traseros */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] bg-[#E60000] rounded-full blur-[150px] opacity-15"></div>
@@ -108,16 +117,16 @@ export default function LandingPage() {
                       <ShieldCheck className="h-7 w-7" />
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                      ¡Sesión Iniciada!
+                      {t("landing.auth.sessionStarted")}
                     </h2>
                     <p className="text-zinc-400 mb-8 text-sm">
-                      Estás conectado con tu cuenta de la Universidad Europea.
+                      {t("landing.auth.connectedWithEmail")}
                     </p>
                     <Link
                       href="/dashboard"
                       className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] cursor-pointer"
                     >
-                      <span>Entrar al Dashboard de Proyectos</span>
+                      <span>{t("landing.auth.enterDashboard")}</span>
                       <ArrowRight className="h-5 w-5" />
                     </Link>
                   </div>
@@ -127,10 +136,10 @@ export default function LandingPage() {
                       <Mail className="h-7 w-7 text-[#E60000]" />
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-2">
-                      Verifica tu correo
+                      {t("landing.auth.verifyEmailTitle")}
                     </h2>
                     <p className="text-zinc-400 mb-6 text-sm">
-                      Revisa tu bandeja de entrada en <span className="text-white font-medium">{currentUser.email}</span>. Debes hacer clic en el enlace para entrar.
+                      {t("landing.auth.verifyEmailDesc", { email: currentUser.email || "" })}
                     </p>
                     <div className="space-y-3">
                       <button
@@ -138,7 +147,7 @@ export default function LandingPage() {
                         className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)]"
                       >
                         <CheckCircle2 className="h-5 w-5" />
-                        <span>Ya lo he verificado</span>
+                        <span>{t("landing.auth.alreadyVerified")}</span>
                       </button>
                       
                       <button
@@ -148,7 +157,7 @@ export default function LandingPage() {
                         }}
                         className="w-full bg-transparent hover:bg-zinc-800/50 text-zinc-400 hover:text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
                       >
-                        Cerrar sesión
+                        {t("landing.auth.logout")}
                       </button>
                     </div>
                   </div>
@@ -157,16 +166,16 @@ export default function LandingPage() {
                 <>
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold text-white mb-1">
-                      Recuperar Contraseña
+                      {t("landing.auth.recoverPasswordTitle")}
                     </h2>
                     <p className="text-zinc-400 text-xs sm:text-sm">
-                      Te enviaremos un correo institucional para que puedas restablecerla.
+                      {t("landing.auth.recoverPasswordDesc")}
                     </p>
                   </div>
 
-                  <form onSubmit={handleResetPassword} className="space-y-4">
+                    <form onSubmit={handleResetPassword} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">Correo Institucional</label>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">{t("landing.auth.institutionalEmailLabel")}</label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-[#E60000] transition-colors duration-200">
                           <Mail className="h-4 w-4" />
@@ -194,7 +203,7 @@ export default function LandingPage() {
                       disabled={loading}
                       className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.35)] disabled:opacity-70 text-sm cursor-pointer"
                     >
-                      {loading ? "Enviando..." : "Enviar Correo de Recuperación"}
+                      {loading ? t("landing.auth.sending") : t("landing.auth.sendRecoveryEmail")}
                       {!loading && <ArrowRight className="h-4 w-4" />}
                     </button>
                   </form>
@@ -208,7 +217,7 @@ export default function LandingPage() {
                       }}
                       className="text-xs text-zinc-400 hover:text-white font-medium transition-colors cursor-pointer"
                     >
-                      Volver a iniciar sesión
+                      {t("landing.auth.backToLogin")}
                     </button>
                   </div>
                 </>
@@ -218,7 +227,7 @@ export default function LandingPage() {
                   <div className="flex items-center justify-between gap-2 mb-5">
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-950/50 border border-red-800/40 text-[11px] font-semibold text-red-300 shadow-sm">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#E60000] animate-pulse" />
-                      <span>Campus Turia y Alameda • Registro Oficial</span>
+                      <span>{t("landing.auth.campusTag")}</span>
                     </div>
                   </div>
 
@@ -234,7 +243,7 @@ export default function LandingPage() {
                         isLogin ? "bg-[#E60000] text-white shadow-md" : "text-zinc-400 hover:text-white"
                       }`}
                     >
-                      Iniciar Sesión
+                      {t("landing.auth.loginTab")}
                     </button>
                     <button
                       type="button"
@@ -246,14 +255,14 @@ export default function LandingPage() {
                         !isLogin ? "bg-[#E60000] text-white shadow-md" : "text-zinc-400 hover:text-white"
                       }`}
                     >
-                      Crear Cuenta
+                      {t("landing.auth.createAccountTab")}
                     </button>
                   </div>
 
                   <form onSubmit={handleAuth} className="space-y-4">
                     <div>
                       <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
-                        Correo Institucional UE
+                        {t("landing.auth.institutionalEmailLabel")}
                       </label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-[#E60000] transition-colors duration-200">
@@ -272,7 +281,7 @@ export default function LandingPage() {
 
                     <div>
                       <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
-                        Contraseña
+                        {t("landing.auth.passwordLabel")}
                       </label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-[#E60000] transition-colors duration-200">
@@ -297,7 +306,7 @@ export default function LandingPage() {
                             }}
                             className="text-xs text-zinc-400 hover:text-[#E60000] transition-colors cursor-pointer"
                           >
-                            ¿Olvidaste tu contraseña?
+                            {t("landing.auth.forgotPassword")}
                           </button>
                         </div>
                       )}
@@ -316,10 +325,10 @@ export default function LandingPage() {
                       className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] disabled:opacity-70 text-sm mt-2 cursor-pointer"
                     >
                       {loading
-                        ? "Procesando..."
+                        ? t("landing.auth.processing")
                         : isLogin
-                        ? "Entrar a CoFound UE"
-                        : "Crear mi Cuenta de Estudiante"}
+                        ? t("landing.auth.enterApp")
+                        : t("landing.auth.createStudentAccount")}
                       {!loading && <ArrowRight className="h-4 w-4" />}
                     </button>
                   </form>
@@ -328,11 +337,11 @@ export default function LandingPage() {
                   <div className="mt-5 pt-4 border-t border-zinc-800/80 space-y-1.5 text-[11px] text-zinc-500">
                     <div className="flex items-center gap-1.5">
                       <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
-                      <span>Verificación automática para @live.uem.es</span>
+                      <span>{t("landing.auth.verificationGuarantee")}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
-                      <span>Acceso libre para alumnos de campus Turia y Alameda</span>
+                      <span>{t("landing.auth.campusGuarantee")}</span>
                     </div>
                   </div>
                 </>

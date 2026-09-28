@@ -8,6 +8,7 @@ import { Briefcase, Clock, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Application {
   id: string;
@@ -19,6 +20,7 @@ interface Application {
 }
 
 export default function MisPostulaciones() {
+  const { t, language } = useLanguage();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
@@ -48,20 +50,20 @@ export default function MisPostulaciones() {
         setApplications(appsData);
       } catch (error) {
         console.error("Error fetching applications:", error);
-        toast.error("Error al cargar tus postulaciones");
+        toast.error(t("myApplications.loadError"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchApplications();
-  }, [user, authLoading]);
+  }, [user, authLoading, t]);
 
   return (
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-extrabold text-white mb-10 tracking-tight">Mis Postulaciones</h1>
+          <h1 className="text-4xl font-extrabold text-white mb-10 tracking-tight">{t("myApplications.title")}</h1>
           
           {loading ? (
             <div className="flex justify-center py-20">
@@ -70,13 +72,13 @@ export default function MisPostulaciones() {
           ) : applications.length === 0 ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
               <Briefcase className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Aún no te has postulado a ningún proyecto</h3>
-              <p className="text-zinc-400 mb-6">Explora los proyectos activos y únete a un equipo.</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t("myApplications.emptyTitle")}</h3>
+              <p className="text-zinc-400 mb-6">{t("myApplications.emptyDesc")}</p>
               <Link 
                 href="/dashboard" 
                 className="bg-[#E60000] hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md inline-block"
               >
-                Explorar Proyectos
+                {t("myApplications.exploreBtn")}
               </Link>
             </div>
           ) : (
@@ -90,7 +92,9 @@ export default function MisPostulaciones() {
                   <div>
                     <h2 className="text-lg font-bold text-white group-hover:text-[#E60000] transition-colors">{app.projectTitle}</h2>
                     <div className="text-sm text-zinc-500 mt-1">
-                      Enviada el {app.createdAt?.toDate().toLocaleDateString('es-ES')}
+                      {t("myApplications.submittedOn", {
+                        date: app.createdAt?.toDate().toLocaleDateString(language === "en" ? "en-US" : "es-ES")
+                      })}
                     </div>
                   </div>
                   
@@ -98,19 +102,19 @@ export default function MisPostulaciones() {
                     {app.status === 'pending' && (
                       <span className="inline-flex items-center gap-1.5 bg-yellow-500/10 text-yellow-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-yellow-500/20">
                         <Clock className="h-4 w-4" />
-                        Pendiente
+                        {t("myApplications.pending")}
                       </span>
                     )}
                     {app.status === 'accepted' && (
                       <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-green-500/20">
                         <CheckCircle className="h-4 w-4" />
-                        Aceptada
+                        {t("myApplications.accepted")}
                       </span>
                     )}
                     {app.status === 'rejected' && (
                       <span className="inline-flex items-center gap-1.5 bg-red-500/10 text-red-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-500/20">
                         <XCircle className="h-4 w-4" />
-                        Rechazada
+                        {t("myApplications.rejected")}
                       </span>
                     )}
                   </div>

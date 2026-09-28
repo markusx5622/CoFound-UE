@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, HelpCircle, Sparkles, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface FAQItem {
   question: string;
@@ -10,24 +11,25 @@ interface FAQItem {
 }
 
 export default function StudentFaq() {
+  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(0); // Primera abierta por defecto
 
   const faqs: FAQItem[] = [
     {
-      question: "¿CoFound UE es totalmente gratis?",
-      answer: "Sí, 100% gratuito. No hay suscripciones, costes ocultos ni comisiones. CoFound UE nace como una herramienta de apoyo a la comunidad de la Universidad Europea de Valencia para potenciar proyectos reales.",
+      question: t("faq.q1"),
+      answer: t("faq.a1"),
     },
     {
-      question: "¿Puedo entrar si aún no tengo una idea de proyecto?",
-      answer: "¡Por supuesto! Más del 60% de los estudiantes entran para aportar su talento (programación, diseño UX/UI, marketing, finanzas, gestión) a proyectos iniciados por otros compañeros del campus.",
+      question: t("faq.q2"),
+      answer: t("faq.a2"),
     },
     {
-      question: "¿Quién organiza y está detrás de CoFound UE?",
-      answer: "Es una iniciativa independiente impulsada por estudiantes de la Universidad Europea de Valencia. El objetivo es derribar las barreras entre facultades y conectar a futuros fundadores antes de graduarse.",
+      question: t("faq.q3"),
+      answer: t("faq.a3"),
     },
     {
-      question: "¿Quién puede ver mis datos y cómo se contacta?",
-      answer: "El acceso está blindado exclusivamente a estudiantes con correo institucional verificado (@live.uem.es o @universidadeuropea.es). Dentro de la plataforma puedes postularte a proyectos y chatear directamente con otros miembros de forma segura.",
+      question: t("faq.q4"),
+      answer: t("faq.a4"),
     },
   ];
 
@@ -54,15 +56,15 @@ export default function StudentFaq() {
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md shadow-inner">
             <HelpCircle className="h-3.5 w-3.5 text-[#E60000]" />
-            <span>Dudas Frecuentes de Estudiantes</span>
+            <span>{t("faq.tag")}</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
-            Respuestas claras, <span className="text-[#E60000]">sin rodeos</span>
+            {t("faq.title1")}<span className="text-[#E60000]">{t("faq.titleHighlight")}</span>
           </h2>
 
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
-            Todo lo que necesitas saber antes de crear tu perfil y empezar a conectar en el campus.
+            {t("faq.subtitle")}
           </p>
         </div>
 
@@ -124,10 +126,10 @@ export default function StudentFaq() {
             </div>
             <div>
               <h4 className="text-sm sm:text-base font-bold text-white">
-                ¿Listo para conectar en el Campus?
+                {t("faq.ctaTitle")}
               </h4>
               <p className="text-xs text-zinc-400">
-                El registro toma 30 segundos con tu correo de la universidad.
+                {t("faq.ctaDesc")}
               </p>
             </div>
           </div>
@@ -136,7 +138,7 @@ export default function StudentFaq() {
             onClick={handleCtaClick}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold py-3 px-5 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.35)] shrink-0"
           >
-            <span>Crear mi perfil ahora</span>
+            <span>{t("faq.ctaButton")}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

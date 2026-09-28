@@ -9,10 +9,13 @@ import { useRouter, useParams } from "next/navigation";
 import { X, Plus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
+import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
 
 export default function EditarProyecto() {
   const { id } = useParams();
   const router = useRouter();
+  const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
 
   const [title, setTitle] = useState("");
@@ -35,7 +38,7 @@ export default function EditarProyecto() {
         if (projectDoc.exists()) {
           const data = projectDoc.data();
           if (data.creator_id !== user.uid) {
-            toast.error("No tienes permiso para editar este proyecto");
+            toast.error(t("projectEdit.noPermissionError"));
             router.push("/dashboard");
             return;
           }
@@ -45,19 +48,19 @@ export default function EditarProyecto() {
           setCategory(data.category || "Reto Académico");
           setProfiles(data.profiles || []);
         } else {
-          toast.error("Proyecto no encontrado");
+          toast.error(t("projectEdit.notFoundError"));
           router.push("/dashboard");
         }
       } catch (error) {
         console.error("Error fetching project:", error);
-        toast.error("Error al cargar los datos del proyecto");
+        toast.error(t("projectEdit.loadError"));
       } finally {
         setFetching(false);
       }
     };
 
     fetchProject();
-  }, [id, user, authLoading, router]);
+  }, [id, user, authLoading, router, t]);
 
   const handleAddProfile = () => {
     if (profileInput.trim() !== "" && !profiles.includes(profileInput.trim())) {
@@ -80,7 +83,7 @@ export default function EditarProyecto() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !description || profiles.length === 0) {
-      toast.error("Por favor completa todos los campos y añade al menos un perfil buscado.");
+      toast.error(t("projectEdit.allFieldsError"));
       return;
     }
 
@@ -96,11 +99,11 @@ export default function EditarProyecto() {
         profiles
       });
 
-      toast.success("Proyecto actualizado correctamente.");
+      toast.success(t("projectEdit.updateSuccess"));
       router.push(`/dashboard/proyecto/${id}`);
     } catch (error) {
       console.error("Error updating project:", error);
-      toast.error("Hubo un error al actualizar el proyecto.");
+      toast.error(t("projectEdit.updateError"));
     } finally {
       setLoading(false);
     }
@@ -122,52 +125,54 @@ export default function EditarProyecto() {
         <div className="max-w-3xl mx-auto">
           <Link href="/dashboard/mis-proyectos" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 transition-colors">
             <ArrowLeft className="h-5 w-5" />
-            Volver a mis proyectos
+            {t("projectEdit.backToMyProjects")}
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">Editar Proyecto</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">{t("projectEdit.title")}</h1>
           
           <div className="bg-zinc-900/60 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)] border border-zinc-800">
             <form onSubmit={handleSubmit} className="space-y-6">
               
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Título del Proyecto</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectEdit.titleLabel")}</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
-                  placeholder="Ej: Plataforma de economía circular para estudiantes"
+                  placeholder={t("projectEdit.titlePlaceholder")}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Descripción</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectEdit.descLabel")}</label>
                 <textarea
                   required
                   rows={5}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all resize-none placeholder:text-zinc-600"
-                  placeholder="Explica de qué trata tu proyecto, en qué fase está y qué objetivos tiene..."
+                  placeholder={t("projectEdit.descPlaceholder")}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Categoría</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectEdit.categoryLabel")}</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all"
                 >
-                  <option value="Reto Académico">Reto Académico</option>
-                  <option value="TFG">TFG (Trabajo Fin de Grado)</option>
-                  <option value="Startup Real">Startup Real</option>
+                  {CANONICAL_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {getCategoryLabel(cat, t)}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">Perfiles Buscados</label>
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectEdit.profilesLabel")}</label>
                 <div className="flex gap-2 mb-3">
                   <input
                     type="text"
@@ -175,7 +180,7 @@ export default function EditarProyecto() {
                     onChange={(e) => setProfileInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     className="flex-1 min-w-0 px-3.5 sm:px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm sm:text-base"
-                    placeholder="Ej: Frontend Developer, Marketing Manager..."
+                    placeholder={t("projectEdit.profilePlaceholder")}
                   />
                   <button
                     type="button"
@@ -183,7 +188,7 @@ export default function EditarProyecto() {
                     className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                   >
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                    <span>Añadir</span>
+                    <span>{t("projectEdit.addBtn")}</span>
                   </button>
                 </div>
                 
@@ -211,7 +216,7 @@ export default function EditarProyecto() {
                   disabled={loading}
                   className="w-full bg-[#E60000] text-white hover:bg-red-700 font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70"
                 >
-                  {loading ? "Actualizando..." : "Guardar Cambios"}
+                  {loading ? t("projectEdit.updating") : t("projectEdit.saveBtn")}
                 </button>
               </div>
             </form>

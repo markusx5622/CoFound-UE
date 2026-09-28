@@ -3,8 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Github, Mail, Compass, HelpCircle, UserPlus, Scale, ShieldCheck, Cookie } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -23,7 +25,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-sm mb-6 text-zinc-500">
-              La red exclusiva de talento para estudiantes de la Universidad Europea. Conecta, crea y lanza tu próximo gran proyecto.
+              {t("footer.description")}
             </p>
             <div className="flex gap-4">
               <a 
@@ -40,7 +42,7 @@ export default function Footer() {
 
           {/* Secciones Col */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Plataforma</h3>
+            <h3 className="text-white font-semibold mb-4">{t("footer.platform")}</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <Link 
@@ -48,7 +50,7 @@ export default function Footer() {
                   className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
                   <Compass className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                  <span>Cómo funciona</span>
+                  <span>{t("footer.howItWorks")}</span>
                 </Link>
               </li>
               <li>
@@ -57,7 +59,7 @@ export default function Footer() {
                   className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
                   <HelpCircle className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                  <span>Preguntas frecuentes</span>
+                  <span>{t("footer.faq")}</span>
                 </Link>
               </li>
               <li>
@@ -66,7 +68,7 @@ export default function Footer() {
                   className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
                   <UserPlus className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                  <span>Unirme a la red</span>
+                  <span>{t("footer.join")}</span>
                 </Link>
               </li>
             </ul>
@@ -74,7 +76,7 @@ export default function Footer() {
 
           {/* Legal Col */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Legal</h3>
+            <h3 className="text-white font-semibold mb-4">{t("footer.legal")}</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <Link 
@@ -82,7 +84,7 @@ export default function Footer() {
                   className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
                   <Scale className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                  <span>Aviso Legal</span>
+                  <span>{t("footer.legalNotice")}</span>
                 </Link>
               </li>
               <li>
@@ -91,7 +93,7 @@ export default function Footer() {
                   className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
                   <ShieldCheck className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                  <span>Política de Privacidad</span>
+                  <span>{t("footer.privacyPolicy")}</span>
                 </Link>
               </li>
               <li>
@@ -100,7 +102,7 @@ export default function Footer() {
                   className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
                   <Cookie className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                  <span>Política de Cookies</span>
+                  <span>{t("footer.cookiesPolicy")}</span>
                 </Link>
               </li>
             </ul>
@@ -108,7 +110,7 @@ export default function Footer() {
 
           {/* Contact Col */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Contacto</h3>
+            <h3 className="text-white font-semibold mb-4">{t("footer.contact")}</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <a 
@@ -121,8 +123,8 @@ export default function Footer() {
               </li>
               <li className="mt-4">
                 <p className="text-zinc-500 text-xs">
-                  Campus Turia y Alameda<br />
-                  Universidad Europea de Valencia
+                  {t("footer.campus")}<br />
+                  {t("footer.university")}
                 </p>
               </li>
             </ul>
@@ -130,9 +132,9 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
-          <p>© {currentYear} Marc Cubero Cantavella · CoFound UE. Todos los derechos reservados.</p>
+          <p>© {currentYear} Marc Cubero Cantavella · CoFound UE. {t("footer.rights")}</p>
           <p className="text-zinc-400 text-sm mb-4 md:mb-0">
-            Diseñado y desarrollado por Marc Cubero Cantavella
+            {t("footer.designedBy")} Marc Cubero Cantavella
           </p>
         </div>
       </div>

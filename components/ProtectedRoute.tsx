@@ -7,8 +7,10 @@ import { AlertTriangle, Mail, LogOut, RefreshCw, CheckCircle2 } from "lucide-rea
 import { sendEmailVerification, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const { user, loading } = useAuth();
   const [isSending, setIsSending] = useState(false);
@@ -32,15 +34,16 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     
     setIsSending(true);
     try {
+      auth.languageCode = language;
       await sendEmailVerification(user);
-      toast.success("Correo de verificación reenviado. Revisa tu bandeja de entrada.");
+      toast.success(t("protectedRoute.toastResent"));
       setCountdown(60);
     } catch (error: any) {
       if (error.code === 'auth/too-many-requests') {
-        toast.error("Has solicitado demasiados reenvíos. Por favor, espera un momento.");
+        toast.error(t("protectedRoute.toastTooMany"));
         setCountdown(60);
       } else {
-        toast.error("Error al enviar el correo. Inténtalo de nuevo más tarde.");
+        toast.error(t("protectedRoute.toastErrorResend"));
       }
     } finally {
       setIsSending(false);
@@ -52,7 +55,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
       await signOut(auth);
       router.push("/");
     } catch (error) {
-      toast.error("Error al cerrar sesión.");
+      toast.error(t("protectedRoute.toastErrorSignOut"));
     }
   };
 
@@ -78,18 +81,17 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
           </div>
           
           <h2 className="text-2xl font-bold text-white mb-3">
-            Verifica tu correo
+            {t("protectedRoute.verifyTitle")}
           </h2>
           
           <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-            Hemos enviado un enlace de verificación a <span className="text-white font-medium">{user.email}</span>. 
-            Debes confirmar tu identidad para acceder a la plataforma.
+            {t("protectedRoute.verifyDescPrefix")}<span className="text-white font-medium">{user.email}</span>{t("protectedRoute.verifyDescSuffix")}
           </p>
           
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-8 text-left flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
             <p className="text-xs text-yellow-500/90">
-              Si acabas de verificarlo, recarga la página. Si no encuentras el correo, revisa tu carpeta de Spam o Correo no deseado.
+              {t("protectedRoute.spamWarning")}
             </p>
           </div>
 
@@ -99,7 +101,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
               className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)]"
             >
               <CheckCircle2 className="h-5 w-5" />
-              <span>Ya lo he verificado</span>
+              <span>{t("protectedRoute.alreadyVerifiedBtn")}</span>
             </button>
             
             <button
@@ -109,7 +111,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
             >
               <RefreshCw className={`h-4 w-4 ${isSending ? 'animate-spin' : ''}`} />
               <span>
-                {countdown > 0 ? `Reenviar correo en ${countdown}s` : 'Reenviar correo de verificación'}
+                {countdown > 0 ? `${t("protectedRoute.resendBtnPrefix")}${countdown}${t("protectedRoute.resendBtnSuffix")}` : t("protectedRoute.resendBtn")}
               </span>
             </button>
             
@@ -118,7 +120,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
               className="w-full bg-transparent hover:bg-zinc-800/50 text-zinc-400 hover:text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mt-4"
             >
               <LogOut className="h-4 w-4" />
-              <span>Cerrar sesión</span>
+              <span>{t("protectedRoute.signOutBtn")}</span>
             </button>
           </div>
         </div>

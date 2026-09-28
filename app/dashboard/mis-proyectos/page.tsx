@@ -9,6 +9,8 @@ import { Briefcase, UserCircle, Tag, Trash2, Users, X, Check, XCircle, Edit } fr
 import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useLanguage } from "@/context/LanguageContext";
+import { getCategoryLabel } from "@/lib/categories";
 
 interface Project {
   id: string;
@@ -37,6 +39,7 @@ interface Application {
 }
 
 export default function MisProyectos() {
+  const { t } = useLanguage();
   const [projects, setProjects] = useState<Project[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +73,7 @@ export default function MisProyectos() {
           if (userDocSnapshot.exists()) {
             const data = userDocSnapshot.data();
             app.applicantData = {
-              name: data.name || "Desconocido",
+              name: data.name || t("myProjects.defaultName"),
               email: data.email || "",
               degree: data.degree || "",
               campus: data.campus || "",
@@ -85,18 +88,18 @@ export default function MisProyectos() {
 
       } catch (error) {
         console.error("Error fetching data:", error);
-        toast.error("Error al cargar tus proyectos");
+        toast.error(t("myProjects.loadError"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [user, authLoading]);
+  }, [user, authLoading, t]);
 
   const handleDelete = async (projectId: string) => {
     if (!user) return;
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este proyecto? Se perderán las postulaciones asociadas.")) return;
+    if (!window.confirm(t("myProjects.deleteConfirm"))) return;
     
     try {
       // 1. Delete project document
@@ -115,10 +118,10 @@ export default function MisProyectos() {
 
       setProjects(projects.filter(p => p.id !== projectId));
       setApplications(applications.filter(a => a.projectId !== projectId));
-      toast.success("Proyecto y postulaciones eliminadas correctamente");
+      toast.success(t("myProjects.deleteSuccess"));
     } catch (error) {
       console.error("Error deleting project:", error);
-      toast.error("Error al eliminar el proyecto");
+      toast.error(t("myProjects.deleteError"));
     }
   };
 
@@ -130,10 +133,10 @@ export default function MisProyectos() {
       setApplications(applications.map(app => 
         app.id === appId ? { ...app, status: newStatus } : app
       ));
-      toast.success(newStatus === 'accepted' ? 'Candidato aceptado' : 'Candidato rechazado');
+      toast.success(newStatus === 'accepted' ? t("myProjects.candidateAcceptedToast") : t("myProjects.candidateRejectedToast"));
     } catch (error) {
       console.error("Error updating status:", error);
-      toast.error("Error al actualizar el estado");
+      toast.error(t("myProjects.updateStatusError"));
     }
   };
 
@@ -142,12 +145,12 @@ export default function MisProyectos() {
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-10">
-            <h1 className="text-4xl font-extrabold text-white tracking-tight">Mis Proyectos</h1>
+            <h1 className="text-4xl font-extrabold text-white tracking-tight">{t("myProjects.title")}</h1>
             <Link 
               href="/dashboard/nuevo" 
               className="bg-[#E60000] hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md"
             >
-              Crear Nuevo
+              {t("myProjects.createBtn")}
             </Link>
           </div>
           
@@ -158,8 +161,8 @@ export default function MisProyectos() {
           ) : projects.length === 0 ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800 mb-12">
               <Briefcase className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Aún no has creado ningún proyecto</h3>
-              <p className="text-zinc-400 mb-6">Publica tu primera idea y empieza a recibir postulaciones.</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t("myProjects.emptyTitle")}</h3>
+              <p className="text-zinc-400 mb-6">{t("myProjects.emptyDesc")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
@@ -169,14 +172,14 @@ export default function MisProyectos() {
                     <Link
                       href={`/dashboard/proyecto/${project.id}/editar`}
                       className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
-                      title="Editar proyecto"
+                      title={t("myProjects.editTooltip")}
                     >
                       <Edit className="h-4 w-4" />
                     </Link>
                     <button 
                       onClick={() => handleDelete(project.id)}
                       className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                      title="Eliminar proyecto"
+                      title={t("myProjects.deleteTooltip")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -185,7 +188,7 @@ export default function MisProyectos() {
                     <div className="flex justify-between items-start mb-4 pr-10">
                       <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2.5 py-1 rounded-md">
                         <Tag className="h-3 w-3" />
-                        {project.category}
+                        {getCategoryLabel(project.category, t)}
                       </span>
                     </div>
                     <h2 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#E60000] transition-colors">{project.title}</h2>
@@ -201,14 +204,14 @@ export default function MisProyectos() {
           {/* Sección de Postulaciones Recibidas */}
           <h2 className="text-3xl font-extrabold text-white mb-8 tracking-tight flex items-center gap-3">
             <Users className="h-8 w-8 text-[#E60000]" />
-            Postulaciones Recibidas
+            {t("myProjects.applicationsReceived")}
           </h2>
 
           {loading ? null : applications.length === 0 ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
               <Users className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">No hay postulaciones</h3>
-              <p className="text-zinc-400 mb-6">Aún nadie se ha postulado a tus proyectos.</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t("myProjects.noApplicationsTitle")}</h3>
+              <p className="text-zinc-400 mb-6">{t("myProjects.noApplicationsDesc")}</p>
             </div>
           ) : (
             <div className="bg-zinc-900/60 backdrop-blur-md rounded-2xl border border-zinc-800 overflow-hidden">
@@ -216,10 +219,10 @@ export default function MisProyectos() {
                 <table className="w-full text-left text-sm text-zinc-400">
                   <thead className="text-xs text-zinc-300 uppercase bg-zinc-800/50 border-b border-zinc-700">
                     <tr>
-                      <th className="px-6 py-4">Candidato</th>
-                      <th className="px-6 py-4">Titulación / Campus</th>
-                      <th className="px-6 py-4">Proyecto</th>
-                      <th className="px-6 py-4 text-center">Acción</th>
+                      <th className="px-6 py-4">{t("myProjects.thCandidate")}</th>
+                      <th className="px-6 py-4">{t("myProjects.thDegreeCampus")}</th>
+                      <th className="px-6 py-4">{t("myProjects.thProject")}</th>
+                      <th className="px-6 py-4 text-center">{t("myProjects.thAction")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -230,20 +233,20 @@ export default function MisProyectos() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <Link href={`/perfil/${app.applicantId}`} className="font-medium text-white hover:text-[#E60000] transition-colors">
-                              {app.applicantData?.name || 'Usuario sin nombre'}
+                              {app.applicantData?.name || t("myProjects.defaultName")}
                             </Link>
                             {app.status === 'accepted' && (
-                              <span className="bg-green-500/20 text-green-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Aceptado</span>
+                              <span className="bg-green-500/20 text-green-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">{t("myProjects.accepted")}</span>
                             )}
                             {app.status === 'rejected' && (
-                              <span className="bg-red-500/20 text-red-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Rechazado</span>
+                              <span className="bg-red-500/20 text-red-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">{t("myProjects.rejected")}</span>
                             )}
                           </div>
                           <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.email}</div>
                         </td>
                         <td className="px-6 py-4">
-                          <div>{app.applicantData?.degree || 'No especificada'}</div>
-                          <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.campus || 'No especificado'}</div>
+                          <div>{app.applicantData?.degree || t("myProjects.notSpecified")}</div>
+                          <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.campus || t("myProjects.notSpecified")}</div>
                         </td>
                         <td className="px-6 py-4">
                           <Link href={`/dashboard/proyecto/${app.projectId}`} className="text-zinc-300 hover:text-white transition-colors text-sm">
@@ -255,7 +258,7 @@ export default function MisProyectos() {
                             <button 
                               className="text-zinc-400 hover:text-white p-1.5 rounded-md hover:bg-zinc-800 transition-colors"
                               onClick={() => setSelectedApplicant(app.applicantData)}
-                              title="Ver Perfil Detallado"
+                              title={t("myProjects.viewProfileTooltip")}
                             >
                               <UserCircle className="h-5 w-5" />
                             </button>
@@ -265,14 +268,14 @@ export default function MisProyectos() {
                                 <button
                                   onClick={() => handleUpdateStatus(app.id, 'accepted')}
                                   className="text-green-500 hover:text-green-400 p-1.5 rounded-md hover:bg-green-500/10 transition-colors"
-                                  title="Aceptar Candidato"
+                                  title={t("myProjects.acceptTooltip")}
                                 >
                                   <Check className="h-5 w-5" />
                                 </button>
                                 <button
                                   onClick={() => handleUpdateStatus(app.id, 'rejected')}
                                   className="text-red-500 hover:text-red-400 p-1.5 rounded-md hover:bg-red-500/10 transition-colors"
-                                  title="Rechazar Candidato"
+                                  title={t("myProjects.rejectTooltip")}
                                 >
                                   <XCircle className="h-5 w-5" />
                                 </button>
@@ -301,23 +304,23 @@ export default function MisProyectos() {
             </button>
             <div className="text-center mb-6">
               <InitialsAvatar name={selectedApplicant.name} size={80} className="w-20 h-20 mx-auto mb-4 text-2xl font-bold" />
-              <h3 className="text-2xl font-bold text-white">{selectedApplicant.name || 'Sin nombre'}</h3>
+              <h3 className="text-2xl font-bold text-white">{selectedApplicant.name || t("myProjects.defaultName")}</h3>
               <p className="text-[#E60000]">{selectedApplicant.email}</p>
             </div>
             
             <div className="space-y-4">
               <div>
-                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Titulación y Campus</h4>
-                <p className="text-zinc-300">{selectedApplicant.degree || 'No especificada'} - {selectedApplicant.campus || 'No especificado'}</p>
+                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalDegreeCampus")}</h4>
+                <p className="text-zinc-300">{selectedApplicant.degree || t("myProjects.notSpecified")} - {selectedApplicant.campus || t("myProjects.notSpecified")}</p>
               </div>
               
               <div>
-                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Sobre Mí</h4>
-                <p className="text-zinc-300 whitespace-pre-wrap">{selectedApplicant.bio || 'El usuario no ha escrito una biografía.'}</p>
+                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalAboutMe")}</h4>
+                <p className="text-zinc-300 whitespace-pre-wrap">{selectedApplicant.bio || t("myProjects.modalNoBio")}</p>
               </div>
 
               <div>
-                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Habilidades</h4>
+                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalSkills")}</h4>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {selectedApplicant.skills && selectedApplicant.skills.length > 0 ? (
                     selectedApplicant.skills.map((skill: string, idx: number) => (
@@ -326,7 +329,7 @@ export default function MisProyectos() {
                       </span>
                     ))
                   ) : (
-                    <span className="text-zinc-500 italic text-sm">Ninguna habilidad listada</span>
+                    <span className="text-zinc-500 italic text-sm">{t("myProjects.modalNoSkills")}</span>
                   )}
                 </div>
               </div>
@@ -337,7 +340,7 @@ export default function MisProyectos() {
                 onClick={() => setSelectedApplicant(null)}
                 className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200"
               >
-                Cerrar
+                {t("myProjects.modalClose")}
               </button>
             </div>
           </div>

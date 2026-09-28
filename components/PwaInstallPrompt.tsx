@@ -12,6 +12,7 @@ import {
   Download, 
   MoreVertical
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const DISMISSED_KEY = "cofoundue_pwa_prompt_dismissed";
 const LEGACY_DISMISSED_KEY = "cofoundue_pwa_dismissed";
@@ -45,6 +46,7 @@ function isShownInCurrentSession(): boolean {
 export default function PwaInstallPrompt() {
   const { user } = useAuth();
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"ios" | "android">("ios");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -190,10 +192,10 @@ export default function PwaInstallPrompt() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-white leading-tight">
-                Instala CoFound UE en tu móvil
+                {t("pwaPrompt.title")}
               </h3>
               <p className="text-[11px] text-zinc-400 mt-0.5 leading-none">
-                Acceso rápido en 1 toque y pantalla completa
+                {t("pwaPrompt.subtitle")}
               </p>
             </div>
           </div>
@@ -240,7 +242,7 @@ export default function PwaInstallPrompt() {
                 <Share className="w-3.5 h-3.5" />
               </div>
               <p className="text-xs text-zinc-300">
-                1. Toca <strong className="text-white">Compartir</strong> en la barra inferior de Safari.
+                {t("pwaPrompt.iosStep1")}<strong className="text-white">{t("pwaPrompt.iosStep1Bold")}</strong>{t("pwaPrompt.iosStep1Suffix")}
               </p>
             </div>
 
@@ -249,7 +251,7 @@ export default function PwaInstallPrompt() {
                 <PlusSquare className="w-3.5 h-3.5" />
               </div>
               <p className="text-xs text-zinc-300">
-                2. Elige <strong className="text-white">&quot;Añadir a pantalla de inicio&quot;</strong> (+).
+                {t("pwaPrompt.iosStep2")}<strong className="text-white">{t("pwaPrompt.iosStep2Bold")}</strong>{t("pwaPrompt.iosStep2Suffix")}
               </p>
             </div>
 
@@ -258,7 +260,7 @@ export default function PwaInstallPrompt() {
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
               <p className="text-xs text-zinc-300">
-                3. Pulsa <strong className="text-white">&quot;Añadir&quot;</strong> arriba a la derecha.
+                {t("pwaPrompt.iosStep3")}<strong className="text-white">{t("pwaPrompt.iosStep3Bold")}</strong>{t("pwaPrompt.iosStep3Suffix")}
               </p>
             </div>
           </div>
@@ -271,7 +273,7 @@ export default function PwaInstallPrompt() {
                   className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 shadow-md text-xs"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Instalar aplicación directamente</span>
+                  <span>{t("pwaPrompt.androidDirectInstall")}</span>
                 </button>
               </div>
             )}
@@ -281,7 +283,7 @@ export default function PwaInstallPrompt() {
                 <MoreVertical className="w-3.5 h-3.5" />
               </div>
               <p className="text-xs text-zinc-300">
-                1. Toca los <strong className="text-white">tres puntos (⋮)</strong> en Chrome.
+                {t("pwaPrompt.androidStep1")}<strong className="text-white">{t("pwaPrompt.androidStep1Bold")}</strong>{t("pwaPrompt.androidStep1Suffix")}
               </p>
             </div>
 
@@ -290,7 +292,7 @@ export default function PwaInstallPrompt() {
                 <Download className="w-3.5 h-3.5" />
               </div>
               <p className="text-xs text-zinc-300">
-                2. Selecciona <strong className="text-white">&quot;Instalar aplicación&quot;</strong>.
+                {t("pwaPrompt.androidStep2")}<strong className="text-white">{t("pwaPrompt.androidStep2Bold")}</strong>{t("pwaPrompt.androidStep2Suffix")}
               </p>
             </div>
 
@@ -299,7 +301,7 @@ export default function PwaInstallPrompt() {
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
               <p className="text-xs text-zinc-300">
-                3. Confirma la instalación en tu teléfono.
+                {t("pwaPrompt.androidStep3")}
               </p>
             </div>
           </div>
@@ -311,13 +313,13 @@ export default function PwaInstallPrompt() {
             onClick={handleDismissPermanent}
             className="flex-1 bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98] text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs text-center border border-zinc-700/60 shadow-sm"
           >
-            ¡Entendido, ya la tengo!
+            {t("pwaPrompt.understoodBtn")}
           </button>
           <button
             onClick={handleDismiss}
             className="py-2 px-3 text-xs text-zinc-400 hover:text-zinc-200 transition-colors text-center"
           >
-            Ahora no
+            {t("pwaPrompt.notNowBtn")}
           </button>
         </div>
       </div>

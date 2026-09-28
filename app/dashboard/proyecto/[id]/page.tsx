@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Briefcase, UserCircle, Tag, ArrowLeft, Send } from "lucide-react";
+import { UserCircle, Tag, ArrowLeft, Send } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useLanguage } from "@/context/LanguageContext";
+import { getCategoryLabel } from "@/lib/categories";
 
 interface Project {
   id: string;
@@ -29,6 +31,7 @@ interface UserProfile {
 export default function ProyectoDetalle() {
   const { id } = useParams();
   const router = useRouter();
+  const { t } = useLanguage();
   
   const [project, setProject] = useState<Project | null>(null);
   const [creator, setCreator] = useState<UserProfile | null>(null);
@@ -76,27 +79,27 @@ export default function ProyectoDetalle() {
         }
       } catch (error) {
         console.error("Error fetching project:", error);
-        toast.error("Error al cargar el proyecto");
+        toast.error(t("projectDetail.loadErrorToast"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchProjectAndCreator();
-  }, [id, user, authLoading]);
+  }, [id, user, authLoading, t]);
 
   const handleApply = async () => {
     try {
       setApplying(true);
       if (!user) {
-        toast.error("Debes iniciar sesión para postularte");
+        toast.error(t("projectDetail.mustLoginToast"));
         return;
       }
       
       if (!project) return;
       
       if (user.uid === project.creator_id) {
-        toast.error("No puedes postularte a tu propio proyecto");
+        toast.error(t("projectDetail.cannotApplyOwnToast"));
         return;
       }
 
@@ -110,10 +113,10 @@ export default function ProyectoDetalle() {
       });
 
       setHasApplied(true);
-      toast.success("Te has postulado correctamente");
+      toast.success(t("projectDetail.applySuccessToast"));
     } catch (error) {
       console.error("Error applying:", error);
-      toast.error("Hubo un error al enviar tu postulación");
+      toast.error(t("projectDetail.applyErrorToast"));
     } finally {
       setApplying(false);
     }
@@ -134,9 +137,9 @@ export default function ProyectoDetalle() {
       <ProtectedRoute>
         <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center py-20">
-            <h2 className="text-3xl font-bold text-white mb-4">Proyecto no encontrado</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">{t("projectDetail.notFoundTitle")}</h2>
             <Link href="/dashboard" className="text-[#E60000] hover:underline">
-              Volver al Dashboard
+              {t("projectDetail.backToDashboard")}
             </Link>
           </div>
         </div>
@@ -150,7 +153,7 @@ export default function ProyectoDetalle() {
         <div className="max-w-4xl mx-auto">
           <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors">
             <ArrowLeft className="h-5 w-5" />
-            Volver al explorar
+            {t("projectDetail.backToExplore")}
           </Link>
 
           <div className="bg-zinc-900/60 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-sm border border-zinc-800 relative overflow-hidden">
@@ -161,7 +164,7 @@ export default function ProyectoDetalle() {
                 <div>
                   <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-3 py-1.5 rounded-md mb-4">
                     <Tag className="h-3.5 w-3.5" />
-                    {project.category}
+                    {getCategoryLabel(project.category, t)}
                   </span>
                   <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">{project.title}</h1>
                 </div>
@@ -178,7 +181,7 @@ export default function ProyectoDetalle() {
                         : "bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
                     }`}
                   >
-                    {applying ? "Procesando..." : hasApplied ? "Ya postulado" : "Postularme"}
+                    {applying ? t("projectDetail.processing") : hasApplied ? t("projectDetail.alreadyApplied") : t("projectDetail.applyBtn")}
                     {!hasApplied && !applying && user?.uid !== project.creator_id && <Send className="h-5 w-5" />}
                   </button>
                 </div>
@@ -187,7 +190,7 @@ export default function ProyectoDetalle() {
               <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-10 pb-8 border-b border-zinc-800/50">
                 <div className="flex items-center gap-2">
                   <UserCircle className="h-5 w-5 text-zinc-500" />
-                  <span>Creado por <Link href={`/perfil/${project.creator_id}`} className="text-zinc-200 font-bold hover:text-[#E60000] hover:underline transition-colors">{project.creatorName || creator?.name || 'Usuario UE'}</Link></span>
+                  <span>{t("projectDetail.createdBy")} <Link href={`/perfil/${project.creator_id}`} className="text-zinc-200 font-bold hover:text-[#E60000] hover:underline transition-colors">{project.creatorName || creator?.name || t("projectDetail.defaultCreator")}</Link></span>
                 </div>
                 {creator?.degree && (
                   <>
@@ -204,14 +207,14 @@ export default function ProyectoDetalle() {
               </div>
 
               <div className="mb-10">
-                <h3 className="text-xl font-bold text-white mb-4">Acerca del Proyecto</h3>
+                <h3 className="text-xl font-bold text-white mb-4">{t("projectDetail.aboutProject")}</h3>
                 <div className="text-zinc-300 text-lg leading-relaxed whitespace-pre-wrap">
                   {project.description}
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-bold text-white mb-4">Perfiles que buscamos</h3>
+                <h3 className="text-lg font-bold text-white mb-4">{t("projectDetail.profilesWanted")}</h3>
                 <div className="flex flex-wrap gap-3">
                   {project.profiles && project.profiles.map((profile, idx) => (
                     <span key={idx} className="bg-red-950/40 text-[#E60000] text-sm font-medium px-4 py-2 rounded-lg border border-red-900/40">

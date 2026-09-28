@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Rocket, ShieldCheck, UserPlus, Sparkles } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function HeroSection() {
+  const { t } = useLanguage();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -55,16 +57,16 @@ export default function HeroSection() {
       
       {/* Main Title */}
       <motion.h1 variants={itemVariants} className="text-3xl sm:text-5xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight">
-        Encuentra a tu <br />
+        {t("landing.hero.title1")} <br />
         <span className="text-[#E60000] drop-shadow-[0_0_25px_rgba(230,0,0,0.45)] hover:brightness-110 transition-all duration-300 inline-block">
-          Co-Founder
+          {t("landing.hero.titleHighlight")}
         </span> <br />
-        en el Campus.
+        {t("landing.hero.title2")}
       </motion.h1>
       
       {/* Subtitle */}
       <motion.p variants={itemVariants} className="hidden sm:block text-lg md:text-xl text-zinc-300 max-w-xl leading-relaxed">
-        La plataforma para conectar estudiantes de <strong className="text-white font-semibold">ADE, Marketing, Ingeniería y Diseño</strong> de la Universidad Europea de Valencia.
+        {t("landing.hero.subtitle1")}<strong className="text-white font-semibold">{t("landing.hero.subtitleHighlight")}</strong>{t("landing.hero.subtitle2")}
       </motion.p>
 
       {/* Honest Early-Adopter Callout with Interactive Feedback */}
@@ -80,10 +82,10 @@ export default function HeroSection() {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white group-hover:text-red-400 transition-colors duration-200">
-              Lanzamiento en campus Turia y Alameda
+              {t("landing.hero.calloutTitle")}
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
-              Sé de los primeros en publicar tu idea o registrar tu perfil para formar equipo con compañeros de otras facultades.
+              {t("landing.hero.calloutDesc")}
             </p>
           </div>
         </div>
@@ -93,15 +95,15 @@ export default function HeroSection() {
       <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3 text-zinc-300 text-xs sm:text-sm pt-1">
         <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">
           <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-          <span>100% Gratuito</span>
+          <span>{t("landing.hero.badgeFree")}</span>
         </span>
         <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-          <span>Solo alumnos UE</span>
+          <span>{t("landing.hero.badgeExclusive")}</span>
         </span>
         <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">
           <Rocket className="h-3.5 w-3.5 text-[#E60000]" />
-          <span>Startups y Proyectos</span>
+          <span>{t("landing.hero.badgeStartups")}</span>
         </span>
       </motion.div>
     </motion.div>

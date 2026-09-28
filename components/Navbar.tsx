@@ -9,6 +9,8 @@ import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Menu, X, LogOut } from "lucide-react";
+import LanguageSelector from "@/components/LanguageSelector";
+import { useLanguage } from "@/context/LanguageContext";
 
 function getTimestampMillis(ts: any): number {
   if (!ts) return 0;
@@ -44,6 +46,7 @@ export default function Navbar() {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
@@ -126,12 +129,12 @@ export default function Navbar() {
   }
 
   const navLinks = [
-    { href: "/dashboard", label: "Explorar" },
-    { href: "/dashboard/mis-proyectos", label: "Mis Proyectos" },
-    { href: "/dashboard/mis-postulaciones", label: "Mis Postulaciones" },
-    { href: "/dashboard/mensajes", label: "Mensajes" },
-    { href: "/dashboard/nuevo", label: "Nuevo Proyecto" },
-    { href: "/perfil", label: "Mi Perfil" },
+    { href: "/dashboard", label: t("navbar.explore") },
+    { href: "/dashboard/mis-proyectos", label: t("navbar.myProjects") },
+    { href: "/dashboard/mis-postulaciones", label: t("navbar.myApplications") },
+    { href: "/dashboard/mensajes", label: t("navbar.messages") },
+    { href: "/dashboard/nuevo", label: t("navbar.newProject") },
+    { href: "/perfil", label: t("navbar.myProfile") },
   ];
 
   return (
@@ -166,12 +169,12 @@ export default function Navbar() {
                     }`}
                   >
                     <span>{link.label}</span>
-                    {link.label === "Mis Proyectos" && pendingCount > 0 && (
+                    {link.href === "/dashboard/mis-proyectos" && pendingCount > 0 && (
                       <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-md">
                         {pendingCount}
                       </span>
                     )}
-                    {link.label === "Mensajes" && unreadMessagesCount > 0 && (
+                    {link.href === "/dashboard/mensajes" && unreadMessagesCount > 0 && (
                       <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-md">
                         {unreadMessagesCount}
                       </span>
@@ -179,13 +182,16 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              <button
-                onClick={handleLogout}
-                className="bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 shadow-sm ml-1.5 flex items-center gap-1.5 group select-none"
-              >
-                <LogOut className="w-3.5 h-3.5 text-red-400 group-hover:text-white transition-colors" />
-                <span>Cerrar Sesión</span>
-              </button>
+              <div className="ml-1 flex items-center gap-1.5">
+                <LanguageSelector />
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 shadow-sm flex items-center gap-1.5 group select-none"
+                >
+                  <LogOut className="w-3.5 h-3.5 text-red-400 group-hover:text-white transition-colors" />
+                  <span>{t("navbar.logout")}</span>
+                </button>
+              </div>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -217,12 +223,12 @@ export default function Navbar() {
               >
                 <span>{link.label}</span>
                 <div className="flex items-center gap-1.5">
-                  {link.label === "Mis Proyectos" && pendingCount > 0 && (
+                  {link.href === "/dashboard/mis-proyectos" && pendingCount > 0 && (
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
                       {pendingCount}
                     </span>
                   )}
-                  {link.label === "Mensajes" && unreadMessagesCount > 0 && (
+                  {link.href === "/dashboard/mensajes" && unreadMessagesCount > 0 && (
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E60000] text-[10px] font-bold text-white shadow-sm">
                       {unreadMessagesCount}
                     </span>
@@ -231,6 +237,9 @@ export default function Navbar() {
               </Link>
             );
           })}
+          <div className="w-full mt-2 flex justify-center">
+            <LanguageSelector />
+          </div>
           <button
             onClick={() => {
               setIsMenuOpen(false);
@@ -239,7 +248,7 @@ export default function Navbar() {
             className="text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-900/80 border border-zinc-800 hover:border-red-500/40 px-4 py-2 rounded-xl transition-all flex items-center gap-2"
           >
             <span>📱</span>
-            <span>Instalar App en tu móvil</span>
+            <span>{t("navbar.installApp")}</span>
           </button>
           <button
             onClick={() => {
@@ -249,7 +258,7 @@ export default function Navbar() {
             className="mt-1 w-full bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
           >
             <LogOut className="w-4 h-4" />
-            <span>Cerrar Sesión</span>
+            <span>{t("navbar.logout")}</span>
           </button>
         </div>
       )}

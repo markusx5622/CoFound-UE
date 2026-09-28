@@ -7,6 +7,8 @@ import { db } from "@/lib/firebase";
 import { UserCircle, Briefcase, Tag, MapPin, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import InitialsAvatar from "@/components/InitialsAvatar";
+import { useLanguage } from "@/context/LanguageContext";
+import { getCategoryLabel } from "@/lib/categories";
 
 interface PublicUser {
   uid: string;
@@ -27,6 +29,7 @@ interface Project {
 }
 
 export default function PublicProfile({ params }: { params: { uid: string } }) {
+  const { t } = useLanguage();
   const [profileUser, setProfileUser] = useState<PublicUser | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,13 +84,13 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
           ) : error || !profileUser ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-6 sm:p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
               <UserCircle className="h-16 w-16 text-zinc-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Usuario no encontrado</h3>
-              <p className="text-zinc-400 mb-6">El perfil que buscas no existe o ha sido eliminado.</p>
+              <h3 className="text-2xl font-bold text-white mb-2">{t("publicProfile.notFoundTitle")}</h3>
+              <p className="text-zinc-400 mb-6">{t("publicProfile.notFoundDesc")}</p>
               <Link 
                 href="/dashboard" 
                 className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md inline-block"
               >
-                Volver al Dashboard
+                {t("publicProfile.backToDashboard")}
               </Link>
             </div>
           ) : (
@@ -101,7 +104,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                   </div>
                   
                   <div className="pt-14">
-                    <h1 className="text-3xl font-extrabold text-white mb-1">{profileUser.name || 'Usuario Sin Nombre'}</h1>
+                    <h1 className="text-3xl font-extrabold text-white mb-1">{profileUser.name || t("publicProfile.defaultName")}</h1>
                     <p className="text-[#E60000] font-medium mb-6">{profileUser.email}</p>
                     
                     <div className="flex flex-wrap gap-4 mb-8">
@@ -122,15 +125,15 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       <div className="md:col-span-2 space-y-6">
                         <div>
-                          <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">Sobre Mí</h3>
+                          <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">{t("publicProfile.aboutMe")}</h3>
                           <p className="text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                            {profileUser.bio || <span className="italic text-zinc-600">Este usuario aún no ha escrito una biografía.</span>}
+                            {profileUser.bio || <span className="italic text-zinc-600">{t("publicProfile.noBio")}</span>}
                           </p>
                         </div>
                       </div>
                       
                       <div>
-                        <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">Habilidades</h3>
+                        <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">{t("publicProfile.skills")}</h3>
                         <div className="flex flex-wrap gap-2">
                           {profileUser.skills && profileUser.skills.length > 0 ? (
                             profileUser.skills.map((skill, idx) => (
@@ -139,7 +142,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                               </span>
                             ))
                           ) : (
-                            <span className="text-zinc-600 italic text-sm">Ninguna habilidad listada</span>
+                            <span className="text-zinc-600 italic text-sm">{t("publicProfile.noSkills")}</span>
                           )}
                         </div>
                       </div>
@@ -151,12 +154,14 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
               {/* User's Projects */}
               <h2 className="text-2xl font-bold text-white mb-6 tracking-tight flex items-center gap-3">
                 <Briefcase className="h-6 w-6 text-[#E60000]" />
-                Proyectos de {profileUser.name?.split(' ')[0] || 'este usuario'}
+                {t("publicProfile.userProjects", {
+                  name: profileUser.name?.split(' ')[0] || t("publicProfile.defaultUser")
+                })}
               </h2>
               
               {projects.length === 0 ? (
                 <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-8 text-center">
-                  <p className="text-zinc-500">No tiene proyectos publicados actualmente.</p>
+                  <p className="text-zinc-500">{t("publicProfile.noProjects")}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -166,7 +171,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                         <div className="mb-3">
                           <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2 py-1 rounded-md">
                             <Tag className="h-3 w-3" />
-                            {project.category}
+                            {getCategoryLabel(project.category, t)}
                           </span>
                         </div>
                         <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#E60000] transition-colors">{project.title}</h3>
