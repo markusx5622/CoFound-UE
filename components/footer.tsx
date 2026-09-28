@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Twitter, Instagram, Linkedin, Mail } from "lucide-react";
+import { Github, Mail } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -26,14 +26,14 @@ export default function Footer() {
               La red exclusiva de talento para estudiantes de la Universidad Europea. Conecta, crea y lanza tu próximo gran proyecto.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-[#E60000] transition-colors" aria-label="Twitter">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-[#E60000] transition-colors" aria-label="Instagram">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-[#E60000] transition-colors" aria-label="LinkedIn">
-                <Linkedin className="h-5 w-5" />
+              <a 
+                href="https://github.com/markusx5622/CoFound-UE" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-[#E60000] transition-colors inline-flex items-center gap-2" 
+                aria-label="GitHub de CoFound UE"
+              >
+                <Github className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function Footer() {
               </li>
               <li className="mt-4">
                 <p className="text-zinc-500 text-xs">
-                  Campus Turia<br />
+                  Campus Turia y Alameda<br />
                   Universidad Europea de Valencia
                 </p>
               </li>
