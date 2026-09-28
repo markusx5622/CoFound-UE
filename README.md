@@ -34,7 +34,7 @@
 <br/>
 
 > [!NOTE]
-> **Proyecto en desarrollo activo:** CoFound UE es un proyecto universitario en desarrollo activo para la comunidad de la Universidad Europea ([cofoundue.es](https://cofoundue.es)).
+> **Proyecto en desarrollo activo:** CoFound UE es un proyecto universitario en desarrollo activo para la comunidad de la Universidad Europea ([www.cofoundue.es](https://www.cofoundue.es)).
 
 ## 📌 Visión General
 
@@ -54,15 +54,15 @@ Ante esta fricción, nace **CoFound UE**: una plataforma web full-stack diseñad
 
 | Módulo | Descripción | Tecnología Clave |
 | :--- | :--- | :--- |
-| **🛡️ Auth Restringida** | Registro e inicio de sesión validado mediante expresión regular para asegurar el acceso únicamente a usuarios con correo institucional de la Universidad Europea. | Firebase Auth & TypeScript regex validation |
+| **🛡️ Auth Restringida** | Registro e inicio de sesión validado mediante expresión regular para asegurar el acceso únicamente a usuarios con correo institucional de la Universidad Europea, con verificación de email obligatoria (hard-gate en interfaz y en reglas de Firestore). | Firebase Auth & TypeScript regex validation |
 | **🎨 Interfaz Inmersiva** | Estética *dark-mode* moderna con canvas de partículas fluidas, efectos glassmorphism (`backdrop-blur`) y acentos de color institucional de la UE (`#E60000`). | Tailwind CSS, Framer Motion & HTML5 Canvas |
-| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno con avatares de iniciales generados localmente (sin almacenamiento de imágenes ni dependencias externas), nombre, titulación, selección de campus (*Campus Turia / Valencia, Villaviciosa, Alcobendas, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge, InitialsAvatar & Sonner Toasts |
+| **👤 Perfiles de Estudiantes** | Gestión completa del perfil del alumno con avatares de iniciales generados localmente (sin almacenamiento de imágenes ni dependencias externas), nombre, titulación, selección de campus (*Campus Turia / Valencia, Campus Alameda / Valencia, Villaviciosa, Alcobendas, Alicante, Málaga, Canarias, Online*), biografía y tags interactivos de habilidades. | Firestore Document Merge, InitialsAvatar & Sonner Toasts |
 | **💡 Marketplace de Proyectos** | Tablero central en tiempo real para visualizar proyectos activos, filtrar por tipo de reto y explorar perfiles requeridos. | Firestore Queries & Lucide Icons |
 | **📝 Creador de Proyectos** | Publicador de ideas con categorización, descripción detallada y definidor dinámico de perfiles buscados (*ej: Frontend Developer, Growth Hacker*). | Controlled Dynamic Forms |
 | **🤝 Postulaciones & Matching** | Sistema de un clic para postularse a iniciativas, prevención de autopostulaciones y control de duplicados. | Realtime Firestore Collections |
 | **💬 Mensajería en tiempo real** | Chat directo entre el creador del proyecto y los postulantes, con acceso restringido por reglas de Firestore a ambas partes. | Firestore Subcollections & Realtime Listeners (`onSnapshot`) |
 | **📂 Gestión Personal** | Paneles dedicados para administrar *Mis Proyectos* creados y monitorear el estado de *Mis Postulaciones*. | Protected Route System |
-| **📲 PWA Instalable** | Instalación en pantalla de inicio (móvil y escritorio) con iconos maskable, service worker propio y experiencia standalone. | Web App Manifest & Service Worker |
+| **📲 PWA Instalable** | Instalación en pantalla de inicio (móvil y escritorio) con iconos maskable, service worker propio, experiencia standalone y prompt de instalación no invasivo (máximo una vez por sesión, descarte persistente de 30 días, detección de modo standalone). | Web App Manifest & Service Worker |
 
 ---
 
@@ -87,62 +87,71 @@ Ante esta fricción, nace **CoFound UE**: una plataforma web full-stack diseñad
 
 ```
 CoFound-UE/
-├── .github/                    # Automatización y flujos de trabajo de GitHub
+├── .github/                              # Automatización y flujos de trabajo de GitHub
 │   └── workflows/
-│       └── ci.yml              # Pipeline CI: lint, tests con emulador, build
-├── app/                        # Rutas y páginas principales (Next.js App Router)
-│   ├── dashboard/              # Panel principal del estudiante (Marketplace de proyectos)
-│   │   ├── mensajes/           # Chat y mensajería en tiempo real entre creadores y postulantes
-│   │   ├── mis-postulaciones/  # Rastreador de postulaciones enviadas
-│   │   ├── mis-proyectos/      # Gestor de proyectos creados por el usuario
-│   │   ├── nuevo/              # Formulario para publicar una nueva idea/proyecto
-│   │   ├── proyecto/[id]/      # Vista detallada de un proyecto y botón de postulación
-│   │   └── page.tsx            # Vista de Proyectos Activos (Dashboard central)
-│   ├── legal/                  # Cumplimiento normativo y aviso legal
-│   │   ├── aviso-legal/        # Documentación de Términos y Condiciones
-│   │   ├── cookies/            # Política de Galletas / Cookies
-│   │   └── privacidad/         # Política de Privacidad de Datos
-│   ├── perfil/                 # Perfil universitario del estudiante
-│   │   ├── [uid]/              # Vista de perfil público de otros estudiantes
-│   │   └── page.tsx            # Gestión de datos personales, campus y habilidades
-│   ├── globals.css             # Estilos globales y extensiones Tailwind
-│   ├── layout.tsx              # Estructura raíz con fondo interactivo, PWA y Toaster
-│   ├── manifest.ts             # Generador de metadatos de la PWA (Web App Manifest)
-│   └── page.tsx                # Landing Page con formulario de Login/Registro integrados
-├── components/                 # Componentes de UI reutilizables
-│   ├── ui/                     # Primitivas y componentes visuales base (Skeleton loaders)
-│   ├── campus-feed-preview.tsx # Muro social interactivo de la Landing
-│   ├── features-section.tsx    # Cuadrícula de características destacadas en Landing
-│   ├── footer.tsx              # Pie de página institucional con enlaces legales
-│   ├── hero-section.tsx        # Sección principal de bienvenida e impacto visual
-│   ├── how-it-works.tsx        # Guía paso a paso sobre el funcionamiento de la red
-│   ├── InitialsAvatar.tsx      # Generador local de avatares con iniciales (privacidad por diseño)
-│   ├── Navbar.tsx              # Barra de navegación adaptativa con estado de usuario
-│   ├── particle-background.tsx # Canvas HTML5 con efecto matricial de partículas
-│   ├── ProtectedRoute.tsx      # HOC / Guardián para proteger rutas privadas
-│   ├── ServiceWorkerRegister.tsx # Registro del Service Worker PWA en entornos de producción
-│   └── vision-section.tsx      # Sección de visión institucional y proyección
-├── context/                    # Contextos globales de React
-│   └── AuthContext.tsx         # Proveedor y hook de autenticación de usuario
-├── lib/                        # Lógica de negocio y utilidades
-│   ├── auth-errors.ts          # Mapeo de errores de Firebase Auth a lenguaje amigable (ES)
-│   └── firebase.ts             # Inicialización del SDK de Firebase, Auth y Firestore
-├── public/                     # Recursos estáticos y PWA
-│   ├── icons/                  # Iconos PWA responsivos y maskable para dispositivos
-│   ├── CoFoundUE_banner.png    # Banner de marca (README / landing)
-│   ├── CoFoundUE_logo.png      # Logotipo oficial de CoFound UE
-│   ├── og-image.jpg            # Imagen OpenGraph optimizada para previsualizaciones (1200x630)
-│   └── sw.js                   # Service Worker para capacidades PWA y caché offline
-├── tests/                      # Suite de pruebas automatizadas
-│   └── rules.test.ts           # Tests de reglas Firestore con Vitest y emulador local
-├── firestore.indexes.json      # Definición de índices compuestos de Firestore
-├── firestore.rules             # Reglas de seguridad de Firestore (Auth, accesos y mensajería)
-├── LICENSE                     # Licencia propietaria (Todos los derechos reservados)
-├── next.config.mjs             # Configuración de compilación Next.js
-├── package.json                # Dependencias, scripts y metadatos
-├── postcss.config.mjs          # Plugins de procesamiento CSS (Autoprefixer, Tailwind)
-├── tailwind.config.ts          # Configuración del tema Tailwind
-└── tsconfig.json               # Reglas del compilador de TypeScript
+│       └── ci.yml                        # Pipeline CI: lint, tests con emulador, build
+├── app/                                  # Rutas y páginas principales (Next.js App Router)
+│   ├── dashboard/                        # Panel principal del estudiante (Marketplace de proyectos)
+│   │   ├── mensajes/                     # Chat y mensajería en tiempo real entre creadores y postulantes
+│   │   ├── mis-postulaciones/            # Rastreador de postulaciones enviadas
+│   │   ├── mis-proyectos/                # Gestor de proyectos creados por el usuario
+│   │   ├── nuevo/                        # Formulario para publicar una nueva idea/proyecto
+│   │   ├── proyecto/[id]/                # Vista detallada de un proyecto y botón de postulación
+│   │   │   ├── editar/                   # Formulario de edición de proyectos existentes
+│   │   │   │   └── page.tsx              # Vista de edición protegida
+│   │   │   └── page.tsx                  # Detalle del proyecto y postulación
+│   │   └── page.tsx                      # Vista de Proyectos Activos (Dashboard central)
+│   ├── legal/                            # Cumplimiento normativo y aviso legal
+│   │   ├── aviso-legal/                  # Documentación de Términos y Condiciones
+│   │   ├── cookies/                      # Política de Galletas / Cookies
+│   │   └── privacidad/                   # Política de Privacidad de Datos
+│   ├── perfil/                           # Perfil universitario del estudiante
+│   │   ├── [uid]/                        # Vista de perfil público de otros estudiantes
+│   │   └── page.tsx                      # Gestión de datos personales, campus y habilidades
+│   ├── globals.css                       # Estilos globales y extensiones Tailwind
+│   ├── layout.tsx                        # Estructura raíz con fondo interactivo, PWA y Toaster
+│   ├── manifest.ts                       # Generador de metadatos de la PWA (Web App Manifest)
+│   ├── page.tsx                          # Landing Page con formulario de Login/Registro integrados
+│   ├── robots.ts                         # Generador dinámico de robots.txt con host canónico
+│   └── sitemap.ts                        # Generador dinámico de sitemap.xml con URLs canónicas
+├── components/                           # Componentes de UI reutilizables
+│   ├── ui/                               # Primitivas y componentes visuales base (Skeleton loaders)
+│   ├── campus-feed-preview.tsx           # Muro social interactivo de la Landing
+│   ├── footer.tsx                        # Pie de página con enlaces legales y enlace al repositorio público en GitHub
+│   ├── hero-section.tsx                  # Sección principal de bienvenida e impacto visual
+│   ├── how-it-works.tsx                  # Guía paso a paso sobre el funcionamiento de la red
+│   ├── InitialsAvatar.tsx                # Generador local de avatares con iniciales (privacidad por diseño)
+│   ├── Navbar.tsx                        # Barra de navegación adaptativa con estado de usuario
+│   ├── particle-background.tsx           # Canvas HTML5 con efecto matricial de partículas
+│   ├── ProtectedRoute.tsx                # Guardián de rutas privadas con hard-gate de email verificado
+│   ├── PwaInstallPrompt.tsx              # Popup de instalación PWA no invasivo (sesión, descarte 30d, standalone)
+│   ├── ServiceWorkerRegister.tsx         # Registro del Service Worker PWA en entornos de producción
+│   └── student-faq.tsx                   # FAQ para estudiantes en la Landing
+├── context/                              # Contextos globales de React
+│   └── AuthContext.tsx                   # Proveedor y hook de autenticación de usuario
+├── lib/                                  # Lógica de negocio y utilidades
+│   ├── auth-errors.ts                    # Mapeo de errores de Firebase Auth a lenguaje amigable (ES)
+│   ├── firebase.ts                       # Inicialización del SDK de Firebase, Auth y Firestore
+│   └── site.ts                           # Constante SITE_URL, única fuente de verdad del dominio canónico
+├── public/                               # Recursos estáticos y PWA
+│   ├── icons/                            # Iconos PWA responsivos y maskable para dispositivos
+│   ├── CoFoundUE_banner.png              # Banner de marca (README / landing)
+│   ├── CoFoundUE_logo.png                # Logotipo oficial de CoFound UE
+│   ├── Diagrama_CoFoundUE.png            # Diagrama de flujo de arquitectura (optimizado a ~272 KB)
+│   ├── og-image.jpg                      # Imagen OpenGraph optimizada para previsualizaciones (1200x630)
+│   └── sw.js                             # Service Worker para capacidades PWA y caché offline
+├── tests/                                # Suite de pruebas automatizadas
+│   └── rules.test.ts                     # Tests de reglas Firestore con Vitest y emulador local
+├── CoFound UE — Protocolo de Smoke Test.md # Protocolo de pruebas pre-piloto
+├── firebase.json                         # Configuración de Firebase y emuladores locales
+├── firestore.indexes.json                # Definición de índices compuestos de Firestore
+├── firestore.rules                       # Reglas de seguridad de Firestore (email verificado obligatorio, accesos granulares y mensajería)
+├── LICENSE                               # Licencia propietaria (Todos los derechos reservados)
+├── next.config.mjs                       # Config Next.js: redirect 308 de host a www.cofoundue.es y headers del Service Worker
+├── package.json                          # Dependencias, scripts y metadatos
+├── postcss.config.mjs                    # Plugins de procesamiento CSS (Autoprefixer, Tailwind)
+├── tailwind.config.ts                    # Configuración del tema Tailwind
+└── tsconfig.json                         # Reglas del compilador de TypeScript
 ```
 
 ## 🎬 Vídeo de Presentación (1 min)
@@ -375,7 +384,7 @@ En el directorio del proyecto, puedes ejecutar:
 
 ## 🧪 Pruebas (Testing)
 
-El proyecto cuenta con un entorno de pruebas unitarias configurado con **Vitest** y el Emulador local de Firestore para validar rigurosamente las reglas de seguridad (`firestore.rules`).
+El proyecto cuenta con un entorno de pruebas unitarias configurado con **Vitest** y el Emulador local de Firestore para validar rigurosamente las reglas de seguridad (`firestore.rules`). La suite actual consta de **23 tests** que validan control de acceso, validación de campos en escritura y el bloqueo de usuarios sin email verificado.
 
 ### Ejecutar tests localmente
 Asegúrate de haber instalado las dependencias (`npm install`). Para lanzar el emulador y correr la suite de tests, ejecuta:
@@ -396,9 +405,11 @@ La aplicación incluye un motor de validación para proteger el ecosistema unive
    - `@live.uem.es` *(Alumnos)*
    - `@universidadeuropea.es` *(Personal / Docentes)*
 2. **Rutas Protegidas (`ProtectedRoute.tsx`):**
-   Las vistas internas (`/dashboard`, `/perfil`, `/dashboard/nuevo`, `/dashboard/proyecto/[id]`, `/dashboard/mensajes`, etc.) verifican la sesión activa en Firebase Auth antes de conceder acceso, redirigiendo automáticamente a la Landing Page si el usuario no se encuentra autenticado.
+   Las vistas internas (`/dashboard`, `/perfil`, `/dashboard/nuevo`, `/dashboard/proyecto/[id]`, `/dashboard/mensajes`, etc.) verifican la sesión activa en Firebase Auth antes de conceder acceso, redirigiendo automáticamente a la Landing Page si el usuario no se encuentra autenticado. Además, exige email verificado como puerta obligatoria (hard-gate): si `user.emailVerified == false`, bloquea TODA la interfaz interna con pantalla de verificación, reenvío de correo con cooldown de 60s y manejo de `auth/too-many-requests`.
 3. **Reglas de Seguridad Estrictas (`firestore.rules`):**
-   Acceso granular en Firestore: usuarios solo editan su propio perfil, creadores gestionan sus proyectos, y la subcolección de mensajes está estrictamente restringida a los dos participantes de la postulación (creador y postulante), bloqueando cualquier acceso cruzado no autorizado.
+   Acceso granular en Firestore: usuarios solo editan su propio perfil, creadores gestionan sus proyectos, y la subcolección de mensajes está estrictamente restringida a los dos participantes de la postulación (creador y postulante), bloqueando cualquier acceso cruzado no autorizado. Desplegado en producción, `isAuthenticated()` exige `request.auth.token.email_verified == true`: un usuario sin verificar queda bloqueado también ante peticiones directas vía SDK/API REST; y las reglas validan campos en escritura: título 3–100 chars, descripción 20–1500, 1–10 perfiles, `creatorName` obligatorio, mensajes 1–1000 chars.
+4. **Cobertura Automatizada en CI:**
+   La suite de 23 tests (`tests/rules.test.ts`, Vitest + emulador) cubre control de acceso por rol/participante, validación de campos en escritura y bloqueo total de usuarios sin email verificado. CI la ejecuta en cada push a main.
 
 ---
 
@@ -410,7 +421,7 @@ La plataforma está optimizada para ser desplegada en **Vercel** o plataformas c
 2. En la configuración del proyecto, agrega las variables de entorno de Firebase (`NEXT_PUBLIC_FIREBASE_*`).
 3. Vercel detectará automáticamente Next.js 14 y ejecutará la compilación.
 
-URL de producción activa: **[https://cofoundue.es](https://cofoundue.es)**
+URL de producción activa: **[https://www.cofoundue.es](https://www.cofoundue.es)**
 
 ---
 
@@ -422,18 +433,21 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
   * **Fase 0:** Auth institucional (`@live.uem.es` / `@universidadeuropea.es`), reglas de seguridad de Firestore y borrado de proyectos en cascada.
   * **Fase 1:** Marketplace de proyectos, sistema de postulaciones y perfiles universitarios.
   * **Fase 2:** Mensajería en tiempo real, perfiles de usuario y *skeleton loaders*.
-  * **Fase 3A:** PWA instalable, dominio custom (`cofoundue.es`), SEO técnico (Sitemap, Robots) y CI con tests automatizados de reglas Firestore.
+  * **Fase 3A:** PWA instalable, dominio custom (`www.cofoundue.es`), SEO técnico (Sitemap, Robots) y CI con tests automatizados de reglas Firestore.
+  * **Fase 3B:** Hardening de seguridad (email verificado exigido en reglas y hard-gate de interfaz), unificación SEO al dominio canónico `www.cofoundue.es` (metadataBase, og:url, canonical, redirect 308 desde el subdominio de Vercel), limpieza de assets huérfanos (−8,2 MB), prompt PWA no invasivo, y ampliación del piloto a los campus Turia y Alameda.
 
 * **En curso / Próximas fases:**
+  * Internacionalización completa ES/EN con selector de idioma (campus mayoritariamente internacional).
+  * Ejecución del smoke test completo y lanzamiento del piloto en los campus Turia y Alameda.
   * Notificaciones transaccionales por email.
   * Buscador global de proyectos.
   * Dashboard de métricas para creadores.
 
 ---
 
-## 📬 Piloto en Campus Turia y Contacto
+## 📬 Piloto en Campus Turia y Alameda y Contacto
 
-Cabe destacar que CoFound UE nace bajo la exigente filosofía del *learning by doing* de nuestra universidad. Por lo tanto, el despliegue inicial de la plataforma se plantea como un **piloto exclusivo y acotado al Campus del Turia** durante este cuatrimestre. Limitar el alcance en esta primera fase nos permite asegurar la calidad del *matchmaking* y garantizar que los primeros usuarios extraigan un valor real e inmediato para sus proyectos y asignaturas.
+Cabe destacar que CoFound UE nace bajo la exigente filosofía del *learning by doing* de nuestra universidad. Por lo tanto, el despliegue inicial de la plataforma se plantea como un **piloto en ambos campus presenciales de Valencia (Turia —Guillem de Castro 175— y Alameda —Paseo de la Alameda 7—)** durante este cuatrimestre. Los dos campus están a 20-25 min a pie y forman un único mercado de talento, permitiendo asegurar la calidad del *matchmaking* y garantizar que los primeros usuarios extraigan un valor real e inmediato para sus proyectos y asignaturas.
 
 Para evaluar la tracción y viabilidad del producto en este entorno real, el piloto se regirá por KPIs estratégicos muy claros. En este sentido, monitorizaremos semanalmente la tasa de usuarios activos (WAU), el ratio de conversión de postulaciones (solicitudes enviadas vs. equipos cerrados) y el *Time-to-Match* (el tiempo medio que tarda una idea publicada en encontrar los perfiles que necesita).
 
