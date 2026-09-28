@@ -35,7 +35,10 @@ export default function MiPerfil() {
             const data = docSnap.data();
             setName(data.name || "");
             setDegree(data.degree || "");
-            setCampus(data.campus || "Valencia");
+            let initialCampus = data.campus || "Valencia";
+            if (initialCampus === "Campus Turia / Valencia" || initialCampus === "Campus Turia (Valencia)") initialCampus = "Valencia";
+            if (initialCampus === "Campus Alameda / Valencia") initialCampus = "Alameda";
+            setCampus(initialCampus);
             setBio(data.bio || "");
             setSkills(data.skills || []);
           }
@@ -150,7 +153,8 @@ export default function MiPerfil() {
                   onChange={(e) => setCampus(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all"
                 >
-                  <option value="Valencia">Campus Turia (Valencia)</option>
+                  <option value="Valencia">Campus Turia / Valencia</option>
+                  <option value="Alameda">Campus Alameda / Valencia</option>
                   <option value="Villaviciosa">Campus Villaviciosa de Odón (Madrid)</option>
                   <option value="Alcobendas">Campus Alcobendas (Madrid)</option>
                   <option value="Alicante">Campus Alicante</option>

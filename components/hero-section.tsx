@@ -80,7 +80,7 @@ export default function HeroSection() {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white group-hover:text-red-400 transition-colors duration-200">
-              Lanzamiento en Campus Turia
+              Lanzamiento en campus Turia y Alameda
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
               Sé de los primeros en publicar tu idea o registrar tu perfil para formar equipo con compañeros de otras facultades.

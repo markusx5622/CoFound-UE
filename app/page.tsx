@@ -218,7 +218,7 @@ export default function LandingPage() {
                   <div className="flex items-center justify-between gap-2 mb-5">
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-950/50 border border-red-800/40 text-[11px] font-semibold text-red-300 shadow-sm">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#E60000] animate-pulse" />
-                      <span>Campus Turia • Registro Oficial</span>
+                      <span>Campus Turia y Alameda • Registro Oficial</span>
                     </div>
                   </div>
 
@@ -332,7 +332,7 @@ export default function LandingPage() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
-                      <span>Acceso libre para alumnos del Campus Turia</span>
+                      <span>Acceso libre para alumnos de campus Turia y Alameda</span>
                     </div>
                   </div>
                 </>

@@ -67,7 +67,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md shadow-inner">
             <Sparkles className="h-3.5 w-3.5 text-[#E60000]" />
-            <span>Colaboración Multidisciplinar • Campus Turia</span>
+            <span>Colaboración Multidisciplinar • Campus Turia y Alameda</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
@@ -89,7 +89,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
           <div className="flex items-center gap-3 text-zinc-400 text-xs">
             <span className="flex items-center gap-1.5 text-zinc-300">
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Campus Turia (Valencia)</span>
+              <span>Campus Turia y Alameda (Valencia)</span>
             </span>
           </div>
         </div>
