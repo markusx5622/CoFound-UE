@@ -38,6 +38,9 @@ export default function MiPerfil() {
             let initialCampus = data.campus || "Valencia";
             if (initialCampus === "Campus Turia / Valencia" || initialCampus === "Campus Turia (Valencia)") initialCampus = "Valencia";
             if (initialCampus === "Campus Alameda / Valencia") initialCampus = "Alameda";
+            if (initialCampus !== "Alameda" && initialCampus !== "Valencia") {
+              initialCampus = "Valencia";
+            }
             setCampus(initialCampus);
             setBio(data.bio || "");
             setSkills(data.skills || []);
@@ -155,12 +158,6 @@ export default function MiPerfil() {
                 >
                   <option value="Valencia">Campus Turia / Valencia</option>
                   <option value="Alameda">Campus Alameda / Valencia</option>
-                  <option value="Villaviciosa">Campus Villaviciosa de Odón (Madrid)</option>
-                  <option value="Alcobendas">Campus Alcobendas (Madrid)</option>
-                  <option value="Alicante">Campus Alicante</option>
-                  <option value="Málaga">Campus Málaga</option>
-                  <option value="Canarias">Campus Canarias</option>
-                  <option value="Online">Online</option>
                 </select>
               </div>
 

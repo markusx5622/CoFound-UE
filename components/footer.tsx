@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Github, Mail } from "lucide-react";
+import { Github, Mail, Compass, HelpCircle, UserPlus, Scale, ShieldCheck, Cookie } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -45,25 +45,28 @@ export default function Footer() {
               <li>
                 <Link 
                   href="/#how-it-works"
-                  className="hover:text-white transition-colors block"
+                  className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
-                  Cómo funciona
+                  <Compass className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span>Cómo funciona</span>
                 </Link>
               </li>
               <li>
                 <Link 
                   href="/#faq"
-                  className="hover:text-white transition-colors block"
+                  className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
-                  Preguntas frecuentes
+                  <HelpCircle className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span>Preguntas frecuentes</span>
                 </Link>
               </li>
               <li>
                 <Link 
                   href="/#join"
-                  className="hover:text-white transition-colors block"
+                  className="group flex items-center gap-2.5 hover:text-white transition-colors"
                 >
-                  Unirme a la red
+                  <UserPlus className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span>Unirme a la red</span>
                 </Link>
               </li>
             </ul>
@@ -74,18 +77,30 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/legal/aviso-legal" className="hover:text-white transition-colors">
-                  Aviso Legal
+                <Link 
+                  href="/legal/aviso-legal" 
+                  className="group flex items-center gap-2.5 hover:text-white transition-colors"
+                >
+                  <Scale className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span>Aviso Legal</span>
                 </Link>
               </li>
               <li>
-                <Link href="/legal/privacidad" className="hover:text-white transition-colors">
-                  Política de Privacidad
+                <Link 
+                  href="/legal/privacidad" 
+                  className="group flex items-center gap-2.5 hover:text-white transition-colors"
+                >
+                  <ShieldCheck className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span>Política de Privacidad</span>
                 </Link>
               </li>
               <li>
-                <Link href="/legal/cookies" className="hover:text-white transition-colors">
-                  Política de Cookies
+                <Link 
+                  href="/legal/cookies" 
+                  className="group flex items-center gap-2.5 hover:text-white transition-colors"
+                >
+                  <Cookie className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span>Política de Cookies</span>
                 </Link>
               </li>
             </ul>
@@ -95,10 +110,13 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Contacto</h3>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-[#E60000]" />
-                <a href="mailto:cofoundue@gmail.com" className="hover:text-white transition-colors">
-                  cofoundue@gmail.com
+              <li>
+                <a 
+                  href="mailto:cofoundue@gmail.com" 
+                  className="group flex items-center gap-2.5 hover:text-white transition-colors"
+                >
+                  <Mail className="h-4 w-4 text-[#E60000] shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                  <span>cofoundue@gmail.com</span>
                 </a>
               </li>
               <li className="mt-4">
