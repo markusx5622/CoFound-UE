@@ -343,6 +343,7 @@ export const es = {
     saveBtn: "Guardar Cambios",
     saveSuccess: "Perfil guardado correctamente.",
     saveError: "Hubo un error al guardar el perfil.",
+    logoutBtn: "Cerrar Sesión",
     deleteAccountBtn: "Eliminar mi cuenta",
     deleteAccountTitle: "Eliminar cuenta permanentemente",
     deleteAccountWarning: "¿Estás seguro? Esta acción es irreversible. Se eliminará tu perfil, todos tus proyectos y tus postulaciones.",

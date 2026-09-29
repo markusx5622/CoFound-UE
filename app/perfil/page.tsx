@@ -3,10 +3,11 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
-import { deleteUser } from "firebase/auth";
-import { db } from "@/lib/firebase";
-import { X, Plus, Save } from "lucide-react";
+import { deleteUser, signOut } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { X, Plus, Save, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import { useLanguage } from "@/context/LanguageContext";
@@ -27,6 +28,8 @@ export default function MiPerfil() {
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -158,6 +161,18 @@ export default function MiPerfil() {
     }
   };
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut(auth);
+      router.push("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error(t("protectedRoute.toastErrorSignOut") || "Error al cerrar sesión");
+      setIsLoggingOut(false);
+    }
+  };
+
   if (fetching) {
     return (
       <ProtectedRoute>
@@ -282,11 +297,21 @@ export default function MiPerfil() {
               </div>
             </form>
 
-            <div className="mt-8 pt-8 border-t border-zinc-800/50">
+            <div className="mt-8 pt-8 border-t border-zinc-800/50 space-y-3">
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="w-full bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-sm flex items-center justify-center gap-2 group select-none disabled:opacity-50"
+              >
+                <LogOut className="h-5 w-5 text-red-400 group-hover:text-white transition-colors" />
+                <span>{isLoggingOut ? t("auth.form.processing") : t("profile.logoutBtn")}</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(true)}
-                className="w-full bg-transparent border border-red-900/50 text-red-500 hover:bg-red-950/30 hover:border-red-800 font-semibold py-4 px-6 rounded-xl transition-all duration-200"
+                className="w-full bg-transparent border border-red-900/30 text-red-500/80 hover:text-red-400 hover:bg-red-950/20 hover:border-red-800 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm"
               >
                 {t("profile.deleteAccountBtn")}
               </button>

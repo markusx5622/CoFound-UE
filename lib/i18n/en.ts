@@ -345,6 +345,7 @@ export const en: Dictionary = {
     saveBtn: "Save Changes",
     saveSuccess: "Profile saved successfully.",
     saveError: "There was an error saving your profile.",
+    logoutBtn: "Log Out",
     deleteAccountBtn: "Delete my account",
     deleteAccountTitle: "Permanently delete account",
     deleteAccountWarning: "Are you sure? This action is irreversible. Your profile, all your projects, and your applications will be deleted.",

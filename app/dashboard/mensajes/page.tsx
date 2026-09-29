@@ -196,8 +196,8 @@ export default function Mensajes() {
 
   return (
     <ProtectedRoute>
-      <div className="bg-transparent flex-grow flex flex-col relative z-10 h-[calc(100vh-80px)] pt-6 pb-0">
-        <div className="max-w-7xl mx-auto w-full flex-grow flex overflow-hidden border border-zinc-800 rounded-t-2xl">
+      <div className="bg-transparent flex-grow flex flex-col relative z-10 h-[calc(100vh-5rem)] md:h-[calc(100dvh-5rem)] max-h-[calc(100dvh-5rem)] min-h-[500px] p-3 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto w-full flex-grow flex overflow-hidden border border-zinc-800 rounded-2xl shadow-2xl bg-zinc-950/60 backdrop-blur-md">
           
           {/* Sidebar */}
           <div className={`w-full md:w-1/3 bg-zinc-950/80 backdrop-blur-md border-r border-zinc-800 flex flex-col h-full ${activeChat ? 'hidden md:flex' : 'flex'}`}>

@@ -3,12 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { auth, db } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
+import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -44,7 +43,6 @@ function hasUnreadMessages(
 
 export default function Navbar() {
   const { user } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
   const { t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -115,14 +113,6 @@ export default function Navbar() {
     };
   }, [user]);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.push("/");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
 
   if (pathname === "/" || pathname.startsWith("/legal")) {
     return null;
@@ -184,13 +174,6 @@ export default function Navbar() {
               })}
               <div className="ml-1 flex items-center gap-1.5">
                 <LanguageSelector />
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 shadow-sm flex items-center gap-1.5 group select-none"
-                >
-                  <LogOut className="w-3.5 h-3.5 text-red-400 group-hover:text-white transition-colors" />
-                  <span>{t("navbar.logout")}</span>
-                </button>
               </div>
             </div>
 
@@ -249,16 +232,6 @@ export default function Navbar() {
           >
             <span>📱</span>
             <span>{t("navbar.installApp")}</span>
-          </button>
-          <button
-            onClick={() => {
-              setIsMenuOpen(false);
-              handleLogout();
-            }}
-            className="mt-1 w-full bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>{t("navbar.logout")}</span>
           </button>
         </div>
       )}
