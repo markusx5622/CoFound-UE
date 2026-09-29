@@ -2,7 +2,8 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
+import { deleteUser } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { X, Plus, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -23,6 +24,9 @@ export default function MiPerfil() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const { user, loading: authLoading } = useAuth();
+  
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -88,7 +92,6 @@ export default function MiPerfil() {
         campus,
         bio,
         skills,
-        email: user.email,
         updatedAt: new Date()
       }, { merge: true });
 
@@ -98,6 +101,60 @@ export default function MiPerfil() {
       toast.error(t("profile.saveError"));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    setIsDeletingAccount(true);
+    try {
+      // 1. Delete user's applications
+      const qApps = query(collection(db, "applications"), where("applicantId", "==", user.uid));
+      const appsSnap = await getDocs(qApps);
+      const appsPromises = appsSnap.docs.map(async (d) => {
+        const msgsSnap = await getDocs(collection(db, "applications", d.id, "messages"));
+        await Promise.all(msgsSnap.docs.map(m => deleteDoc(m.ref)));
+        await deleteDoc(d.ref);
+      });
+      await Promise.all(appsPromises);
+
+      // 2. Delete user's projects and applications to those projects
+      const qProjects = query(collection(db, "projects"), where("creator_id", "==", user.uid));
+      const projSnap = await getDocs(qProjects);
+      
+      const projPromises = projSnap.docs.map(async (projectDoc) => {
+        // Delete applications to this project
+        const qProjApps = query(collection(db, "applications"), where("projectId", "==", projectDoc.id));
+        const projAppsSnap = await getDocs(qProjApps);
+        const projAppsPromises = projAppsSnap.docs.map(async (d) => {
+          const msgsSnap = await getDocs(collection(db, "applications", d.id, "messages"));
+          await Promise.all(msgsSnap.docs.map(m => deleteDoc(m.ref)));
+          await deleteDoc(d.ref);
+        });
+        await Promise.all(projAppsPromises);
+        
+        // Delete project itself
+        await deleteDoc(projectDoc.ref);
+      });
+      await Promise.all(projPromises);
+
+      // 3. Delete user document
+      await deleteDoc(doc(db, "users", user.uid));
+
+      // 4. Delete Auth user
+      await deleteUser(user);
+
+      toast.success(t("profile.deleteAccountSuccess"));
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      if (error.code === 'auth/requires-recent-login') {
+        toast.error(t("profile.deleteAccountRequiresLogin"));
+      } else {
+        toast.error(t("profile.deleteAccountError"));
+      }
+    } finally {
+      setIsDeletingAccount(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -224,9 +281,49 @@ export default function MiPerfil() {
                 </button>
               </div>
             </form>
+
+            <div className="mt-8 pt-8 border-t border-zinc-800/50">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(true)}
+                className="w-full bg-transparent border border-red-900/50 text-red-500 hover:bg-red-950/30 hover:border-red-800 font-semibold py-4 px-6 rounded-xl transition-all duration-200"
+              >
+                {t("profile.deleteAccountBtn")}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-zinc-900 border border-red-900/50 p-6 sm:p-8 rounded-2xl w-full max-w-md shadow-[0_0_40px_rgba(230,0,0,0.15)] relative">
+            <h2 className="text-xl font-bold text-white mb-2">{t("profile.deleteAccountTitle")}</h2>
+            <p className="text-zinc-400 text-sm mb-8">{t("profile.deleteAccountWarning")}</p>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeletingAccount}
+                className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50"
+              >
+                {t("profile.deleteAccountCancel")}
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeletingAccount}
+                className="flex-1 bg-[#E60000] hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center"
+              >
+                {isDeletingAccount ? (
+                  <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  t("profile.deleteAccountConfirm")
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ProtectedRoute>
   );
 }

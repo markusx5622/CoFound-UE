@@ -342,7 +342,16 @@ export const es = {
     saving: "Guardando...",
     saveBtn: "Guardar Cambios",
     saveSuccess: "Perfil guardado correctamente.",
-    saveError: "Hubo un error al guardar el perfil."
+    saveError: "Hubo un error al guardar el perfil.",
+    deleteAccountBtn: "Eliminar mi cuenta",
+    deleteAccountTitle: "Eliminar cuenta permanentemente",
+    deleteAccountWarning: "¿Estás seguro? Esta acción es irreversible. Se eliminará tu perfil, todos tus proyectos y tus postulaciones.",
+    deleteAccountConfirm: "Sí, eliminar cuenta",
+    deleteAccountCancel: "Cancelar",
+    deleteAccountSuccess: "Tu cuenta ha sido eliminada correctamente.",
+    deleteAccountError: "Hubo un error al eliminar tu cuenta. Inténtalo de nuevo.",
+    deleteAccountRequiresLogin: "Debes cerrar sesión y volver a entrar para realizar esta acción por motivos de seguridad.",
+    deletingAccount: "Eliminando..."
   },
   publicProfile: {
     notFoundTitle: "Usuario no encontrado",

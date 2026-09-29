@@ -344,7 +344,16 @@ export const en: Dictionary = {
     saving: "Saving...",
     saveBtn: "Save Changes",
     saveSuccess: "Profile saved successfully.",
-    saveError: "There was an error saving your profile."
+    saveError: "There was an error saving your profile.",
+    deleteAccountBtn: "Delete my account",
+    deleteAccountTitle: "Permanently delete account",
+    deleteAccountWarning: "Are you sure? This action is irreversible. Your profile, all your projects, and your applications will be deleted.",
+    deleteAccountConfirm: "Yes, delete account",
+    deleteAccountCancel: "Cancel",
+    deleteAccountSuccess: "Your account has been successfully deleted.",
+    deleteAccountError: "There was an error deleting your account. Please try again.",
+    deleteAccountRequiresLogin: "You must log out and log back in to perform this action for security reasons.",
+    deletingAccount: "Deleting..."
   },
   publicProfile: {
     notFoundTitle: "User not found",

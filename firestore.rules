@@ -8,7 +8,10 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && request.auth.uid == userId;
+      allow create, update: if isAuthenticated() 
+                   && request.auth.uid == userId 
+                   && (!('email' in request.resource.data));
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
 
     match /projects/{projectId} {
@@ -47,6 +50,9 @@ service cloud.firestore {
           request.resource.data.text is string &&
           request.resource.data.text.size() >= 1 &&
           request.resource.data.text.size() <= 1000;
+        allow delete: if isAuthenticated() && 
+          (get(/databases/$(database)/documents/applications/$(applicationId)).data.applicantId == request.auth.uid || 
+           get(/databases/$(database)/documents/applications/$(applicationId)).data.creatorId == request.auth.uid);
       }
     }
   }

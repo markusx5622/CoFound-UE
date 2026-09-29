@@ -30,7 +30,6 @@ interface Application {
   createdAt: any;
   applicantData?: {
     name: string;
-    email: string;
     degree: string;
     campus: string;
     bio: string;
@@ -74,7 +73,6 @@ export default function MisProyectos() {
             const data = userDocSnapshot.data();
             app.applicantData = {
               name: data.name || t("myProjects.defaultName"),
-              email: data.email || "",
               degree: data.degree || "",
               campus: data.campus || "",
               bio: data.bio || "",
@@ -113,7 +111,11 @@ export default function MisProyectos() {
       );
       const appSnapshot = await getDocs(qApps);
       
-      const deletePromises = appSnapshot.docs.map(appDoc => deleteDoc(doc(db, "applications", appDoc.id)));
+      const deletePromises = appSnapshot.docs.map(async (appDoc) => {
+        const msgsSnap = await getDocs(collection(db, "applications", appDoc.id, "messages"));
+        await Promise.all(msgsSnap.docs.map(m => deleteDoc(m.ref)));
+        await deleteDoc(doc(db, "applications", appDoc.id));
+      });
       await Promise.all(deletePromises);
 
       setProjects(projects.filter(p => p.id !== projectId));
@@ -242,7 +244,6 @@ export default function MisProyectos() {
                               <span className="bg-red-500/20 text-red-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">{t("myProjects.rejected")}</span>
                             )}
                           </div>
-                          <div className="text-xs text-zinc-500 mt-1">{app.applicantData?.email}</div>
                         </td>
                         <td className="px-6 py-4">
                           <div>{app.applicantData?.degree || t("myProjects.notSpecified")}</div>
@@ -305,7 +306,6 @@ export default function MisProyectos() {
             <div className="text-center mb-6">
               <InitialsAvatar name={selectedApplicant.name} size={80} className="w-20 h-20 mx-auto mb-4 text-2xl font-bold" />
               <h3 className="text-2xl font-bold text-white">{selectedApplicant.name || t("myProjects.defaultName")}</h3>
-              <p className="text-[#E60000]">{selectedApplicant.email}</p>
             </div>
             
             <div className="space-y-4">

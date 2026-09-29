@@ -13,7 +13,6 @@ import { getCategoryLabel } from "@/lib/categories";
 interface PublicUser {
   uid: string;
   name: string;
-  email: string;
   degree: string;
   campus: string;
   bio: string;
@@ -104,8 +103,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                   </div>
                   
                   <div className="pt-14">
-                    <h1 className="text-3xl font-extrabold text-white mb-1">{profileUser.name || t("publicProfile.defaultName")}</h1>
-                    <p className="text-[#E60000] font-medium mb-6">{profileUser.email}</p>
+                    <h1 className="text-3xl font-extrabold text-white mb-6">{profileUser.name || t("publicProfile.defaultName")}</h1>
                     
                     <div className="flex flex-wrap gap-4 mb-8">
                       {profileUser.degree && (
