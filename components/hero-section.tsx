@@ -46,7 +46,7 @@ export default function HeroSection() {
         >
           <Image 
             src="/CoFoundUE_logo.png" 
-            alt="CoFound UE Logo" 
+            alt="CoFound UE (cofoundue) - Logo" 
             width={180} 
             height={180} 
             className="w-24 h-24 sm:w-40 sm:h-40 md:w-44 md:h-44 object-contain rounded-[22%]"
@@ -57,6 +57,7 @@ export default function HeroSection() {
       
       {/* Main Title */}
       <motion.h1 variants={itemVariants} className="text-3xl sm:text-5xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight">
+        <span className="sr-only">CoFound UE (cofoundue) - </span>
         {t("landing.hero.title1")} <br />
         <span className="text-[#E60000] drop-shadow-[0_0_25px_rgba(230,0,0,0.45)] hover:brightness-110 transition-all duration-300 inline-block">
           {t("landing.hero.titleHighlight")}

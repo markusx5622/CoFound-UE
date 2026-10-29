@@ -17,10 +17,52 @@ export const viewport: Viewport = {
   themeColor: "#E60000",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "CoFound UE",
+      alternateName: ["cofoundue", "CoFoundUE", "CoFound UE Valencia", "CoFound Universidad Europea"],
+      description: "La Plataforma Exclusiva de Co-Founders y Talento para la Universidad Europea.",
+      inLanguage: ["es-ES", "en-US"],
+    },
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "CoFound UE",
+      alternateName: ["cofoundue", "CoFoundUE"],
+      url: SITE_URL,
+      logo: `${SITE_URL}/CoFoundUE_logo.png`,
+    },
+  ],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "CoFound UE - Encuentra tu Co-Founder",
+  title: {
+    default: "CoFound UE | Plataforma de Co-Founders y Talento - Universidad Europea",
+    template: "%s | CoFound UE",
+  },
   description: "Conecta con talento de ADE, Marketing, Tech y Diseño en el Campus de la Universidad Europea de Valencia para crear tu startup.",
+  keywords: [
+    "cofoundue",
+    "cofound ue",
+    "CoFound UE",
+    "CoFoundUE",
+    "co founder universidad europea",
+    "startups universidad europea",
+    "talento universidad europea",
+    "tfg universidad europea emprendimiento",
+    "emprendimiento universidad europea valencia",
+    "estudiantes universidad europea startups",
+    "marketplace talento universidad europea",
+  ],
+  authors: [{ name: "CoFound UE Team" }],
+  creator: "CoFound UE",
+  publisher: "CoFound UE",
   alternates: {
     canonical: "/",
   },
@@ -34,6 +76,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
@@ -45,7 +88,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_ES",
     siteName: "CoFound UE",
-    title: "CoFound UE - Conecta con talento en el Campus",
+    title: "CoFound UE | Plataforma de Co-Founders y Talento - Universidad Europea",
     description: "La red exclusiva para conectar talento de ADE, Marketing, Tech y Diseño de la Universidad Europea.",
     url: SITE_URL,
     images: [
@@ -60,7 +103,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "CoFound UE - Conecta con talento en el Campus",
+    title: "CoFound UE | Plataforma de Co-Founders y Talento - Universidad Europea",
     description: "La red exclusiva para conectar talento de ADE, Marketing, Tech y Diseño de la Universidad Europea.",
     images: [
       {
@@ -81,6 +124,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${inter.className} min-h-screen bg-zinc-950 text-white flex flex-col relative`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <LanguageProvider>
           <AuthProvider>
             <ServiceWorkerRegister />

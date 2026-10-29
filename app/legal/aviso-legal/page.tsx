@@ -1,7 +1,7 @@
 import AvisoLegalContent from "./content";
 
 export const metadata = {
-  title: "Aviso Legal | CoFound UE",
+  title: "Aviso Legal",
   description: "Aviso legal y condiciones de uso de la plataforma CoFound UE para estudiantes de la Universidad Europea.",
   alternates: {
     canonical: "/legal/aviso-legal",

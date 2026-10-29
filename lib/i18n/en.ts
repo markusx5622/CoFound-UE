@@ -90,11 +90,11 @@ export const en: Dictionary = {
     titleHighlight: "no fluff",
     subtitle: "Everything you need to know before creating your profile and starting to connect on campus.",
     q1: "Is CoFound UE completely free?",
-    a1: "Yes, 100% free. There are no subscriptions, hidden costs, or commissions. CoFound UE was born as a support tool for the European University of Valencia community to boost real projects.",
+    a1: "Yes, 100% free. There are no subscriptions, hidden costs, or commissions. CoFound UE (cofoundue) was born as a support tool for the European University of Valencia community to boost real projects.",
     q2: "Can I join if I don't have a project idea yet?",
     a2: "Of course! Over 60% of students join to contribute their talent (coding, UX/UI design, marketing, finance, management) to projects started by other campus peers.",
     q3: "Who organizes and is behind CoFound UE?",
-    a3: "It is an independent initiative driven by students of the European University of Valencia. The goal is to break down barriers between faculties and connect future founders before graduating.",
+    a3: "CoFound UE (cofoundue) is an independent initiative driven by students of the European University of Valencia. The goal is to break down barriers between faculties and connect future founders before graduating.",
     q4: "Who can see my data and how do I contact people?",
     a4: "Access is strictly limited to students with a verified institutional email (@live.uem.es or @universidadeuropea.es). Inside the platform, you can apply to projects and chat directly with other members securely.",
     ctaTitle: "Ready to connect on Campus?",
@@ -139,7 +139,7 @@ export const en: Dictionary = {
     bottomBtn: "Create my Student Account"
   },
   footer: {
-    description: "The exclusive talent network for European University students. Connect, create, and launch your next big project.",
+    description: "CoFound UE (cofoundue) is the exclusive talent network for European University students. Connect, create, and launch your next big project.",
     platform: "Platform",
     howItWorks: "How it works",
     faq: "FAQs",

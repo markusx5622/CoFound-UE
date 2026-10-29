@@ -88,11 +88,11 @@ export const es = {
     titleHighlight: "sin rodeos",
     subtitle: "Todo lo que necesitas saber antes de crear tu perfil y empezar a conectar en el campus.",
     q1: "¿CoFound UE es totalmente gratis?",
-    a1: "Sí, 100% gratuito. No hay suscripciones, costes ocultos ni comisiones. CoFound UE nace como una herramienta de apoyo a la comunidad de la Universidad Europea de Valencia para potenciar proyectos reales.",
+    a1: "Sí, 100% gratuito. No hay suscripciones, costes ocultos ni comisiones. CoFound UE (cofoundue) nace como una herramienta de apoyo a la comunidad de la Universidad Europea de Valencia para potenciar proyectos reales.",
     q2: "¿Puedo entrar si aún no tengo una idea de proyecto?",
     a2: "¡Por supuesto! Más del 60% de los estudiantes entran para aportar su talento (programación, diseño UX/UI, marketing, finanzas, gestión) a proyectos iniciados por otros compañeros del campus.",
     q3: "¿Quién organiza y está detrás de CoFound UE?",
-    a3: "Es una iniciativa independiente impulsada por estudiantes de la Universidad Europea de Valencia. El objetivo es derribar las barreras entre facultades y conectar a futuros fundadores antes de graduarse.",
+    a3: "CoFound UE (cofoundue) es una iniciativa independiente impulsada por estudiantes de la Universidad Europea de Valencia. El objetivo es derribar las barreras entre facultades y conectar a futuros fundadores antes de graduarse.",
     q4: "¿Quién puede ver mis datos y cómo se contacta?",
     a4: "El acceso está blindado exclusivamente a estudiantes con correo institucional verificado (@live.uem.es o @universidadeuropea.es). Dentro de la plataforma puedes postularte a proyectos y chatear directamente con otros miembros de forma segura.",
     ctaTitle: "¿Listo para conectar en el Campus?",
@@ -137,7 +137,7 @@ export const es = {
     bottomBtn: "Crear mi Cuenta de Estudiante"
   },
   footer: {
-    description: "La red exclusiva de talento para estudiantes de la Universidad Europea. Conecta, crea y lanza tu próximo gran proyecto.",
+    description: "CoFound UE (cofoundue) es la red exclusiva de talento para estudiantes de la Universidad Europea. Conecta, crea y lanza tu próximo gran proyecto.",
     platform: "Plataforma",
     howItWorks: "Cómo funciona",
     faq: "Preguntas frecuentes",
