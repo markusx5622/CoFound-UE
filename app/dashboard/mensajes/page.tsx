@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Send, MessageSquare } from "lucide-react";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
+import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface UserData {
@@ -21,6 +22,7 @@ interface Conversation {
   projectTitle: string;
   status: string;
   otherUser: UserData;
+  createdAt?: any;
   lastMessageAt?: any;
   lastMessageSenderId?: string;
   lastReadByApplicant?: any;
@@ -90,7 +92,7 @@ export default function Mensajes() {
             const otherUserDoc = await getDoc(doc(db, "users", otherUserId));
             const otherData = otherUserDoc.exists() ? otherUserDoc.data() : null;
             otherUserData = {
-              name: otherData?.name || "Usuario Desconocido",
+              name: otherData?.name || t("messages.unknownUser"),
             };
             usersCache.set(otherUserId, otherUserData);
           }
@@ -102,12 +104,21 @@ export default function Mensajes() {
         }));
 
         enhancedConvos.sort((a, b) => {
-          const timeA = getTimestampMillis(a.lastMessageAt);
-          const timeB = getTimestampMillis(b.lastMessageAt);
+          const timeA = getTimestampMillis(a.lastMessageAt) || getTimestampMillis(a.createdAt);
+          const timeB = getTimestampMillis(b.lastMessageAt) || getTimestampMillis(b.createdAt);
           return timeB - timeA;
         });
 
         setConversations(enhancedConvos);
+        if (typeof window !== "undefined") {
+          const requestedChatId = new URLSearchParams(window.location.search).get("chat");
+          if (requestedChatId) {
+            const matched = enhancedConvos.find((c) => c.id === requestedChatId);
+            if (matched) {
+              setActiveChat((prev) => prev || matched);
+            }
+          }
+        }
       } catch (error) {
         console.error("Error updating conversations:", error);
       } finally {
@@ -135,7 +146,7 @@ export default function Mensajes() {
       unsubApp();
       unsubCreator();
     };
-  }, [user]);
+  }, [user, t]);
 
   useEffect(() => {
     if (!activeChat || !user) return;
@@ -191,6 +202,8 @@ export default function Mensajes() {
       });
     } catch (error) {
       console.error("Error sending message:", error);
+      setNewMessage(msgText);
+      toast.error(t("messages.sendError"));
     }
   };
 

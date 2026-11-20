@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Briefcase, Clock, CheckCircle, XCircle, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
@@ -84,21 +84,27 @@ export default function MisPostulaciones() {
           ) : (
             <div className="grid gap-4">
               {applications.map((app) => (
-                <Link 
-                  href={`/dashboard/proyecto/${app.projectId}`} 
+                <div 
                   key={app.id} 
-                  className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-between group"
+                  className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-zinc-800 hover:border-zinc-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
                 >
-                  <div>
+                  <Link href={`/dashboard/proyecto/${app.projectId}`} className="flex-grow">
                     <h2 className="text-lg font-bold text-white group-hover:text-[#E60000] transition-colors">{app.projectTitle}</h2>
                     <div className="text-sm text-zinc-500 mt-1">
                       {t("myApplications.submittedOn", {
                         date: app.createdAt?.toDate().toLocaleDateString(language === "en" ? "en-US" : "es-ES")
                       })}
                     </div>
-                  </div>
+                  </Link>
                   
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5 shrink-0">
+                    <Link
+                      href={`/dashboard/mensajes?chat=${app.id}`}
+                      className="inline-flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white px-3 py-1.5 rounded-lg text-sm font-medium border border-zinc-700 transition-colors"
+                    >
+                      <MessageSquare className="h-4 w-4 text-[#E60000]" />
+                      <span>{t("myApplications.openChatBtn")}</span>
+                    </Link>
                     {app.status === 'pending' && (
                       <span className="inline-flex items-center gap-1.5 bg-yellow-500/10 text-yellow-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-yellow-500/20">
                         <Clock className="h-4 w-4" />
@@ -118,7 +124,7 @@ export default function MisPostulaciones() {
                       </span>
                     )}
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}

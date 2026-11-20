@@ -77,13 +77,39 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchProjects(true);
+    const loadInitialProjects = async () => {
+      try {
+        setLoading(true);
+        const q = query(collection(db, "projects"), orderBy("createdAt", "desc"), limit(PROJECTS_PER_PAGE));
+        const querySnapshot = await getDocs(q);
+        const projectsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Project[];
+
+        setHasMore(projectsData.length >= PROJECTS_PER_PAGE);
+        if (querySnapshot.docs.length > 0) {
+          setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        }
+        setProjects(projectsData);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialProjects();
   }, []);
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = 
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      project.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      project.title.toLowerCase().includes(q) ||
+      project.description.toLowerCase().includes(q) ||
+      (project.profiles && project.profiles.some((p) => p.toLowerCase().includes(q))) ||
+      (project.creatorName && project.creatorName.toLowerCase().includes(q));
     
     const matchesCategory = categoryFilter === "Todas" || project.category === categoryFilter;
     

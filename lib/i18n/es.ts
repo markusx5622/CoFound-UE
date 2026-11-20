@@ -58,6 +58,12 @@ export const es = {
       createStudentAccount: "Crear mi Cuenta de Estudiante",
       verificationGuarantee: "Verificación automática para @live.uem.es",
       campusGuarantee: "Acceso libre para alumnos de campus Turia y Alameda"
+    },
+    showMore: {
+      hideTitle: "Ocultar información",
+      showTitle: "Saber más de CoFound UE",
+      hideSubtitle: "Plegar secciones de detalle",
+      showSubtitle: "Explorar proyectos & ventajas"
     }
   },
   navbar: {
@@ -190,7 +196,8 @@ export const es = {
     resendBtnPrefix: "Reenviar correo en ",
     resendBtnSuffix: "s",
     resendBtn: "Reenviar correo de verificación",
-    signOutBtn: "Cerrar sesión"
+    signOutBtn: "Cerrar sesión",
+    notYetVerified: "Tu correo aún no aparece como verificado. Haz clic primero en el enlace que te enviamos por email."
   },
   categories: {
     all: "Todas las categorías",
@@ -294,6 +301,7 @@ export const es = {
     rejected: "Rechazado",
     notSpecified: "No especificado",
     viewProfileTooltip: "Ver Perfil Detallado",
+    openChatTooltip: "Abrir chat con el candidato",
     acceptTooltip: "Aceptar Candidato",
     rejectTooltip: "Rechazar Candidato",
     modalDegreeCampus: "Titulación y Campus",
@@ -312,7 +320,8 @@ export const es = {
     submittedOn: "Enviada el {date}",
     pending: "Pendiente",
     accepted: "Aceptada",
-    rejected: "Rechazada"
+    rejected: "Rechazada",
+    openChatBtn: "Chat"
   },
   messages: {
     title: "Mensajes",
@@ -324,7 +333,9 @@ export const es = {
     viewProfile: "Ver Perfil",
     emptyChat: "No hay mensajes aún. ¡Rompe el hielo!",
     inputPlaceholder: "Escribe un mensaje...",
-    selectConversation: "Selecciona una conversación para empezar a chatear."
+    selectConversation: "Selecciona una conversación para empezar a chatear.",
+    unknownUser: "Usuario UE",
+    sendError: "No se pudo enviar el mensaje. Comprueba tu conexión."
   },
   profile: {
     title: "Mi Perfil",

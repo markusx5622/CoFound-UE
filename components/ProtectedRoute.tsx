@@ -14,6 +14,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   const router = useRouter();
   const { user, loading } = useAuth();
   const [isSending, setIsSending] = useState(false);
+  const [isCheckingVerification, setIsCheckingVerification] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
@@ -23,11 +24,53 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }, [user, loading, router]);
 
   useEffect(() => {
+    if (!user || user.emailVerified) return;
+
+    const checkVerificationOnFocus = async () => {
+      if (document.visibilityState && document.visibilityState !== "visible") return;
+      try {
+        await user.reload();
+        if (auth.currentUser?.emailVerified) {
+          await auth.currentUser.getIdToken(true);
+          window.location.reload();
+        }
+      } catch {
+        // Ignorar errores silenciosos en autofoco
+      }
+    };
+
+    window.addEventListener("focus", checkVerificationOnFocus);
+    document.addEventListener("visibilitychange", checkVerificationOnFocus);
+    return () => {
+      window.removeEventListener("focus", checkVerificationOnFocus);
+      document.removeEventListener("visibilitychange", checkVerificationOnFocus);
+    };
+  }, [user]);
+
+  useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     }
   }, [countdown]);
+
+  const handleCheckVerified = async () => {
+    if (!user || isCheckingVerification) return;
+    setIsCheckingVerification(true);
+    try {
+      await user.reload();
+      if (auth.currentUser?.emailVerified) {
+        await auth.currentUser.getIdToken(true);
+        window.location.reload();
+      } else {
+        toast.error(t("protectedRoute.notYetVerified"));
+      }
+    } catch {
+      window.location.reload();
+    } finally {
+      setIsCheckingVerification(false);
+    }
+  };
 
   const handleResendEmail = async () => {
     if (!user || countdown > 0 || isSending) return;
@@ -97,10 +140,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
           <div className="space-y-3">
             <button
-              onClick={() => window.location.reload()}
-              className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)]"
+              onClick={handleCheckVerified}
+              disabled={isCheckingVerification}
+              className="w-full bg-[#E60000] hover:bg-red-700 disabled:opacity-70 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)]"
             >
-              <CheckCircle2 className="h-5 w-5" />
+              <CheckCircle2 className={`h-5 w-5 ${isCheckingVerification ? "animate-pulse" : ""}`} />
               <span>{t("protectedRoute.alreadyVerifiedBtn")}</span>
             </button>
             

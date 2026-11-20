@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, Sparkles } from "lucide-react";
 import HeroSection from "@/components/hero-section";
 import CampusFeedPreview from "@/components/campus-feed-preview";
@@ -24,8 +25,52 @@ export default function LandingPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingVerification, setCheckingVerification] = useState(false);
   const { user: currentUser } = useAuth();
   const { t, language } = useLanguage();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!currentUser || currentUser.emailVerified) return;
+
+    const checkVerificationOnFocus = async () => {
+      if (document.visibilityState && document.visibilityState !== "visible") return;
+      try {
+        await currentUser.reload();
+        if (auth.currentUser?.emailVerified) {
+          await auth.currentUser.getIdToken(true);
+          router.push("/dashboard");
+        }
+      } catch {
+        // Ignorar errores silenciosos en autofoco
+      }
+    };
+
+    window.addEventListener("focus", checkVerificationOnFocus);
+    document.addEventListener("visibilitychange", checkVerificationOnFocus);
+    return () => {
+      window.removeEventListener("focus", checkVerificationOnFocus);
+      document.removeEventListener("visibilitychange", checkVerificationOnFocus);
+    };
+  }, [currentUser, router]);
+
+  const handleCheckVerifiedLanding = async () => {
+    if (!currentUser || checkingVerification) return;
+    setCheckingVerification(true);
+    try {
+      await currentUser.reload();
+      if (auth.currentUser?.emailVerified) {
+        await auth.currentUser.getIdToken(true);
+        router.push("/dashboard");
+      } else {
+        toast.error(t("protectedRoute.notYetVerified"));
+      }
+    } catch {
+      window.location.reload();
+    } finally {
+      setCheckingVerification(false);
+    }
+  };
 
   const validateEmail = (email: string) => {
     const domainCheck = email.endsWith("@live.uem.es") || email.endsWith("@universidadeuropea.es");
@@ -46,7 +91,12 @@ export default function LandingPage() {
     setLoading(true);
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, normalizedEmail, password);
+        const userCredential = await signInWithEmailAndPassword(auth, normalizedEmail, password);
+        await userCredential.user.reload();
+        if (userCredential.user.emailVerified) {
+          await userCredential.user.getIdToken(true);
+          router.push("/dashboard");
+        }
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
         auth.languageCode = language;
@@ -143,10 +193,11 @@ export default function LandingPage() {
                     </p>
                     <div className="space-y-3">
                       <button
-                        onClick={() => window.location.reload()}
-                        className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)]"
+                        onClick={handleCheckVerifiedLanding}
+                        disabled={checkingVerification}
+                        className="w-full bg-[#E60000] hover:bg-red-700 disabled:opacity-70 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)]"
                       >
-                        <CheckCircle2 className="h-5 w-5" />
+                        <CheckCircle2 className={`h-5 w-5 ${checkingVerification ? "animate-pulse" : ""}`} />
                         <span>{t("landing.auth.alreadyVerified")}</span>
                       </button>
                       
@@ -375,10 +426,10 @@ export default function LandingPage() {
               )}
               <div className="flex flex-col">
                 <span className="text-xs font-semibold uppercase tracking-wider text-zinc-200 group-hover:text-white transition-colors">
-                  {showMore ? "Ocultar información" : "Saber más de CoFound UE"}
+                  {showMore ? t("landing.showMore.hideTitle") : t("landing.showMore.showTitle")}
                 </span>
                 <span className="text-[10px] text-zinc-400 font-normal">
-                  {showMore ? "Plegar secciones de detalle" : "Explorar proyectos & ventajas"}
+                  {showMore ? t("landing.showMore.hideSubtitle") : t("landing.showMore.showSubtitle")}
                 </span>
               </div>
             </div>

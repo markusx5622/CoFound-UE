@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Smartphone } from "lucide-react";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -48,6 +48,15 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const standalone =
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+      (window.navigator as any).standalone === true;
+    setIsStandalone(standalone);
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -173,6 +182,17 @@ export default function Navbar() {
                 );
               })}
               <div className="ml-1 flex items-center gap-1.5">
+                {!isStandalone && (
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new CustomEvent("open-pwa-install-modal"))}
+                    title={t("navbar.installApp")}
+                    aria-label={t("navbar.installApp")}
+                    className="p-2 rounded-xl bg-zinc-900/60 text-zinc-300 hover:text-white hover:bg-zinc-800/80 border border-zinc-800 hover:border-red-500/40 transition-all shadow-sm"
+                  >
+                    <Smartphone className="h-4 w-4 text-[#E60000]" />
+                  </button>
+                )}
                 <LanguageSelector />
               </div>
             </div>
@@ -223,16 +243,19 @@ export default function Navbar() {
           <div className="w-full mt-2 flex justify-center">
             <LanguageSelector />
           </div>
-          <button
-            onClick={() => {
-              setIsMenuOpen(false);
-              window.dispatchEvent(new CustomEvent("open-pwa-install-modal"));
-            }}
-            className="text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-900/80 border border-zinc-800 hover:border-red-500/40 px-4 py-2 rounded-xl transition-all flex items-center gap-2"
-          >
-            <span>📱</span>
-            <span>{t("navbar.installApp")}</span>
-          </button>
+          {!isStandalone && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsMenuOpen(false);
+                window.dispatchEvent(new CustomEvent("open-pwa-install-modal"));
+              }}
+              className="text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-900/80 border border-zinc-800 hover:border-red-500/40 px-4 py-2 rounded-xl transition-all flex items-center gap-2"
+            >
+              <Smartphone className="h-4 w-4 text-[#E60000]" />
+              <span>{t("navbar.installApp")}</span>
+            </button>
+          )}
         </div>
       )}
     </nav>

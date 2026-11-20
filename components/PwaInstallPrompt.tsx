@@ -20,13 +20,17 @@ const INSTALLED_KEY = "cofoundue_pwa_installed";
 const SESSION_SHOWN_KEY = "cofoundue_pwa_session_shown";
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-function isStandaloneMode(): boolean {
+function isRealStandaloneMode(): boolean {
   if (typeof window === "undefined") return false;
   return (
     (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
-    (window.navigator as any).standalone === true ||
-    localStorage.getItem(INSTALLED_KEY) === "true"
+    (window.navigator as any).standalone === true
   );
+}
+
+function isAutoPromptSuppressed(): boolean {
+  if (typeof window === "undefined") return false;
+  return isRealStandaloneMode() || localStorage.getItem(INSTALLED_KEY) === "true";
 }
 
 function isDismissedWithin30Days(): boolean {
@@ -54,8 +58,8 @@ export default function PwaInstallPrompt() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // 1. Comprobar si ya está instalada en modo standalone o marcada como instalada
-    if (isStandaloneMode()) {
+    // 1. Comprobar si ya está ejecutándose en modo standalone real
+    if (isRealStandaloneMode()) {
       setIsStandalone(true);
       return;
     }
@@ -86,9 +90,12 @@ export default function PwaInstallPrompt() {
     };
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // 5. Permitir abrir el modal manualmente desde cualquier lugar con un evento personalizado
+    // 5. Permitir abrir el modal manualmente desde el Navbar aunque hubiera descartado el popup automático
     const handleOpenModal = () => {
-      setIsOpen(true);
+      if (!isRealStandaloneMode()) {
+        setIsStandalone(false);
+        setIsOpen(true);
+      }
     };
     window.addEventListener("open-pwa-install-modal", handleOpenModal);
 
@@ -101,12 +108,12 @@ export default function PwaInstallPrompt() {
 
   useEffect(() => {
     // Si ya está instalada, descartada hace menos de 30 días o mostrada en esta sesión -> no programar
-    if (isStandaloneMode()) {
+    if (isRealStandaloneMode()) {
       setIsStandalone(true);
       return;
     }
 
-    if (isDismissedWithin30Days() || isShownInCurrentSession()) {
+    if (isAutoPromptSuppressed() || isDismissedWithin30Days() || isShownInCurrentSession()) {
       return;
     }
 
@@ -116,7 +123,7 @@ export default function PwaInstallPrompt() {
       // Si ya hay un timer corriendo (ej. navegación rápida entre /dashboard y /perfil), lo mantenemos
       if (!timerRef.current) {
         timerRef.current = setTimeout(() => {
-          if (!isStandaloneMode() && !isDismissedWithin30Days() && !isShownInCurrentSession()) {
+          if (!isAutoPromptSuppressed() && !isDismissedWithin30Days() && !isShownInCurrentSession()) {
             sessionStorage.setItem(SESSION_SHOWN_KEY, "true");
             setIsOpen(true);
           }

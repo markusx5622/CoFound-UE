@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, doc, deleteDoc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Briefcase, UserCircle, Tag, Trash2, Users, X, Check, XCircle, Edit } from "lucide-react";
+import { Briefcase, UserCircle, Tag, Trash2, Users, X, Check, XCircle, Edit, MessageSquare } from "lucide-react";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -263,6 +263,14 @@ export default function MisProyectos() {
                             >
                               <UserCircle className="h-5 w-5" />
                             </button>
+
+                            <Link
+                              href={`/dashboard/mensajes?chat=${app.id}`}
+                              className="text-zinc-400 hover:text-white p-1.5 rounded-md hover:bg-zinc-800 transition-colors"
+                              title={t("myProjects.openChatTooltip")}
+                            >
+                              <MessageSquare className="h-5 w-5" />
+                            </Link>
                             
                             {app.status === 'pending' && (
                               <>

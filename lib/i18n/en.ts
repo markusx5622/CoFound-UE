@@ -60,6 +60,12 @@ export const en: Dictionary = {
       createStudentAccount: "Create my Student Account",
       verificationGuarantee: "Automatic verification for @live.uem.es",
       campusGuarantee: "Open access for Turia and Alameda campus students"
+    },
+    showMore: {
+      hideTitle: "Hide information",
+      showTitle: "Learn more about CoFound UE",
+      hideSubtitle: "Collapse detail sections",
+      showSubtitle: "Explore projects & benefits"
     }
   },
   navbar: {
@@ -192,7 +198,8 @@ export const en: Dictionary = {
     resendBtnPrefix: "Resend email in ",
     resendBtnSuffix: "s",
     resendBtn: "Resend verification email",
-    signOutBtn: "Sign out"
+    signOutBtn: "Sign out",
+    notYetVerified: "Your email is not verified yet. Please click the link we sent to your inbox first."
   },
   categories: {
     all: "All categories",
@@ -296,6 +303,7 @@ export const en: Dictionary = {
     rejected: "Rejected",
     notSpecified: "Not specified",
     viewProfileTooltip: "View Detailed Profile",
+    openChatTooltip: "Open chat with candidate",
     acceptTooltip: "Accept Candidate",
     rejectTooltip: "Reject Candidate",
     modalDegreeCampus: "Degree & Campus",
@@ -314,7 +322,8 @@ export const en: Dictionary = {
     submittedOn: "Submitted on {date}",
     pending: "Pending",
     accepted: "Accepted",
-    rejected: "Rejected"
+    rejected: "Rejected",
+    openChatBtn: "Chat"
   },
   messages: {
     title: "Messages",
@@ -326,7 +335,9 @@ export const en: Dictionary = {
     viewProfile: "View Profile",
     emptyChat: "No messages yet. Break the ice!",
     inputPlaceholder: "Type a message...",
-    selectConversation: "Select a conversation to start chatting."
+    selectConversation: "Select a conversation to start chatting.",
+    unknownUser: "UE User",
+    sendError: "Could not send message. Check your connection."
   },
   profile: {
     title: "My Profile",
