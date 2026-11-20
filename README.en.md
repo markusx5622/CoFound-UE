@@ -65,6 +65,8 @@ To resolve this friction, **CoFound UE** was created: a full-stack web platform 
 | **🤝 Applications & Matching** | One-click application system, self-application prevention, and duplicate prevention. | Realtime Firestore Collections |
 | **💬 Real-Time Messaging** | Direct chat between project creator and applicants, secured by Firestore rules allowing access only to both participants. | Firestore Subcollections & Realtime Listeners (`onSnapshot`) |
 | **📂 Personal Management** | Dedicated dashboards to manage *My Projects* created and monitor the status of *My Applications*. | Protected Route System |
+| **🌐 Internationalization (ES/EN)** | Fully bilingual interface (Spanish and English) with strictly typed dictionaries, category translation, and persistent language preference. | React Context (`LanguageContext`) & Typed Dictionaries |
+| **🔒 GDPR Privacy & Right to Erasure** | Public email hiding and full account deletion with automatic cascading cleanup of projects, applications, and messages. | Firestore Security Rules & Cascading Deletes |
 | **📲 Installable PWA** | Add to home screen (mobile and desktop) with maskable icons, custom service worker, standalone experience, and non-invasive install prompt (max once per session, persistent 30-day dismissal, standalone detection). | Web App Manifest & Service Worker |
 
 ---
@@ -80,7 +82,7 @@ To resolve this friction, **CoFound UE** was created: a full-stack web platform 
 * **[Sonner](https://sonner.emilkowal.ski/):** Elegant and accessible toast notification system.
 
 ### Backend & Services
-* **[Firebase Auth](https://firebase.google.com/docs/auth):** Email/password authentication management with localized error handling.
+* **[Firebase Auth](https://firebase.google.com/docs/auth):** Email/password authentication management with localized error handling in Spanish and English (ES/EN).
 * **[Cloud Firestore](https://firebase.google.com/docs/firestore):** Scalable NoSQL real-time database for users, projects, applications, and messages.
 * **[Vercel & Analytics](https://vercel.com/):** Continuous deployment platform optimized for Next.js with real-time performance monitoring and analytics.
 
@@ -110,9 +112,10 @@ CoFound-UE/
 │   │   └── privacidad/                   # Data Privacy Policy
 │   ├── perfil/                           # Student university profile
 │   │   ├── [uid]/                        # Public profile view for other students
-│   │   └── page.tsx                      # Personal info, campus, and skills management
+│   │   └── page.tsx                      # Personal info, campus, skills management, and GDPR account deletion
+│   ├── favicon.ico                       # Application icon for App Router routes
 │   ├── globals.css                       # Global styles and Tailwind extensions
-│   ├── layout.tsx                        # Root layout with particle background, PWA, and Toaster
+│   ├── layout.tsx                        # Root layout with JSON-LD, particle background, PWA, and Toaster
 │   ├── manifest.ts                       # PWA metadata generator (Web App Manifest)
 │   ├── page.tsx                          # Landing Page with integrated Login/Registration form
 │   ├── robots.ts                         # Dynamic robots.txt generator with canonical host
@@ -147,6 +150,7 @@ CoFound-UE/
 │   ├── CoFoundUE_banner.png              # Brand banner (README / landing)
 │   ├── CoFoundUE_logo.png                # Official CoFound UE logo
 │   ├── Diagrama_CoFoundUE.png            # Architecture flowchart (optimized to ~272 KB)
+│   ├── favicon.ico                       # Public platform favicon
 │   ├── og-image.jpg                      # Optimized OpenGraph preview image (1200x630)
 │   └── sw.js                             # Service Worker for PWA offline caching
 ├── scripts/                              # Local development utilities
@@ -447,12 +451,12 @@ The roadmap of **CoFound UE** is structured into strategic phases designed to co
   * **Phase 2:** Real-time messaging, user profiles, and skeleton loaders.
   * **Phase 3A:** Installable PWA, custom domain (`www.cofoundue.es`), technical SEO (Sitemap, Robots), and CI with automated Firestore rules tests.
   * **Phase 3B:** Security hardening (verified email enforced in rules and UI hard-gate), SEO unification to canonical domain `www.cofoundue.es` (metadataBase, og:url, canonical, 308 redirect from Vercel subdomain), orphaned asset cleanup (−8.2 MB), non-invasive PWA prompt, and pilot expansion to Turia and Alameda campuses.
+  * **Phase 3C:** Full ES/EN internationalization with language selector and typed dictionaries, GDPR privacy (public email hiding, automatic legacy `email` field cleanup, and right to erasure with cascading account deletion), JSON-LD structured data, ESLint (`next/core-web-vitals`), 24-test security rules suite, and local emulator example seed script.
 
 * **In Progress / Upcoming Phases:**
-  * Full ES/EN internationalization with language selector (predominantly international campus).
-  * Comprehensive smoke test execution and pilot launch at Turia and Alameda campuses.
+  * Final smoke test execution and pilot launch at Turia and Alameda campuses.
   * Transactional email notifications.
-  * Global project search.
+  * Advanced global project and talent search.
   * Creator metrics dashboard.
 
 ---

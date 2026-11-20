@@ -64,6 +64,8 @@ Ante esta fricción, nace **CoFound UE**: una plataforma web full-stack diseñad
 | **🤝 Postulaciones & Matching** | Sistema de un clic para postularse a iniciativas, prevención de autopostulaciones y control de duplicados. | Realtime Firestore Collections |
 | **💬 Mensajería en tiempo real** | Chat directo entre el creador del proyecto y los postulantes, con acceso restringido por reglas de Firestore a ambas partes. | Firestore Subcollections & Realtime Listeners (`onSnapshot`) |
 | **📂 Gestión Personal** | Paneles dedicados para administrar *Mis Proyectos* creados y monitorear el estado de *Mis Postulaciones*. | Protected Route System |
+| **🌐 Internacionalización (ES/EN)** | Interfaz completamente bilingüe (español e inglés) con diccionarios estrictamente tipados, traducción de categorías y persistencia de preferencia. | React Context (`LanguageContext`) & Typed Dictionaries |
+| **🔒 Privacidad RGPD & Derecho al Olvido** | Ocultación de emails en perfiles públicos y eliminación integral de cuenta con borrado automático en cascada de proyectos, postulaciones y mensajes. | Firestore Security Rules & Cascading Deletes |
 | **📲 PWA Instalable** | Instalación en pantalla de inicio (móvil y escritorio) con iconos maskable, service worker propio, experiencia standalone y prompt de instalación no invasivo (máximo una vez por sesión, descarte persistente de 30 días, detección de modo standalone). | Web App Manifest & Service Worker |
 
 ---
@@ -79,7 +81,7 @@ Ante esta fricción, nace **CoFound UE**: una plataforma web full-stack diseñad
 * **[Sonner](https://sonner.emilkowal.ski/):** Sistema de notificaciones toast elegantes y accesibles.
 
 ### Backend & Servicios
-* **[Firebase Auth](https://firebase.google.com/docs/auth):** Manejo de autenticación basada en email y contraseña con control de errores localizado en español.
+* **[Firebase Auth](https://firebase.google.com/docs/auth):** Manejo de autenticación basada en email y contraseña con control de errores localizado en español e inglés (ES/EN).
 * **[Cloud Firestore](https://firebase.google.com/docs/firestore):** Base de datos NoSQL escalable para el almacenamiento en tiempo real de usuarios, proyectos, postulaciones y mensajes.
 * **[Vercel & Analytics](https://vercel.com/):** Plataforma de despliegue continuo optimizada para Next.js con monitorización de rendimiento y analíticas en tiempo real.
 
@@ -109,9 +111,10 @@ CoFound-UE/
 │   │   └── privacidad/                   # Política de Privacidad de Datos
 │   ├── perfil/                           # Perfil universitario del estudiante
 │   │   ├── [uid]/                        # Vista de perfil público de otros estudiantes
-│   │   └── page.tsx                      # Gestión de datos personales, campus y habilidades
+│   │   └── page.tsx                      # Gestión de datos personales, campus, habilidades y baja RGPD
+│   ├── favicon.ico                       # Icono de la aplicación para rutas del App Router
 │   ├── globals.css                       # Estilos globales y extensiones Tailwind
-│   ├── layout.tsx                        # Estructura raíz con fondo interactivo, PWA y Toaster
+│   ├── layout.tsx                        # Estructura raíz con JSON-LD, fondo interactivo, PWA y Toaster
 │   ├── manifest.ts                       # Generador de metadatos de la PWA (Web App Manifest)
 │   ├── page.tsx                          # Landing Page con formulario de Login/Registro integrados
 │   ├── robots.ts                         # Generador dinámico de robots.txt con host canónico
@@ -135,6 +138,8 @@ CoFound-UE/
 │   └── LanguageContext.tsx               # Proveedor y hook de internacionalización (ES/EN)
 ├── lib/                                  # Lógica de negocio, diccionarios i18n y utilidades
 │   ├── i18n/                             # Diccionarios tipados para soporte bilingüe (ES/EN)
+│   │   ├── en.ts                         # Traducciones al inglés (tipado estricto)
+│   │   └── es.ts                         # Traducciones al español (fuente canónica y tipo Dictionary)
 │   ├── auth-errors.ts                    # Mapeo de errores de Firebase Auth a claves i18n
 │   ├── categories.ts                     # Categorías canónicas de proyectos y traducción
 │   ├── firebase.ts                       # Inicialización del SDK de Firebase, Auth y Firestore
@@ -144,6 +149,7 @@ CoFound-UE/
 │   ├── CoFoundUE_banner.png              # Banner de marca (README / landing)
 │   ├── CoFoundUE_logo.png                # Logotipo oficial de CoFound UE
 │   ├── Diagrama_CoFoundUE.png            # Diagrama de flujo de arquitectura (optimizado a ~272 KB)
+│   ├── favicon.ico                       # Favicon público de la plataforma
 │   ├── og-image.jpg                      # Imagen OpenGraph optimizada para previsualizaciones (1200x630)
 │   └── sw.js                             # Service Worker para capacidades PWA y caché offline
 ├── scripts/                              # Utilidades locales de desarrollo
@@ -445,12 +451,12 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
   * **Fase 2:** Mensajería en tiempo real, perfiles de usuario y *skeleton loaders*.
   * **Fase 3A:** PWA instalable, dominio custom (`www.cofoundue.es`), SEO técnico (Sitemap, Robots) y CI con tests automatizados de reglas Firestore.
   * **Fase 3B:** Hardening de seguridad (email verificado exigido en reglas y hard-gate de interfaz), unificación SEO al dominio canónico `www.cofoundue.es` (metadataBase, og:url, canonical, redirect 308 desde el subdominio de Vercel), limpieza de assets huérfanos (−8,2 MB), prompt PWA no invasivo, y ampliación del piloto a los campus Turia y Alameda.
+  * **Fase 3C:** Internacionalización completa ES/EN con selector de idioma y diccionarios tipados, privacidad RGPD (ocultación de emails públicos, autolimpieza de `email` heredado y derecho al olvido con borrado de cuenta en cascada), datos estructurados JSON-LD, ESLint (`next/core-web-vitals`), suite de 24 tests de reglas y script de proyectos de ejemplo para emulador local.
 
 * **En curso / Próximas fases:**
-  * Internacionalización completa ES/EN con selector de idioma (campus mayoritariamente internacional).
-  * Ejecución del smoke test completo y lanzamiento del piloto en los campus Turia y Alameda.
+  * Ejecución del smoke test final y lanzamiento del piloto en los campus Turia y Alameda.
   * Notificaciones transaccionales por email.
-  * Buscador global de proyectos.
+  * Buscador global avanzado de proyectos y talento.
   * Dashboard de métricas para creadores.
 
 ---
