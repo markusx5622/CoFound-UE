@@ -54,6 +54,61 @@ describe("CoFound-UE Firestore Rules", () => {
       // Escritura en doc ajeno
       await assertFails(db.collection("users").doc("user2").set({ name: "User 2" }));
     });
+
+    it("bloquea inyectar o modificar email pero permite actualizar y migrar documentos con email heredado", async () => {
+      const db = getAuthContext("user1", "user1@live.uem.es").firestore();
+
+      // 1. Crear documento nuevo con campo email falla (RGPD)
+      await assertFails(
+        db.collection("users").doc("user1").set({
+          name: "User 1",
+          email: "user1@live.uem.es",
+        })
+      );
+
+      // 2. Sembrar documento heredado con email previo a la regla RGPD
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection("users").doc("user1").set({
+          name: "User 1",
+          degree: "Grado en IOI",
+          campus: "Valencia",
+          email: "user1@live.uem.es",
+        });
+      });
+
+      // 3. Actualizar perfil heredado con merge: true sin alterar email funciona
+      await assertSucceeds(
+        db.collection("users").doc("user1").set(
+          { name: "User 1 Actualizado", bio: "Nueva bio" },
+          { merge: true }
+        )
+      );
+
+      // 4. Intentar modificar el valor del email heredado falla
+      await assertFails(
+        db.collection("users").doc("user1").set(
+          { email: "otro@live.uem.es" },
+          { merge: true }
+        )
+      );
+
+      // 5. Migrar el documento eliminando el campo email funciona
+      await assertSucceeds(
+        db.collection("users").doc("user1").set({
+          name: "User 1 Migrado",
+          degree: "Grado en IOI",
+          campus: "Valencia",
+        })
+      );
+
+      // 6. Una vez eliminado, volver a inyectar email con merge: true falla
+      await assertFails(
+        db.collection("users").doc("user1").set(
+          { email: "user1@live.uem.es" },
+          { merge: true }
+        )
+      );
+    });
   });
 
   describe("Projects Collection", () => {

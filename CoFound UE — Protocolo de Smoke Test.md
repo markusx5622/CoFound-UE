@@ -1,9 +1,9 @@
 # CoFound UE — Protocolo de Smoke Test Exhaustivo
 
-**Versión:** 1.0 · **Fecha:** Septiembre 2026
+**Versión:** 1.1 · **Fecha:** Noviembre 2026
 **Tester:** Marc Cubero Cantavella (individual)
-**Entorno bajo prueba:** Producción — https://cofoundue.es
-**Estado del código:** commit `6103f38` (main), CI verde, 19/19 tests de reglas
+**Entorno bajo prueba:** Producción — https://www.cofoundue.es
+**Estado del código:** rama `main`, CI verde (lint + tests + build), 24/24 tests de reglas en emulador
 
 ---
 
@@ -38,10 +38,10 @@ Todo ❌ o ⚠️ se documenta con la plantilla de la sección 14 y se clasifica
 
 | # | Test | Pasos | Resultado esperado | ☐ |
 | --- | --- | --- | --- | --- |
-| 1.1 | Web accesible | Abrir https://cofound-ue.vercel.app | Carga sin errores, landing visible | ☐ |
+| 1.1 | Web accesible | Abrir https://www.cofoundue.es (y comprobar redirección 308 desde https://cofound-ue.vercel.app) | Carga sin errores en dominio canónico, landing visible | ☐ |
 | 1.2 | Velocidad de carga | Recargar con Ctrl+Shift+R (sin caché) y cronometrar | Primera carga < 4s en WiFi normal (los assets se optimizaron a <500 KB) | ☐ |
 | 1.3 | Consola sin errores | F12 → Consola → recargar | Sin errores rojos (warnings amarillos menores son aceptables; anótalos) | ☐ |
-| 1.4 | Manifest servido | Visitar https://cofound-ue.vercel.app/manifest.webmanifest | JSON del manifest visible con name "CoFound UE" | ☐ |
+| 1.4 | Manifest servido | Visitar https://www.cofoundue.es/manifest.webmanifest | JSON del manifest visible con name "CoFound UE" | ☐ |
 | 1.5 | Service worker | F12 → Application → Service Workers | `/sw.js` registrado y activado (tras unos segundos) | ☐ |
 
 

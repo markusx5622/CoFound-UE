@@ -8,9 +8,15 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated() 
+      allow create: if isAuthenticated() 
                    && request.auth.uid == userId 
                    && (!('email' in request.resource.data));
+      allow update: if isAuthenticated() 
+                   && request.auth.uid == userId 
+                   && (
+                     !('email' in request.resource.data)
+                     || (resource != null && 'email' in resource.data && request.resource.data.email == resource.data.email)
+                   );
       allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
 

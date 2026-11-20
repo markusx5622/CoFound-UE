@@ -124,6 +124,7 @@ CoFound-UE/
 │   ├── hero-section.tsx                  # Main welcome and high-impact visual section
 │   ├── how-it-works.tsx                  # Step-by-step platform walkthrough
 │   ├── InitialsAvatar.tsx                # Local initials avatar generator (privacy by design)
+│   ├── LanguageSelector.tsx              # ES/EN language switcher with persistence
 │   ├── Navbar.tsx                        # Responsive navigation bar with user state
 │   ├── particle-background.tsx           # HTML5 Canvas particle matrix effect
 │   ├── ProtectedRoute.tsx                # Private route guardian with verified email hard-gate
@@ -138,6 +139,7 @@ CoFound-UE/
 │   │   ├── en.ts                         # English translations (strictly typed)
 │   │   └── es.ts                         # Spanish translations (canonical source & Dictionary type)
 │   ├── auth-errors.ts                    # Firebase Auth error code mapper with i18n keys
+│   ├── categories.ts                     # Canonical project categories and translation helper
 │   ├── firebase.ts                       # Firebase SDK, Auth, and Firestore initialization
 │   └── site.ts                           # SITE_URL constant, single source of truth for canonical domain
 ├── public/                               # Static assets and PWA files
@@ -147,15 +149,19 @@ CoFound-UE/
 │   ├── Diagrama_CoFoundUE.png            # Architecture flowchart (optimized to ~272 KB)
 │   ├── og-image.jpg                      # Optimized OpenGraph preview image (1200x630)
 │   └── sw.js                             # Service Worker for PWA offline caching
+├── scripts/                              # Local development utilities
+│   └── seed-database.mjs                 # Example projects seed script (local emulator only, supports --dry-run)
 ├── tests/                                # Automated test suite
 │   └── rules.test.ts                     # Firestore security rules tests with Vitest and local emulator
+├── .eslintrc.json                        # ESLint configuration (next/core-web-vitals)
+├── .nvmrc                                # Pinned Node.js version for development and CI (Node 20)
 ├── CoFound UE — Protocolo de Smoke Test.md # Pre-pilot manual testing protocol
 ├── firebase.json                         # Firebase configuration and local emulator ports
 ├── firestore.indexes.json                # Firestore composite index definitions
 ├── firestore.rules                       # Firestore security rules (verified email required, granular access, messaging)
 ├── LICENSE                               # Proprietary license (All rights reserved)
 ├── next.config.mjs                       # Next.js config: 308 apex/subdomain redirect to www.cofoundue.es and SW headers
-├── package.json                          # Dependencies, scripts, and metadata
+├── package.json                          # Dependencies, scripts, engines, and metadata
 ├── postcss.config.mjs                    # CSS processing plugins (Autoprefixer, Tailwind)
 ├── tailwind.config.ts                    # Tailwind theme configuration
 └── tsconfig.json                         # TypeScript compiler configuration
@@ -287,7 +293,7 @@ Follow these steps to run **CoFound UE** in your local environment:
 
 ### 1. Prerequisites
 Ensure you have installed:
-* **Node.js**: Version `18.x` or higher.
+* **Node.js**: Version `20.x` (pinned in `.nvmrc` and `package.json`) or higher.
 * **npm**, **yarn**, **pnpm**, or **bun**.
 
 ### 2. Clone the Repository
@@ -335,7 +341,6 @@ erDiagram
     USERS {
         string uid PK
         string name
-        string email
         string degree
         string campus
         string bio
@@ -383,14 +388,15 @@ In the project directory, you can run:
 | `npm run dev` | Runs the app in development mode with Hot Module Replacement (HMR). |
 | `npm run build` | Compiles the production-optimized application into the `.next` directory. |
 | `npm run start` | Starts a Next.js production server. |
-| `npm run lint` | Runs ESLint to detect code and style issues. |
+| `npm run lint` | Runs ESLint (`next/core-web-vitals`, configured in `.eslintrc.json`) to detect code and style issues. |
 | `npm test` | Runs the Firestore rules test suite with Vitest (requires emulator). |
+| `node scripts/seed-database.mjs` | Seeds example profiles and projects into the local Firestore emulator (blocked against production; supports `--dry-run`). |
 
 ---
 
 ## 🧪 Testing
 
-The project includes an automated unit testing environment configured with **Vitest** and the local Firestore Emulator to rigorously validate security rules (`firestore.rules`). The current test suite consists of **23 tests** validating access control, write field validations, and the rejection of unverified users.
+The project includes an automated unit testing environment configured with **Vitest** and the local Firestore Emulator to rigorously validate security rules (`firestore.rules`). The current test suite consists of **24 tests** validating access control, GDPR email protection and legacy profile migration, write field validations, and the rejection of unverified users.
 
 ### Run tests locally
 Make sure dependencies are installed (`npm install`). To launch the emulator and execute the test suite, run:
@@ -413,9 +419,9 @@ The platform incorporates a multi-layer validation engine to safeguard the unive
 2. **Protected Routes (`ProtectedRoute.tsx`):**
    Internal views (`/dashboard`, `/perfil`, `/dashboard/nuevo`, `/dashboard/proyecto/[id]`, `/dashboard/mensajes`, etc.) verify the active Firebase Auth session before granting access, redirecting to the Landing Page if unauthenticated. Furthermore, verified email acts as an absolute gate (hard-gate): if `user.emailVerified == false`, the entire internal UI is blocked by a verification screen offering email resending with a 60-second cooldown and `auth/too-many-requests` handling.
 3. **Strict Security Rules (`firestore.rules`):**
-   Granular access in Firestore: users can only edit their own profile, creators manage their projects, and the messages subcollection is strictly limited to the two participants of the application (creator and applicant), preventing any unauthorized access. In production, `isAuthenticated()` requires `request.auth.token.email_verified == true`: unverified users are blocked from direct SDK/REST requests; and rules validate write fields: title 3–100 chars, description 20–1500 chars, 1–10 profiles, `creatorName` mandatory, messages 1–1000 chars.
+   Granular access in Firestore: users can only edit their own profile (forbidding injecting or altering the `email` field in public documents and automatically stripping any legacy `email` field on save), creators manage their projects, and the messages subcollection is strictly limited to the two participants of the application (creator and applicant), preventing any unauthorized access. In production, `isAuthenticated()` requires `request.auth.token.email_verified == true`: unverified users are blocked from direct SDK/REST requests; and rules validate write fields: title 3–100 chars, description 20–1500 chars, 1–10 profiles, `creatorName` mandatory, messages 1–1000 chars.
 4. **Automated CI Coverage:**
-   The 23-test suite (`tests/rules.test.ts`, Vitest + emulator) covers role-based access control, write validation, and unverified user rejection. CI executes this on every push to main.
+   The 24-test suite (`tests/rules.test.ts`, Vitest + emulator) covers role-based access control, profile `email` protection and migration, write validation, and unverified user rejection. CI executes this on every push to main.
 
 ---
 

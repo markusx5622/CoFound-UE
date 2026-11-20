@@ -2,7 +2,7 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc, deleteField } from "firebase/firestore";
 import { deleteUser, signOut } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { X, Plus, Save, LogOut } from "lucide-react";
@@ -95,6 +95,7 @@ export default function MiPerfil() {
         campus,
         bio,
         skills,
+        email: deleteField(),
         updatedAt: new Date()
       }, { merge: true });
 

@@ -123,6 +123,7 @@ CoFound-UE/
 │   ├── hero-section.tsx                  # Sección principal de bienvenida e impacto visual
 │   ├── how-it-works.tsx                  # Guía paso a paso sobre el funcionamiento de la red
 │   ├── InitialsAvatar.tsx                # Generador local de avatares con iniciales (privacidad por diseño)
+│   ├── LanguageSelector.tsx              # Selector de idioma ES/EN con persistencia
 │   ├── Navbar.tsx                        # Barra de navegación adaptativa con estado de usuario
 │   ├── particle-background.tsx           # Canvas HTML5 con efecto matricial de partículas
 │   ├── ProtectedRoute.tsx                # Guardián de rutas privadas con hard-gate de email verificado
@@ -130,9 +131,12 @@ CoFound-UE/
 │   ├── ServiceWorkerRegister.tsx         # Registro del Service Worker PWA en entornos de producción
 │   └── student-faq.tsx                   # FAQ para estudiantes en la Landing
 ├── context/                              # Contextos globales de React
-│   └── AuthContext.tsx                   # Proveedor y hook de autenticación de usuario
-├── lib/                                  # Lógica de negocio y utilidades
-│   ├── auth-errors.ts                    # Mapeo de errores de Firebase Auth a lenguaje amigable (ES)
+│   ├── AuthContext.tsx                   # Proveedor y hook de autenticación de usuario
+│   └── LanguageContext.tsx               # Proveedor y hook de internacionalización (ES/EN)
+├── lib/                                  # Lógica de negocio, diccionarios i18n y utilidades
+│   ├── i18n/                             # Diccionarios tipados para soporte bilingüe (ES/EN)
+│   ├── auth-errors.ts                    # Mapeo de errores de Firebase Auth a claves i18n
+│   ├── categories.ts                     # Categorías canónicas de proyectos y traducción
 │   ├── firebase.ts                       # Inicialización del SDK de Firebase, Auth y Firestore
 │   └── site.ts                           # Constante SITE_URL, única fuente de verdad del dominio canónico
 ├── public/                               # Recursos estáticos y PWA
@@ -142,15 +146,19 @@ CoFound-UE/
 │   ├── Diagrama_CoFoundUE.png            # Diagrama de flujo de arquitectura (optimizado a ~272 KB)
 │   ├── og-image.jpg                      # Imagen OpenGraph optimizada para previsualizaciones (1200x630)
 │   └── sw.js                             # Service Worker para capacidades PWA y caché offline
+├── scripts/                              # Utilidades locales de desarrollo
+│   └── seed-database.mjs                 # Sembrado de proyectos de ejemplo (exclusivo emulador local, con --dry-run)
 ├── tests/                                # Suite de pruebas automatizadas
 │   └── rules.test.ts                     # Tests de reglas Firestore con Vitest y emulador local
+├── .eslintrc.json                        # Configuración de ESLint (next/core-web-vitals)
+├── .nvmrc                                # Versión de Node.js fijada para desarrollo y CI (Node 20)
 ├── CoFound UE — Protocolo de Smoke Test.md # Protocolo de pruebas pre-piloto
 ├── firebase.json                         # Configuración de Firebase y emuladores locales
 ├── firestore.indexes.json                # Definición de índices compuestos de Firestore
 ├── firestore.rules                       # Reglas de seguridad de Firestore (email verificado obligatorio, accesos granulares y mensajería)
 ├── LICENSE                               # Licencia propietaria (Todos los derechos reservados)
 ├── next.config.mjs                       # Config Next.js: redirect 308 de host a www.cofoundue.es y headers del Service Worker
-├── package.json                          # Dependencias, scripts y metadatos
+├── package.json                          # Dependencias, scripts, engines y metadatos
 ├── postcss.config.mjs                    # Plugins de procesamiento CSS (Autoprefixer, Tailwind)
 ├── tailwind.config.ts                    # Configuración del tema Tailwind
 └── tsconfig.json                         # Reglas del compilador de TypeScript
@@ -283,7 +291,7 @@ Sigue estos pasos para ejecutar **CoFound UE** en tu entorno local:
 
 ### 1. Prerrequisitos
 Asegúrate de tener instalados:
-* **Node.js**: Versión `18.x` o superior.
+* **Node.js**: Versión `20.x` (fijada en `.nvmrc` y `package.json`) o superior.
 * **npm**, **yarn**, **pnpm** o **bun**.
 
 ### 2. Clonar el Repositorio
@@ -331,7 +339,6 @@ erDiagram
     USERS {
         string uid PK
         string name
-        string email
         string degree
         string campus
         string bio
@@ -379,14 +386,15 @@ En el directorio del proyecto, puedes ejecutar:
 | `npm run dev` | Inicia la aplicación en modo desarrollo con Hot Module Replacement (HMR). |
 | `npm run build` | Compila la aplicación optimizada para producción en el directorio `.next`. |
 | `npm run start` | Inicia un servidor de producción de Next.js. |
-| `npm run lint` | Ejecuta el linter de ESLint para detectar errores de código y estilo. |
+| `npm run lint` | Ejecuta el linter de ESLint (`next/core-web-vitals`, configurado en `.eslintrc.json`) para detectar errores de código y estilo. |
 | `npm test` | Ejecuta la suite de tests de reglas de Firestore con Vitest (requiere el emulador). |
+| `node scripts/seed-database.mjs` | Carga perfiles y proyectos de ejemplo en el emulador local de Firestore (bloqueado contra producción; soporta `--dry-run`). |
 
 ---
 
 ## 🧪 Pruebas (Testing)
 
-El proyecto cuenta con un entorno de pruebas unitarias configurado con **Vitest** y el Emulador local de Firestore para validar rigurosamente las reglas de seguridad (`firestore.rules`). La suite actual consta de **23 tests** que validan control de acceso, validación de campos en escritura y el bloqueo de usuarios sin email verificado.
+El proyecto cuenta con un entorno de pruebas unitarias configurado con **Vitest** y el Emulador local de Firestore para validar rigurosamente las reglas de seguridad (`firestore.rules`). La suite actual consta de **24 tests** que validan control de acceso, protección RGPD de emails y migración de perfiles heredados, validación de campos en escritura y el bloqueo de usuarios sin email verificado.
 
 ### Ejecutar tests localmente
 Asegúrate de haber instalado las dependencias (`npm install`). Para lanzar el emulador y correr la suite de tests, ejecuta:
@@ -409,9 +417,9 @@ La aplicación incluye un motor de validación para proteger el ecosistema unive
 2. **Rutas Protegidas (`ProtectedRoute.tsx`):**
    Las vistas internas (`/dashboard`, `/perfil`, `/dashboard/nuevo`, `/dashboard/proyecto/[id]`, `/dashboard/mensajes`, etc.) verifican la sesión activa en Firebase Auth antes de conceder acceso, redirigiendo automáticamente a la Landing Page si el usuario no se encuentra autenticado. Además, exige email verificado como puerta obligatoria (hard-gate): si `user.emailVerified == false`, bloquea TODA la interfaz interna con pantalla de verificación, reenvío de correo con cooldown de 60s y manejo de `auth/too-many-requests`.
 3. **Reglas de Seguridad Estrictas (`firestore.rules`):**
-   Acceso granular en Firestore: usuarios solo editan su propio perfil, creadores gestionan sus proyectos, y la subcolección de mensajes está estrictamente restringida a los dos participantes de la postulación (creador y postulante), bloqueando cualquier acceso cruzado no autorizado. Desplegado en producción, `isAuthenticated()` exige `request.auth.token.email_verified == true`: un usuario sin verificar queda bloqueado también ante peticiones directas vía SDK/API REST; y las reglas validan campos en escritura: título 3–100 chars, descripción 20–1500, 1–10 perfiles, `creatorName` obligatorio, mensajes 1–1000 chars.
+   Acceso granular en Firestore: usuarios solo editan su propio perfil (prohibiendo inyectar o alterar el campo `email` en documentos públicos y limpiando automáticamente cualquier `email` heredado al guardar), creadores gestionan sus proyectos, y la subcolección de mensajes está estrictamente restringida a los dos participantes de la postulación (creador y postulante), bloqueando cualquier acceso cruzado no autorizado. Desplegado en producción, `isAuthenticated()` exige `request.auth.token.email_verified == true`: un usuario sin verificar queda bloqueado también ante peticiones directas vía SDK/API REST; y las reglas validan campos en escritura: título 3–100 chars, descripción 20–1500, 1–10 perfiles, `creatorName` obligatorio, mensajes 1–1000 chars.
 4. **Cobertura Automatizada en CI:**
-   La suite de 23 tests (`tests/rules.test.ts`, Vitest + emulador) cubre control de acceso por rol/participante, validación de campos en escritura y bloqueo total de usuarios sin email verificado. CI la ejecuta en cada push a main.
+   La suite de 24 tests (`tests/rules.test.ts`, Vitest + emulador) cubre control de acceso por rol/participante, protección y migración del campo `email` en perfiles, validación de campos en escritura y bloqueo total de usuarios sin email verificado. CI la ejecuta en cada push a main.
 
 ---
 
