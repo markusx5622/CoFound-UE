@@ -400,7 +400,7 @@ En el directorio del proyecto, puedes ejecutar:
 
 ## 🧪 Pruebas (Testing)
 
-El proyecto cuenta con un entorno de pruebas unitarias configurado con **Vitest** y el Emulador local de Firestore para validar rigurosamente las reglas de seguridad (`firestore.rules`). La suite actual consta de **24 tests** que validan control de acceso, protección RGPD de emails y migración de perfiles heredados, validación de campos en escritura y el bloqueo de usuarios sin email verificado.
+El proyecto cuenta con un entorno de pruebas unitarias configurado con **Vitest** y el Emulador local de Firestore para validar rigurosamente las reglas de seguridad (`firestore.rules`). La suite actual consta de **29 tests** que validan control de acceso, dominio institucional obligatorio en backend, protección RGPD de emails y migración de perfiles heredados, anti-suplantación en chat, anti-autoaceptación en postulaciones, validación de campos en escritura y el bloqueo de usuarios sin email verificado.
 
 ### Ejecutar tests localmente
 Asegúrate de haber instalado las dependencias (`npm install`). Para lanzar el emulador y correr la suite de tests, ejecuta:
@@ -425,7 +425,7 @@ La aplicación incluye un motor de validación para proteger el ecosistema unive
 3. **Reglas de Seguridad Estrictas (`firestore.rules`):**
    Acceso granular en Firestore: usuarios solo editan su propio perfil (prohibiendo inyectar o alterar el campo `email` en documentos públicos y limpiando automáticamente cualquier `email` heredado al guardar), creadores gestionan sus proyectos, y la subcolección de mensajes está estrictamente restringida a los dos participantes de la postulación (creador y postulante), bloqueando cualquier acceso cruzado no autorizado. Desplegado en producción, `isAuthenticated()` exige `request.auth.token.email_verified == true`: un usuario sin verificar queda bloqueado también ante peticiones directas vía SDK/API REST; y las reglas validan campos en escritura: título 3–100 chars, descripción 20–1500, 1–10 perfiles, `creatorName` obligatorio, mensajes 1–1000 chars.
 4. **Cobertura Automatizada en CI:**
-   La suite de 24 tests (`tests/rules.test.ts`, Vitest + emulador) cubre control de acceso por rol/participante, protección y migración del campo `email` en perfiles, validación de campos en escritura y bloqueo total de usuarios sin email verificado. CI la ejecuta en cada push a main.
+   La suite de 29 tests (`tests/rules.test.ts`, Vitest + emulador) cubre control de acceso por rol/participante, validación de dominio institucional en reglas, protección y migración del campo `email` en perfiles, anti-suplantación en chat, anti-autoaceptación en postulaciones, validación de campos en escritura y bloqueo total de usuarios sin email verificado. CI la ejecuta en cada push a main.
 
 ---
 
@@ -451,7 +451,7 @@ El desarrollo de **CoFound UE** se organiza en fases estratégicas orientadas a 
   * **Fase 2:** Mensajería en tiempo real, perfiles de usuario y *skeleton loaders*.
   * **Fase 3A:** PWA instalable, dominio custom (`www.cofoundue.es`), SEO técnico (Sitemap, Robots) y CI con tests automatizados de reglas Firestore.
   * **Fase 3B:** Hardening de seguridad (email verificado exigido en reglas y hard-gate de interfaz), unificación SEO al dominio canónico `www.cofoundue.es` (metadataBase, og:url, canonical, redirect 308 desde el subdominio de Vercel), limpieza de assets huérfanos (−8,2 MB), prompt PWA no invasivo, y ampliación del piloto a los campus Turia y Alameda.
-  * **Fase 3C:** Internacionalización completa ES/EN con selector de idioma y diccionarios tipados, privacidad RGPD (ocultación de emails públicos, autolimpieza de `email` heredado y derecho al olvido con borrado de cuenta en cascada), datos estructurados JSON-LD, ESLint (`next/core-web-vitals`), suite de 24 tests de reglas y script de proyectos de ejemplo para emulador local.
+  * **Fase 3C:** Internacionalización completa ES/EN con selector de idioma y diccionarios tipados, privacidad RGPD (ocultación de emails públicos, autolimpieza de `email` heredado y derecho al olvido con borrado de cuenta en cascada), datos estructurados JSON-LD, ESLint (`next/core-web-vitals`), blindaje de reglas Firestore (dominio institucional en backend, anti-suplantación en chat, anti-autoaceptación y límites de perfil), cabeceras HTTP de seguridad, suite de 29 tests de reglas y script de proyectos de ejemplo para emulador local.
 
 * **En curso / Próximas fases:**
   * Ejecución del smoke test final y lanzamiento del piloto en los campus Turia y Alameda.

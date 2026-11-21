@@ -400,7 +400,7 @@ In the project directory, you can run:
 
 ## 🧪 Testing
 
-The project includes an automated unit testing environment configured with **Vitest** and the local Firestore Emulator to rigorously validate security rules (`firestore.rules`). The current test suite consists of **24 tests** validating access control, GDPR email protection and legacy profile migration, write field validations, and the rejection of unverified users.
+The project includes an automated unit testing environment configured with **Vitest** and the local Firestore Emulator to rigorously validate security rules (`firestore.rules`). The current test suite consists of **29 tests** validating access control, backend institutional domain enforcement, GDPR email protection and legacy profile migration, anti-spoofing in chat, anti-self-acceptance on applications, write field validations, and the rejection of unverified users.
 
 ### Run tests locally
 Make sure dependencies are installed (`npm install`). To launch the emulator and execute the test suite, run:
@@ -425,7 +425,7 @@ The platform incorporates a multi-layer validation engine to safeguard the unive
 3. **Strict Security Rules (`firestore.rules`):**
    Granular access in Firestore: users can only edit their own profile (forbidding injecting or altering the `email` field in public documents and automatically stripping any legacy `email` field on save), creators manage their projects, and the messages subcollection is strictly limited to the two participants of the application (creator and applicant), preventing any unauthorized access. In production, `isAuthenticated()` requires `request.auth.token.email_verified == true`: unverified users are blocked from direct SDK/REST requests; and rules validate write fields: title 3–100 chars, description 20–1500 chars, 1–10 profiles, `creatorName` mandatory, messages 1–1000 chars.
 4. **Automated CI Coverage:**
-   The 24-test suite (`tests/rules.test.ts`, Vitest + emulator) covers role-based access control, profile `email` protection and migration, write validation, and unverified user rejection. CI executes this on every push to main.
+   The 29-test suite (`tests/rules.test.ts`, Vitest + emulator) covers role-based access control, institutional domain enforcement in rules, profile `email` protection and migration, chat anti-spoofing, application anti-self-acceptance, write validation, and unverified user rejection. CI executes this on every push to main.
 
 ---
 
@@ -451,7 +451,7 @@ The roadmap of **CoFound UE** is structured into strategic phases designed to co
   * **Phase 2:** Real-time messaging, user profiles, and skeleton loaders.
   * **Phase 3A:** Installable PWA, custom domain (`www.cofoundue.es`), technical SEO (Sitemap, Robots), and CI with automated Firestore rules tests.
   * **Phase 3B:** Security hardening (verified email enforced in rules and UI hard-gate), SEO unification to canonical domain `www.cofoundue.es` (metadataBase, og:url, canonical, 308 redirect from Vercel subdomain), orphaned asset cleanup (−8.2 MB), non-invasive PWA prompt, and pilot expansion to Turia and Alameda campuses.
-  * **Phase 3C:** Full ES/EN internationalization with language selector and typed dictionaries, GDPR privacy (public email hiding, automatic legacy `email` field cleanup, and right to erasure with cascading account deletion), JSON-LD structured data, ESLint (`next/core-web-vitals`), 24-test security rules suite, and local emulator example seed script.
+  * **Phase 3C:** Full ES/EN internationalization with language selector and typed dictionaries, GDPR privacy (public email hiding, automatic legacy `email` field cleanup, and right to erasure with cascading account deletion), JSON-LD structured data, ESLint (`next/core-web-vitals`), Firestore security hardening (backend institutional domain check, chat anti-spoofing, application anti-self-acceptance, and profile size limits), HTTP security headers, 29-test security rules suite, and local emulator example seed script.
 
 * **In Progress / Upcoming Phases:**
   * Final smoke test execution and pilot launch at Turia and Alameda campuses.

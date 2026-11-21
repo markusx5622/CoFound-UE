@@ -3,7 +3,7 @@
 **Versión:** 1.1 · **Fecha:** Noviembre 2026
 **Tester:** Marc Cubero Cantavella (individual)
 **Entorno bajo prueba:** Producción — https://www.cofoundue.es
-**Estado del código:** rama `main`, CI verde (lint + tests + build), 24/24 tests de reglas en emulador
+**Estado del código:** rama `main`, CI verde (lint + tests + build), 29/29 tests de reglas en emulador
 
 ---
 

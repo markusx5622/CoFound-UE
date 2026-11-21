@@ -66,8 +66,10 @@ export default function MiPerfil() {
   }, [user, authLoading]);
 
   const handleAddSkill = () => {
-    if (skillInput.trim() !== "" && !skills.includes(skillInput.trim())) {
-      setSkills([...skills, skillInput.trim()]);
+    const trimmed = skillInput.trim();
+    if (trimmed !== "" && !skills.includes(trimmed)) {
+      if (skills.length >= 20) return;
+      setSkills([...skills, trimmed]);
       setSkillInput("");
     }
   };
@@ -204,6 +206,7 @@ export default function MiPerfil() {
                   <input
                     type="text"
                     required
+                    maxLength={100}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
@@ -216,6 +219,7 @@ export default function MiPerfil() {
                   <input
                     type="text"
                     required
+                    maxLength={120}
                     value={degree}
                     onChange={(e) => setDegree(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600"
@@ -240,11 +244,13 @@ export default function MiPerfil() {
                 <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("profile.bio")}</label>
                 <textarea
                   rows={4}
+                  maxLength={1000}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all resize-none placeholder:text-zinc-600"
                   placeholder={t("profile.bioPlaceholder")}
                 />
+                <div className="text-right text-xs text-zinc-500 mt-1">{bio.length}/1000</div>
               </div>
 
               <div>
@@ -252,6 +258,7 @@ export default function MiPerfil() {
                 <div className="flex gap-2 mb-3">
                   <input
                     type="text"
+                    maxLength={40}
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={handleKeyDown}

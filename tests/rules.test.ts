@@ -42,12 +42,12 @@ describe("CoFound-UE Firestore Rules", () => {
       const unauthedDb = testEnv.unauthenticatedContext().firestore();
       await assertFails(unauthedDb.collection("users").doc("user1").get());
       
-      const authedDb = getAuthContext("user1", "test@test.com").firestore();
+      const authedDb = getAuthContext("user1", "test@live.uem.es").firestore();
       await assertSucceeds(authedDb.collection("users").doc("user1").get());
     });
 
     it("escritura solo del propio uid", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       
       // Escritura propia
       await assertSucceeds(db.collection("users").doc("user1").set({ name: "User 1" }));
@@ -109,6 +109,22 @@ describe("CoFound-UE Firestore Rules", () => {
         )
       );
     });
+
+    it("bloquea perfiles que superen los límites de tamaño en name, bio o skills", async () => {
+      const db = getAuthContext("user1", "user1@live.uem.es").firestore();
+
+      await assertFails(db.collection("users").doc("user1").set({ name: "a".repeat(101) }));
+      await assertFails(db.collection("users").doc("user1").set({ name: "User 1", bio: "a".repeat(1001) }));
+      await assertFails(db.collection("users").doc("user1").set({ name: "User 1", skills: Array(21).fill("React") }));
+
+      await assertSucceeds(db.collection("users").doc("user1").set({
+        name: "User 1",
+        degree: "Grado en IOI",
+        campus: "Valencia",
+        bio: "Bio válida",
+        skills: ["React", "Next.js"],
+      }));
+    });
   });
 
   describe("Projects Collection", () => {
@@ -124,7 +140,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create con creator_id distinto del uid falla", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       await assertFails(db.collection("projects").doc("proj1").set({
         creator_id: "user2",
         creatorName: "User",
@@ -135,7 +151,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create SIN creatorName o con creatorName vacío falla", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       
       await assertFails(db.collection("projects").doc("proj1").set({
         creator_id: "user1",
@@ -154,7 +170,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create con title < 3 o > 100 chars falla", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       
       await assertFails(db.collection("projects").doc("proj1").set({
         creator_id: "user1",
@@ -174,7 +190,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create con description < 20 o > 1500 chars falla", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       
       await assertFails(db.collection("projects").doc("proj1").set({
         creator_id: "user1",
@@ -194,7 +210,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create con profiles vacío o > 10 falla", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       
       await assertFails(db.collection("projects").doc("proj1").set({
         creator_id: "user1",
@@ -214,7 +230,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create válido succeed", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       await assertSucceeds(db.collection("projects").doc("proj1").set({
         creator_id: "user1",
         creatorName: "User",
@@ -235,8 +251,8 @@ describe("CoFound-UE Firestore Rules", () => {
         });
       });
 
-      const user1Db = getAuthContext("user1", "test1@test.com").firestore();
-      const user2Db = getAuthContext("user2", "test2@test.com").firestore();
+      const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
+      const user2Db = getAuthContext("user2", "test2@live.uem.es").firestore();
 
       // Update por no creador
       await assertFails(user2Db.collection("projects").doc("proj1").update({ title: "Hack" }));
@@ -248,11 +264,26 @@ describe("CoFound-UE Firestore Rules", () => {
       // Delete por creador
       await assertSucceeds(user1Db.collection("projects").doc("proj1").delete());
     });
+
+    it("update intentando reasignar creator_id a otro usuario falla", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection("projects").doc("proj1").set({
+          creator_id: "user1",
+          creatorName: "User 1",
+          title: "Valid title",
+          description: "Valid description with enough length",
+          profiles: ["Developer"],
+        });
+      });
+
+      const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
+      await assertFails(user1Db.collection("projects").doc("proj1").update({ creator_id: "user2" }));
+    });
   });
 
   describe("Applications Collection", () => {
     it("create con applicantId != uid falla", async () => {
-      const db = getAuthContext("user1", "test@test.com").firestore();
+      const db = getAuthContext("user1", "test@live.uem.es").firestore();
       await assertFails(db.collection("applications").doc("app1").set({
         projectId: "proj1",
         applicantId: "user2",
@@ -278,10 +309,10 @@ describe("CoFound-UE Firestore Rules", () => {
         });
       });
 
-      const user3Db = getAuthContext("user3", "test3@test.com").firestore();
+      const user3Db = getAuthContext("user3", "test3@live.uem.es").firestore();
       await assertFails(user3Db.collection("applications").doc("app1").update({ status: "accepted" }));
 
-      const creatorDb = getAuthContext("creator1", "creator@test.com").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@live.uem.es").firestore();
       await assertSucceeds(creatorDb.collection("applications").doc("app1").update({ status: "accepted" }));
     });
 
@@ -297,7 +328,7 @@ describe("CoFound-UE Firestore Rules", () => {
       });
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore();
-      const user3Db = getAuthContext("user3", "test3@test.com").firestore();
+      const user3Db = getAuthContext("user3", "test3@live.uem.es").firestore();
 
       await assertFails(unauthedDb.collection("applications").doc("app1").get());
       await assertFails(user3Db.collection("applications").doc("app1").get());
@@ -314,8 +345,8 @@ describe("CoFound-UE Firestore Rules", () => {
         });
       });
 
-      const applicantDb = getAuthContext("user1", "test1@test.com").firestore();
-      const creatorDb = getAuthContext("creator1", "creator@test.com").firestore();
+      const applicantDb = getAuthContext("user1", "test1@live.uem.es").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@live.uem.es").firestore();
 
       await assertSucceeds(applicantDb.collection("applications").doc("app1").get());
       await assertSucceeds(creatorDb.collection("applications").doc("app1").get());
@@ -332,8 +363,8 @@ describe("CoFound-UE Firestore Rules", () => {
         });
       });
 
-      const applicantDb = getAuthContext("user1", "test1@test.com").firestore();
-      const user3Db = getAuthContext("user3", "test3@test.com").firestore();
+      const applicantDb = getAuthContext("user1", "test1@live.uem.es").firestore();
+      const user3Db = getAuthContext("user3", "test3@live.uem.es").firestore();
 
       // Query sin filtro de participante
       await assertFails(applicantDb.collection("applications").get());
@@ -360,8 +391,8 @@ describe("CoFound-UE Firestore Rules", () => {
         });
       });
 
-      const applicantDb = getAuthContext("user1", "test1@test.com").firestore();
-      const creatorDb = getAuthContext("creator1", "creator@test.com").firestore();
+      const applicantDb = getAuthContext("user1", "test1@live.uem.es").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@live.uem.es").firestore();
 
       // List con filtro del propio applicantId succeed
       await assertSucceeds(applicantDb.collection("applications").where("applicantId", "==", "user1").get());
@@ -372,6 +403,50 @@ describe("CoFound-UE Firestore Rules", () => {
       // List del creador por creatorId succeed
       await assertSucceeds(creatorDb.collection("applications").where("creatorId", "==", "creator1").get());
       await assertSucceeds(creatorDb.collection("applications").where("projectId", "==", "proj1").where("creatorId", "==", "creator1").get());
+    });
+
+    it("bloquea autopostulación, creación con status distinto de pending y autoaceptación por el postulante", async () => {
+      const applicantDb = getAuthContext("user1", "user1@live.uem.es").firestore();
+      const creatorDb = getAuthContext("creator1", "creator1@live.uem.es").firestore();
+
+      // Autopostulación (applicantId == creatorId) falla
+      await assertFails(applicantDb.collection("applications").doc("selfApp").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "user1",
+        status: "pending",
+      }));
+
+      // Crear con status ya aceptado falla
+      await assertFails(applicantDb.collection("applications").doc("cheatedApp").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "accepted",
+      }));
+
+      // Crear postulación válida
+      await assertSucceeds(applicantDb.collection("applications").doc("app1").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+      }));
+
+      // Postulante intentando autoaceptarse falla
+      await assertFails(applicantDb.collection("applications").doc("app1").update({ status: "accepted" }));
+      // Postulante intentando tocar lastReadByCreator falla
+      await assertFails(applicantDb.collection("applications").doc("app1").update({ lastReadByCreator: new Date() }));
+      // Postulante actualizando sus metadatos de chat/lectura succeed
+      await assertSucceeds(applicantDb.collection("applications").doc("app1").update({
+        lastMessageAt: new Date(),
+        lastMessageSenderId: "user1",
+        lastReadByApplicant: new Date(),
+      }));
+      // Creador aceptando candidatura succeed
+      await assertSucceeds(creatorDb.collection("applications").doc("app1").update({ status: "accepted" }));
+      // Creador intentando alterar applicantId falla
+      await assertFails(creatorDb.collection("applications").doc("app1").update({ applicantId: "user2" }));
     });
   });
 
@@ -388,7 +463,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create por usuario ajeno a la aplicación falla", async () => {
-      const user3Db = getAuthContext("user3", "test3@test.com").firestore();
+      const user3Db = getAuthContext("user3", "test3@live.uem.es").firestore();
       await assertFails(user3Db.collection("applications").doc("app1").collection("messages").add({
         text: "Hello",
         senderId: "user3",
@@ -396,13 +471,13 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create por participant con text válido succeed", async () => {
-      const user1Db = getAuthContext("user1", "test1@test.com").firestore();
+      const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
       await assertSucceeds(user1Db.collection("applications").doc("app1").collection("messages").add({
         text: "Hello creator",
         senderId: "user1",
       }));
 
-      const creatorDb = getAuthContext("creator1", "creator@test.com").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@live.uem.es").firestore();
       await assertSucceeds(creatorDb.collection("applications").doc("app1").collection("messages").add({
         text: "Hello applicant",
         senderId: "creator1",
@@ -410,7 +485,7 @@ describe("CoFound-UE Firestore Rules", () => {
     });
 
     it("create con text vacío o > 1000 chars falla", async () => {
-      const user1Db = getAuthContext("user1", "test1@test.com").firestore();
+      const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
       
       await assertFails(user1Db.collection("applications").doc("app1").collection("messages").add({
         text: "",
@@ -419,6 +494,23 @@ describe("CoFound-UE Firestore Rules", () => {
 
       await assertFails(user1Db.collection("applications").doc("app1").collection("messages").add({
         text: "a".repeat(1001),
+        senderId: "user1",
+      }));
+    });
+
+    it("bloquea suplantación de senderId en el chat", async () => {
+      const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@live.uem.es").firestore();
+
+      // Postulante intentando hacerse pasar por el creador falla
+      await assertFails(user1Db.collection("applications").doc("app1").collection("messages").add({
+        text: "Mensaje suplantado",
+        senderId: "creator1",
+      }));
+
+      // Creador intentando hacerse pasar por el postulante falla
+      await assertFails(creatorDb.collection("applications").doc("app1").collection("messages").add({
+        text: "Mensaje suplantado",
         senderId: "user1",
       }));
     });
@@ -485,6 +577,34 @@ describe("CoFound-UE Firestore Rules", () => {
 
       const unverifiedDb = getUnverifiedAuthContext("unverified1", "unverified@live.uem.es").firestore();
       await assertFails(unverifiedDb.collection("applications").doc("app1").collection("messages").doc("msg1").get());
+    });
+  });
+
+  describe("dominio institucional obligatorio en reglas", () => {
+    it("bloquea dominios externos verificados (@gmail.com, spoofing) y permite @universidadeuropea.es", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection("users").doc("user1").set({
+          name: "User 1",
+        });
+      });
+
+      const gmailDb = getAuthContext("ext1", "hacker@gmail.com").firestore();
+      const spoofDb = getAuthContext("ext2", "fake@live.uem.es.evil.com").firestore();
+      const subSpoofDb = getAuthContext("ext3", "fake@notlive.uem.es").firestore();
+      const staffDb = getAuthContext("staff1", "profesor@universidadeuropea.es").firestore();
+
+      await assertFails(gmailDb.collection("users").doc("user1").get());
+      await assertFails(gmailDb.collection("projects").doc("proj1").set({
+        creator_id: "ext1",
+        creatorName: "External",
+        title: "External project",
+        description: "Valid description with enough length",
+        profiles: ["Developer"],
+      }));
+      await assertFails(spoofDb.collection("users").doc("user1").get());
+      await assertFails(subSpoofDb.collection("users").doc("user1").get());
+
+      await assertSucceeds(staffDb.collection("users").doc("user1").get());
     });
   });
 });
