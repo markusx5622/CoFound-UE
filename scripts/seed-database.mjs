@@ -392,7 +392,7 @@ function buildSeedData() {
 
   const applications = [
     {
-      id: "demo-app-example-1",
+      id: "campusbite-uev_demo-user-tech",
       fields: {
         projectId: toFirestoreString("campusbite-uev"),
         projectTitle: toFirestoreString(

@@ -10,7 +10,8 @@ service cloud.firestore {
     }
 
     function isValidUserPayload(data) {
-      return (!('name' in data) || (data.name is string && data.name.size() <= 100))
+      return data.keys().hasOnly(['name', 'degree', 'campus', 'bio', 'skills', 'updatedAt', 'photoURL', 'email'])
+        && (!('name' in data) || (data.name is string && data.name.size() <= 100))
         && (!('degree' in data) || (data.degree is string && data.degree.size() <= 120))
         && (!('campus' in data) || (data.campus is string && data.campus.size() <= 80))
         && (!('bio' in data) || (data.bio is string && data.bio.size() <= 1000))
@@ -36,6 +37,7 @@ service cloud.firestore {
     match /projects/{projectId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() 
+        && request.resource.data.keys().hasOnly(['title', 'description', 'category', 'profiles', 'creator_id', 'creatorName', 'createdAt'])
         && request.resource.data.creator_id == request.auth.uid
         && request.resource.data.creatorName is string
         && request.resource.data.creatorName.size() > 0 && request.resource.data.creatorName.size() <= 100
@@ -47,6 +49,7 @@ service cloud.firestore {
         && request.resource.data.profiles.size() >= 1 && request.resource.data.profiles.size() <= 10;
       allow update: if isAuthenticated() 
         && resource.data.creator_id == request.auth.uid
+        && request.resource.data.keys().hasOnly(['title', 'description', 'category', 'profiles', 'creator_id', 'creatorName', 'createdAt'])
         && (!('creator_id' in request.resource.data) || request.resource.data.creator_id == resource.data.creator_id)
         && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 100))
         && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() >= 20 && request.resource.data.description.size() <= 1500))
@@ -58,12 +61,17 @@ service cloud.firestore {
       allow get: if isAuthenticated() && (resource.data.applicantId == request.auth.uid || resource.data.creatorId == request.auth.uid);
       allow list: if isAuthenticated() && (resource.data.applicantId == request.auth.uid || resource.data.creatorId == request.auth.uid);
       allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly(['projectId', 'projectTitle', 'applicantId', 'creatorId', 'status', 'createdAt'])
         && request.resource.data.applicantId == request.auth.uid
+        && request.resource.data.projectId is string
+        && request.resource.data.projectId.size() > 0
+        && applicationId == request.resource.data.projectId + '_' + request.auth.uid
         && request.resource.data.creatorId is string
         && request.resource.data.creatorId.size() > 0
         && request.resource.data.creatorId != request.auth.uid
-        && request.resource.data.projectId is string
-        && request.resource.data.projectId.size() > 0
+        && exists(/databases/$(database)/documents/projects/$(request.resource.data.projectId))
+        && get(/databases/$(database)/documents/projects/$(request.resource.data.projectId)).data.creator_id == request.resource.data.creatorId
+        && (!('projectTitle' in request.resource.data) || (request.resource.data.projectTitle is string && request.resource.data.projectTitle.size() <= 150))
         && request.resource.data.status == 'pending';
       allow update: if isAuthenticated()
         && request.resource.data.applicantId == resource.data.applicantId
@@ -91,6 +99,7 @@ service cloud.firestore {
         allow create: if isAuthenticated() && 
           (get(/databases/$(database)/documents/applications/$(applicationId)).data.applicantId == request.auth.uid || 
            get(/databases/$(database)/documents/applications/$(applicationId)).data.creatorId == request.auth.uid) &&
+          request.resource.data.keys().hasOnly(['text', 'senderId', 'createdAt']) &&
           request.resource.data.senderId == request.auth.uid &&
           request.resource.data.text is string &&
           request.resource.data.text.size() >= 1 &&

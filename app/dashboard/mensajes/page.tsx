@@ -2,7 +2,7 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect, useRef } from "react";
-import { collection, query, where, onSnapshot, addDoc, serverTimestamp, orderBy, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, serverTimestamp, orderBy, doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Send, MessageSquare } from "lucide-react";
@@ -65,6 +65,7 @@ export default function Mensajes() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -182,29 +183,37 @@ export default function Mensajes() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeChat || !user) return;
+    if (!newMessage.trim() || !activeChat || !user || sending) return;
 
     const msgText = newMessage.trim();
     setNewMessage("");
+    setSending(true);
 
     try {
-      await addDoc(collection(db, "applications", activeChat.id, "messages"), {
-        text: msgText,
-        senderId: user.uid,
-        createdAt: serverTimestamp()
-      });
-
       const isCreator = activeChat.creatorId === user.uid;
       const readField = isCreator ? "lastReadByCreator" : "lastReadByApplicant";
-      await updateDoc(doc(db, "applications", activeChat.id), {
+      const batch = writeBatch(db);
+      const newMsgRef = doc(collection(db, "applications", activeChat.id, "messages"));
+      const appRef = doc(db, "applications", activeChat.id);
+
+      batch.set(newMsgRef, {
+        text: msgText,
+        senderId: user.uid,
+        createdAt: serverTimestamp(),
+      });
+      batch.update(appRef, {
         lastMessageAt: serverTimestamp(),
         lastMessageSenderId: user.uid,
-        [readField]: serverTimestamp()
+        [readField]: serverTimestamp(),
       });
+
+      await batch.commit();
     } catch (error) {
       reportClientError("messages_send", error);
       setNewMessage(msgText);
       toast.error(t("messages.sendError"));
+    } finally {
+      setSending(false);
     }
   };
 
@@ -235,8 +244,16 @@ export default function Mensajes() {
                   return (
                     <div 
                       key={convo.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setActiveChat(convo)}
-                      className={`p-4 border-b border-zinc-800/50 cursor-pointer transition-colors flex items-center gap-3 ${activeChat?.id === convo.id ? 'bg-zinc-900 border-l-2 border-l-[#E60000]' : 'hover:bg-zinc-900/50'}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setActiveChat(convo);
+                        }
+                      }}
+                      className={`p-4 border-b border-zinc-800/50 cursor-pointer transition-colors flex items-center gap-3 focus:outline-none focus:bg-zinc-900/80 ${activeChat?.id === convo.id ? 'bg-zinc-900 border-l-2 border-l-[#E60000]' : 'hover:bg-zinc-900/50'}`}
                     >
                       <InitialsAvatar name={convo.otherUser.name} size={48} className="w-12 h-12 text-sm font-semibold" />
                       <div className="overflow-hidden flex-grow min-w-0">
@@ -308,7 +325,7 @@ export default function Mensajes() {
                       maxLength={1000}
                       className="flex-grow bg-zinc-900 border border-zinc-700 rounded-full px-5 py-3 text-white focus:outline-none focus:border-[#E60000] transition-colors placeholder:text-zinc-500 text-sm"
                     />
-                    <button type="submit" disabled={!newMessage.trim()} className="bg-[#E60000] hover:bg-red-700 text-white p-3 rounded-full disabled:opacity-50 transition-colors shadow-md">
+                    <button type="submit" disabled={!newMessage.trim() || sending} className="bg-[#E60000] hover:bg-red-700 text-white p-3 rounded-full disabled:opacity-50 transition-colors shadow-md">
                       <Send className="h-5 w-5" />
                     </button>
                   </form>

@@ -2,7 +2,7 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
-import { doc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { UserCircle, Tag, ArrowLeft, Send } from "lucide-react";
@@ -104,7 +104,8 @@ export default function ProyectoDetalle() {
         return;
       }
 
-      await addDoc(collection(db, "applications"), {
+      const deterministicAppId = `${project.id}_${user.uid}`;
+      await setDoc(doc(db, "applications", deterministicAppId), {
         projectId: project.id,
         projectTitle: project.title,
         applicantId: user.uid,

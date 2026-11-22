@@ -110,12 +110,13 @@ describe("CoFound-UE Firestore Rules", () => {
       );
     });
 
-    it("bloquea perfiles que superen los límites de tamaño en name, bio o skills", async () => {
+    it("bloquea perfiles que superen los límites de tamaño en name, bio o skills o campos extra no permitidos", async () => {
       const db = getAuthContext("user1", "user1@live.uem.es").firestore();
 
       await assertFails(db.collection("users").doc("user1").set({ name: "a".repeat(101) }));
       await assertFails(db.collection("users").doc("user1").set({ name: "User 1", bio: "a".repeat(1001) }));
       await assertFails(db.collection("users").doc("user1").set({ name: "User 1", skills: Array(21).fill("React") }));
+      await assertFails(db.collection("users").doc("user1").set({ name: "User 1", role: "superadmin" }));
 
       await assertSucceeds(db.collection("users").doc("user1").set({
         name: "User 1",
@@ -282,16 +283,28 @@ describe("CoFound-UE Firestore Rules", () => {
   });
 
   describe("Applications Collection", () => {
+    beforeEach(async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection("projects").doc("proj1").set({
+          creator_id: "creator1",
+          creatorName: "Creator 1",
+          title: "Valid title",
+          description: "Valid description with enough length",
+          profiles: ["Developer"],
+        });
+      });
+    });
+
     it("create con applicantId != uid falla", async () => {
       const db = getAuthContext("user1", "test@live.uem.es").firestore();
-      await assertFails(db.collection("applications").doc("app1").set({
+      await assertFails(db.collection("applications").doc("proj1_user2").set({
         projectId: "proj1",
         applicantId: "user2",
         creatorId: "creator1",
         status: "pending",
       }));
       
-      await assertSucceeds(db.collection("applications").doc("app2").set({
+      await assertSucceeds(db.collection("applications").doc("proj1_user1").set({
         projectId: "proj1",
         applicantId: "user1",
         creatorId: "creator1",
@@ -409,16 +422,16 @@ describe("CoFound-UE Firestore Rules", () => {
       const applicantDb = getAuthContext("user1", "user1@live.uem.es").firestore();
       const creatorDb = getAuthContext("creator1", "creator1@live.uem.es").firestore();
 
-      // Autopostulación (applicantId == creatorId) falla
-      await assertFails(applicantDb.collection("applications").doc("selfApp").set({
+      // Autopostulación (el propio creador intenta postularse a su proyecto) falla
+      await assertFails(creatorDb.collection("applications").doc("proj1_creator1").set({
         projectId: "proj1",
-        applicantId: "user1",
-        creatorId: "user1",
+        applicantId: "creator1",
+        creatorId: "creator1",
         status: "pending",
       }));
 
       // Crear con status ya aceptado falla
-      await assertFails(applicantDb.collection("applications").doc("cheatedApp").set({
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").set({
         projectId: "proj1",
         applicantId: "user1",
         creatorId: "creator1",
@@ -426,7 +439,7 @@ describe("CoFound-UE Firestore Rules", () => {
       }));
 
       // Crear postulación válida
-      await assertSucceeds(applicantDb.collection("applications").doc("app1").set({
+      await assertSucceeds(applicantDb.collection("applications").doc("proj1_user1").set({
         projectId: "proj1",
         applicantId: "user1",
         creatorId: "creator1",
@@ -434,19 +447,75 @@ describe("CoFound-UE Firestore Rules", () => {
       }));
 
       // Postulante intentando autoaceptarse falla
-      await assertFails(applicantDb.collection("applications").doc("app1").update({ status: "accepted" }));
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").update({ status: "accepted" }));
       // Postulante intentando tocar lastReadByCreator falla
-      await assertFails(applicantDb.collection("applications").doc("app1").update({ lastReadByCreator: new Date() }));
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").update({ lastReadByCreator: new Date() }));
       // Postulante actualizando sus metadatos de chat/lectura succeed
-      await assertSucceeds(applicantDb.collection("applications").doc("app1").update({
+      await assertSucceeds(applicantDb.collection("applications").doc("proj1_user1").update({
         lastMessageAt: new Date(),
         lastMessageSenderId: "user1",
         lastReadByApplicant: new Date(),
       }));
       // Creador aceptando candidatura succeed
-      await assertSucceeds(creatorDb.collection("applications").doc("app1").update({ status: "accepted" }));
+      await assertSucceeds(creatorDb.collection("applications").doc("proj1_user1").update({ status: "accepted" }));
       // Creador intentando alterar applicantId falla
-      await assertFails(creatorDb.collection("applications").doc("app1").update({ applicantId: "user2" }));
+      await assertFails(creatorDb.collection("applications").doc("proj1_user1").update({ applicantId: "user2" }));
+    });
+
+    it("valida existencia y propietario real del proyecto, ID determinista, unicidad y esquema cerrado (CF-01, CF-06, CF-08)", async () => {
+      const applicantDb = getAuthContext("user1", "user1@live.uem.es").firestore();
+
+      // 1. Proyecto inexistente falla
+      await assertFails(applicantDb.collection("applications").doc("ghostProj_user1").set({
+        projectId: "ghostProj",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+      }));
+
+      // 2. creatorId falso (distinto al propietario real de proj1) falla
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "fakeCreator",
+        status: "pending",
+      }));
+
+      // 3. ID no determinista falla
+      await assertFails(applicantDb.collection("applications").doc("randomId").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+      }));
+
+      // 4. Campo arbitrario no permitido en el esquema falla
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+        injectedAdminFlag: true,
+      }));
+
+      // 5. Postulación válida succeed y segundo set duplicado que intente alterar campos inmutables falla
+      await assertSucceeds(applicantDb.collection("applications").doc("proj1_user1").set({
+        projectId: "proj1",
+        projectTitle: "Valid title",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+        createdAt: new Date(),
+      }));
+
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").set({
+        projectId: "proj1",
+        projectTitle: "Overwritten title",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+        createdAt: new Date(),
+      }));
     });
   });
 
@@ -513,6 +582,33 @@ describe("CoFound-UE Firestore Rules", () => {
         text: "Mensaje suplantado",
         senderId: "user1",
       }));
+    });
+
+    it("permite envío atómico mediante writeBatch (mensaje + metadatos de aplicación) y rechaza campos extra (CF-06, CF-10)", async () => {
+      const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
+
+      // Rechaza mensaje con campo extra no permitido
+      await assertFails(user1Db.collection("applications").doc("app1").collection("messages").add({
+        text: "Hola con campo extra",
+        senderId: "user1",
+        injectedHtml: "<script>",
+      }));
+
+      // Permite writeBatch atómico (crear mensaje + actualizar metadatos del chat en applications/app1)
+      const batch = user1Db.batch();
+      const appRef = user1Db.collection("applications").doc("app1");
+      const msgRef = appRef.collection("messages").doc("msgBatch1");
+      batch.set(msgRef, {
+        text: "Mensaje atómico por batch",
+        senderId: "user1",
+        createdAt: new Date(),
+      });
+      batch.update(appRef, {
+        lastMessageAt: new Date(),
+        lastMessageSenderId: "user1",
+        lastReadByApplicant: new Date(),
+      });
+      await assertSucceeds(batch.commit());
     });
   });
 

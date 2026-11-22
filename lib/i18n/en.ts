@@ -476,7 +476,7 @@ export const en: Dictionary = {
       s5P1_4: "Vercel Inc.",
       s5P1_5: ", which act as data processors under strict privacy and security measures in compliance with the GDPR.",
       s5P2: "Since Google Firebase servers can operate on a global scale, the possibility of international data transfers outside the European Economic Area (EEA) is contemplated, which are carried out with due legal guarantees through Standard Contractual Clauses (SCCs) approved by the European Commission and under the corresponding adequacy frameworks.",
-      s5P3: "The institutional email, name, degree, and skills entered by the user will be visible internally to other registered users of the platform with the exclusive purpose of facilitating project collaboration.",
+      s5P3: "By privacy by design, your institutional email is never displayed on your public profile. Only the name, degree, campus, bio, and skills you enter are visible internally to other verified users to facilitate collaboration. Additionally, if a technical application error occurs, a minimized internal diagnostic log (technical session identifier, route, browser type, and error code, without exposing your email address) is recorded and accessible exclusively to the administrator for troubleshooting.",
       s6Title: "6. User Rights (ARCO)",
       s6P1: "In accordance with the GDPR and LOPDGDD, any person has the right to obtain confirmation as to whether we are processing personal data concerning them at CoFound UE. Interested persons have the right to:",
       s6L1T: "Access:",

@@ -101,10 +101,7 @@ export default function MisProyectos() {
     if (!window.confirm(t("myProjects.deleteConfirm"))) return;
     
     try {
-      // 1. Delete project document
-      await deleteDoc(doc(db, "projects", projectId));
-      
-      // 2. Cascade delete applications
+      // 1. Eliminar primero postulaciones y sus mensajes (hijos -> padre) para evitar huérfanos ante fallos parciales
       const qApps = query(
         collection(db, "applications"),
         where("projectId", "==", projectId),
@@ -118,6 +115,9 @@ export default function MisProyectos() {
         await deleteDoc(doc(db, "applications", appDoc.id));
       });
       await Promise.all(deletePromises);
+
+      // 2. Eliminar el documento del proyecto una vez limpiadas sus postulaciones
+      await deleteDoc(doc(db, "projects", projectId));
 
       setProjects(projects.filter(p => p.id !== projectId));
       setApplications(applications.filter(a => a.projectId !== projectId));

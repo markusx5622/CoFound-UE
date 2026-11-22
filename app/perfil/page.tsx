@@ -125,13 +125,17 @@ export default function MiPerfil() {
       });
       await Promise.all(appsPromises);
 
-      // 2. Delete user's projects and applications to those projects
+      // 2. Delete user's projects and applications to those projects (hijos -> padre)
       const qProjects = query(collection(db, "projects"), where("creator_id", "==", user.uid));
       const projSnap = await getDocs(qProjects);
       
       const projPromises = projSnap.docs.map(async (projectDoc) => {
-        // Delete applications to this project
-        const qProjApps = query(collection(db, "applications"), where("projectId", "==", projectDoc.id));
+        // Delete applications to this project (filtrando por creatorId para cumplir firestore.rules allow list)
+        const qProjApps = query(
+          collection(db, "applications"),
+          where("projectId", "==", projectDoc.id),
+          where("creatorId", "==", user.uid)
+        );
         const projAppsSnap = await getDocs(qProjApps);
         const projAppsPromises = projAppsSnap.docs.map(async (d) => {
           const msgsSnap = await getDocs(collection(db, "applications", d.id, "messages"));
@@ -140,7 +144,7 @@ export default function MiPerfil() {
         });
         await Promise.all(projAppsPromises);
         
-        // Delete project itself
+        // Delete project itself after its applications and messages are deleted
         await deleteDoc(projectDoc.ref);
       });
       await Promise.all(projPromises);

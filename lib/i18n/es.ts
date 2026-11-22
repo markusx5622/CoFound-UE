@@ -474,7 +474,7 @@ export const es = {
       s5P1_4: "Vercel Inc.",
       s5P1_5: ", las cuales actúan como encargadas del tratamiento bajo estrictas medidas de seguridad y privacidad conformes al RGPD.",
       s5P2: "Dado que los servidores de Google Firebase pueden operar a escala global, se contempla la posibilidad de transferencias internacionales de datos fuera del Espacio Económico Europeo (EEE), las cuales se realizan con las debidas garantías legales mediante Cláusulas Contractuales Tipo (SCC) aprobadas por la Comisión Europea y bajo los marcos de adecuación correspondientes.",
-      s5P3: "El correo institucional, nombre, titulación y habilidades introducidos por el usuario serán visibles de forma interna para otros usuarios registrados de la plataforma con el exclusivo fin de facilitar la colaboración en proyectos.",
+      s5P3: "Por privacidad por diseño, tu correo institucional nunca se muestra en tu perfil público. Únicamente el nombre, titulación, campus, biografía y habilidades que introduzcas serán visibles internamente para otros usuarios verificados con el fin de facilitar la colaboración. Asimismo, ante fallos técnicos de la aplicación se registra un diagnóstico interno minimizado (identificador técnico de sesión, ruta, tipo de navegador y código de error, sin exponer tu correo electrónico) accesible exclusivamente por el administrador para resolver incidencias.",
       s6Title: "6. Derechos del Usuario (ARCO)",
       s6P1: "Conforme al RGPD y la LOPDGDD, cualquier persona tiene derecho a obtener confirmación sobre si en CoFound UE estamos tratando datos personales que le conciernan. Las personas interesadas tienen derecho a:",
       s6L1T: "Acceso:",

@@ -169,11 +169,24 @@ export default function Dashboard() {
               <p className="text-zinc-400 mb-6">{t("dashboard.emptyDesc")}</p>
             </div>
           ) : filteredProjects.length === 0 ? (
-            <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
-              <Briefcase className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">{t("dashboard.noResultsTitle")}</h3>
-              <p className="text-zinc-400 mb-6">{t("dashboard.noResultsDesc")}</p>
-            </div>
+            <>
+              <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
+                <Briefcase className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">{t("dashboard.noResultsTitle")}</h3>
+                <p className="text-zinc-400 mb-6">{t("dashboard.noResultsDesc")}</p>
+              </div>
+              {hasMore && (
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={() => fetchProjects(false)}
+                    disabled={loadingMore}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-50"
+                  >
+                    {loadingMore ? t("dashboard.loadingMore") : t("dashboard.loadMoreBtn")}
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
