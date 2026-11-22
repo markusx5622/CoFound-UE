@@ -9,6 +9,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { reportClientError } from "@/lib/error-logger";
 
 interface Application {
   id: string;
@@ -49,7 +50,7 @@ export default function MisPostulaciones() {
 
         setApplications(appsData);
       } catch (error) {
-        console.error("Error fetching applications:", error);
+        reportClientError("my_applications_fetch", error);
         toast.error(t("myApplications.loadError"));
       } finally {
         setLoading(false);

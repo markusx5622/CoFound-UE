@@ -11,6 +11,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
+import { reportClientError } from "@/lib/error-logger";
 
 interface Project {
   id: string;
@@ -85,7 +86,7 @@ export default function MisProyectos() {
         setApplications(appsData);
 
       } catch (error) {
-        console.error("Error fetching data:", error);
+        reportClientError("my_projects_fetch", error);
         toast.error(t("myProjects.loadError"));
       } finally {
         setLoading(false);
@@ -122,7 +123,7 @@ export default function MisProyectos() {
       setApplications(applications.filter(a => a.projectId !== projectId));
       toast.success(t("myProjects.deleteSuccess"));
     } catch (error) {
-      console.error("Error deleting project:", error);
+      reportClientError("my_projects_delete", error);
       toast.error(t("myProjects.deleteError"));
     }
   };
@@ -137,7 +138,7 @@ export default function MisProyectos() {
       ));
       toast.success(newStatus === 'accepted' ? t("myProjects.candidateAcceptedToast") : t("myProjects.candidateRejectedToast"));
     } catch (error) {
-      console.error("Error updating status:", error);
+      reportClientError("my_projects_update_status", error);
       toast.error(t("myProjects.updateStatusError"));
     }
   };

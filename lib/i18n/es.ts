@@ -337,6 +337,12 @@ export const es = {
     unknownUser: "Usuario UE",
     sendError: "No se pudo enviar el mensaje. Comprueba tu conexión."
   },
+  errorBoundary: {
+    title: "Algo no ha salido como esperábamos",
+    description: "Se ha registrado el diagnóstico técnico de forma automática para solucionarlo. Puedes reintentar la acción o volver al tablón principal.",
+    retryBtn: "Reintentar",
+    homeBtn: "Ir al Dashboard"
+  },
   profile: {
     title: "Mi Perfil",
     avatarPreview: "Vista previa de tu avatar",

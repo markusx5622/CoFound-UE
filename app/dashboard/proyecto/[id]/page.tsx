@@ -11,6 +11,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
+import { reportClientError } from "@/lib/error-logger";
 
 interface Project {
   id: string;
@@ -78,7 +79,7 @@ export default function ProyectoDetalle() {
           }
         }
       } catch (error) {
-        console.error("Error fetching project:", error);
+        reportClientError("project_detail_fetch", error);
         toast.error(t("projectDetail.loadErrorToast"));
       } finally {
         setLoading(false);
@@ -115,7 +116,7 @@ export default function ProyectoDetalle() {
       setHasApplied(true);
       toast.success(t("projectDetail.applySuccessToast"));
     } catch (error) {
-      console.error("Error applying:", error);
+      reportClientError("project_apply", error);
       toast.error(t("projectDetail.applyErrorToast"));
     } finally {
       setApplying(false);

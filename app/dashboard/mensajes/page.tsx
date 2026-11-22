@@ -10,6 +10,7 @@ import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
+import { reportClientError } from "@/lib/error-logger";
 
 interface UserData {
   name: string;
@@ -120,7 +121,7 @@ export default function Mensajes() {
           }
         }
       } catch (error) {
-        console.error("Error updating conversations:", error);
+        reportClientError("messages_update_conversations", error);
       } finally {
         setLoading(false);
       }
@@ -130,7 +131,7 @@ export default function Mensajes() {
       applicantDocs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       updateConversationsList();
     }, (err) => {
-      console.error("Error listening to applicant convos:", err);
+      reportClientError("messages_listen_applicant", err);
       setLoading(false);
     });
 
@@ -138,7 +139,7 @@ export default function Mensajes() {
       creatorDocs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       updateConversationsList();
     }, (err) => {
-      console.error("Error listening to creator convos:", err);
+      reportClientError("messages_listen_creator", err);
       setLoading(false);
     });
 
@@ -201,7 +202,7 @@ export default function Mensajes() {
         [readField]: serverTimestamp()
       });
     } catch (error) {
-      console.error("Error sending message:", error);
+      reportClientError("messages_send", error);
       setNewMessage(msgText);
       toast.error(t("messages.sendError"));
     }

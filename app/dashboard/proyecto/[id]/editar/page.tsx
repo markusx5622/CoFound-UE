@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
+import { reportClientError } from "@/lib/error-logger";
 
 export default function EditarProyecto() {
   const { id } = useParams();
@@ -52,7 +53,7 @@ export default function EditarProyecto() {
           router.push("/dashboard");
         }
       } catch (error) {
-        console.error("Error fetching project:", error);
+        reportClientError("project_edit_fetch", error);
         toast.error(t("projectEdit.loadError"));
       } finally {
         setFetching(false);
@@ -117,7 +118,7 @@ export default function EditarProyecto() {
       toast.success(t("projectEdit.updateSuccess"));
       router.push(`/dashboard/proyecto/${id}`);
     } catch (error) {
-      console.error("Error updating project:", error);
+      reportClientError("project_edit_update", error);
       toast.error(t("projectEdit.updateError"));
     } finally {
       setLoading(false);

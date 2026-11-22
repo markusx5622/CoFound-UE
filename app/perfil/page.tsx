@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import { useLanguage } from "@/context/LanguageContext";
+import { reportClientError } from "@/lib/error-logger";
 
 export default function MiPerfil() {
   const { t } = useLanguage();
@@ -56,7 +57,7 @@ export default function MiPerfil() {
           }
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        reportClientError("profile_fetch", error);
       } finally {
         setFetching(false);
       }
@@ -103,7 +104,7 @@ export default function MiPerfil() {
 
       toast.success(t("profile.saveSuccess"));
     } catch (error) {
-      console.error("Error saving profile:", error);
+      reportClientError("profile_save", error);
       toast.error(t("profile.saveError"));
     } finally {
       setLoading(false);
@@ -152,10 +153,10 @@ export default function MiPerfil() {
 
       toast.success(t("profile.deleteAccountSuccess"));
     } catch (error: any) {
-      console.error("Error deleting account:", error);
-      if (error.code === 'auth/requires-recent-login') {
+      if (error?.code === 'auth/requires-recent-login') {
         toast.error(t("profile.deleteAccountRequiresLogin"));
       } else {
+        reportClientError("profile_delete_account", error);
         toast.error(t("profile.deleteAccountError"));
       }
     } finally {

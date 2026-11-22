@@ -9,6 +9,7 @@ import Link from "next/link";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
+import { reportClientError } from "@/lib/error-logger";
 
 interface PublicUser {
   uid: string;
@@ -62,7 +63,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
         
         setProjects(projectsData);
       } catch (err) {
-        console.error("Error fetching public profile:", err);
+        reportClientError("public_profile_fetch", err);
         setError(true);
       } finally {
         setLoading(false);

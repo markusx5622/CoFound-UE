@@ -339,6 +339,12 @@ export const en: Dictionary = {
     unknownUser: "UE User",
     sendError: "Could not send message. Check your connection."
   },
+  errorBoundary: {
+    title: "Something went wrong",
+    description: "A technical diagnostic log has been automatically recorded so we can fix it. You can retry or return to the main dashboard.",
+    retryBtn: "Try again",
+    homeBtn: "Go to Dashboard"
+  },
   profile: {
     title: "My Profile",
     avatarPreview: "Avatar preview",

@@ -607,4 +607,59 @@ describe("CoFound-UE Firestore Rules", () => {
       await assertSucceeds(staffDb.collection("users").doc("user1").get());
     });
   });
+
+  describe("Client Errors Collection (Telemetría)", () => {
+    it("permite crear reporte válido propio pero bloquea lectura, edición, borrado, suplantación y campos extra", async () => {
+      const user1Db = getAuthContext("user1", "user1@live.uem.es").firestore();
+
+      // 1. Crear reporte de error válido propio succeed
+      await assertSucceeds(user1Db.collection("client_errors").doc("err1").set({
+        uid: "user1",
+        context: "project_create",
+        message: "Failed to create project",
+        code: "permission-denied",
+        path: "/dashboard/nuevo",
+        userAgent: "Mozilla/5.0",
+        createdAt: new Date(),
+      }));
+
+      // 2. Suplantar uid de otro usuario falla
+      await assertFails(user1Db.collection("client_errors").doc("err2").set({
+        uid: "user2",
+        context: "project_create",
+        message: "Failed",
+        code: "unknown",
+        path: "/dashboard",
+        userAgent: "Mozilla/5.0",
+        createdAt: new Date(),
+      }));
+
+      // 3. Inyectar campo extra (ej. email) o superar límite de message falla
+      await assertFails(user1Db.collection("client_errors").doc("err3").set({
+        uid: "user1",
+        email: "user1@live.uem.es",
+        context: "project_create",
+        message: "Failed",
+        code: "unknown",
+        path: "/dashboard",
+        userAgent: "Mozilla/5.0",
+        createdAt: new Date(),
+      }));
+      await assertFails(user1Db.collection("client_errors").doc("err4").set({
+        uid: "user1",
+        context: "project_create",
+        message: "a".repeat(501),
+        code: "unknown",
+        path: "/dashboard",
+        userAgent: "Mozilla/5.0",
+        createdAt: new Date(),
+      }));
+
+      // 4. Ningún usuario puede leer, listar, actualizar ni borrar client_errors
+      await assertFails(user1Db.collection("client_errors").doc("err1").get());
+      await assertFails(user1Db.collection("client_errors").get());
+      await assertFails(user1Db.collection("client_errors").doc("err1").update({ message: "Edited" }));
+      await assertFails(user1Db.collection("client_errors").doc("err1").delete());
+    });
+  });
 });

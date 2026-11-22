@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ProjectSkeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
+import { reportClientError } from "@/lib/error-logger";
 
 interface Project {
   id: string;
@@ -69,7 +70,7 @@ export default function Dashboard() {
         setProjects([...projects, ...projectsData]);
       }
     } catch (error) {
-      console.error("Error fetching projects:", error);
+      reportClientError("dashboard_fetch_projects_more", error);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -93,7 +94,7 @@ export default function Dashboard() {
         }
         setProjects(projectsData);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        reportClientError("dashboard_fetch_projects_initial", error);
       } finally {
         setLoading(false);
       }

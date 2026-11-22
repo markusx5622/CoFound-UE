@@ -10,6 +10,7 @@ import { X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
+import { reportClientError } from "@/lib/error-logger";
 
 export default function NuevoProyecto() {
   const { t } = useLanguage();
@@ -91,7 +92,7 @@ export default function NuevoProyecto() {
       toast.success(t("projectNew.successToast"));
       router.push("/dashboard");
     } catch (error) {
-      console.error("Error creating project:", error);
+      reportClientError("project_create", error);
       toast.error(t("projectNew.errorToast"));
       setLoading(false);
     }
