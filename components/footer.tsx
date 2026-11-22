@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Github, Mail, Compass, HelpCircle, UserPlus, Scale, ShieldCheck, Cookie } from "lucide-react";
+import { Github, Instagram, Mail, Compass, HelpCircle, UserPlus, Scale, ShieldCheck, Cookie } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
@@ -36,6 +36,15 @@ export default function Footer() {
                 aria-label="GitHub de CoFound UE"
               >
                 <Github className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.instagram.com/cofoundue/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-[#E60000] transition-colors inline-flex items-center gap-2" 
+                aria-label="Instagram de CoFound UE"
+              >
+                <Instagram className="h-5 w-5" />
               </a>
             </div>
           </div>
