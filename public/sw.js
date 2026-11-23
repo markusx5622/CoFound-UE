@@ -1,7 +1,7 @@
 // SW de producción para instalabilidad PWA y degradación elegante offline.
 // Nunca cachea datos de Firebase Auth, Firestore ni rutas de API.
 
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const STATIC_CACHE = `cofound-static-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [

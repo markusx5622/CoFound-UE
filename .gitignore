@@ -32,3 +32,12 @@ next-env.d.ts
 
 # internal documentation
 Contexto CoFound UE — Handoff.md
+
+# marketing exported campaign renders (keep copy.md, design.html and marketing/assets/ versioned)
+marketing/**/*.png
+marketing/**/*.jpg
+marketing/**/*.webp
+!marketing/assets/**
+!marketing/assets/**/*.png
+!marketing/assets/**/*.jpg
+!marketing/assets/**/*.webp
