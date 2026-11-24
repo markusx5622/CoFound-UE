@@ -53,7 +53,7 @@ Tu prioridad absoluta es mantener una coherencia milimétrica con los activos of
 - **PWA instalable:** funciona como web y se instala en iOS (Safari) y Android (Chrome) sin stores ni fricción.
 - **Credibilidad técnica ("Construido en serio"):**
   - **Privacidad por diseño (RGPD/LOPDGDD):** el correo institucional **nunca** aparece en perfiles públicos; aviso legal, privacidad y cookies públicos; borrado total de cuenta en cascada desde *Mi Perfil*.
-  - **Ingeniería verificada:** reglas de seguridad de Firestore validadas con **32 tests automatizados** en CI en cada cambio.
+  - **Ingeniería verificada:** reglas de seguridad de Firestore validadas con **38 tests automatizados** en CI en cada cambio.
 
 ### Lo que la app NO tiene todavía (PROHIBIDO prometer o simular)
 - **NO** existe chat grupal multi-miembro (es chat privado 1 a 1 por postulación; nunca prometas *"chat grupal de equipo"*).

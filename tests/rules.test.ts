@@ -126,6 +126,27 @@ describe("CoFound-UE Firestore Rules", () => {
         skills: ["React", "Next.js"],
       }));
     });
+
+    it("bloquea listado masivo (list) de users y rechaza elementos inválidos en skills o photoURL (SEC-01, SEC-03, SEC-14)", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const adminDb = context.firestore();
+        await adminDb.collection("users").doc("uList1").set({ name: "User 1" });
+        await adminDb.collection("users").doc("uList2").set({ name: "User 2" });
+      });
+
+      const db = getAuthContext("uList1", "ulist1@live.uem.es").firestore();
+
+      // Lectura puntual permitida, pero volcado completo de la colección users denegado
+      await assertSucceeds(db.collection("users").doc("uList2").get());
+      await assertFails(db.collection("users").get());
+
+      // Poison-pill: objetos, números o etiquetas > 40 chars en skills fallan
+      await assertFails(db.collection("users").doc("uList1").set({ name: "User 1", skills: [{ bad: 1 }] }));
+      await assertFails(db.collection("users").doc("uList1").set({ name: "User 1", skills: [12345] }));
+      await assertFails(db.collection("users").doc("uList1").set({ name: "User 1", skills: ["a".repeat(41)] }));
+      // Campo photoURL retirado del esquema falla
+      await assertFails(db.collection("users").doc("uList1").set({ name: "User 1", photoURL: "https://evil.test/x" }));
+    });
   });
 
   describe("Projects Collection", () => {
@@ -237,7 +258,9 @@ describe("CoFound-UE Firestore Rules", () => {
         creatorName: "User",
         title: "Valid title",
         description: "Valid description with enough length",
+        category: "Startup Real",
         profiles: ["Developer"],
+        createdAt: new Date(),
       }));
     });
 
@@ -280,6 +303,55 @@ describe("CoFound-UE Firestore Rules", () => {
       const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
       await assertFails(user1Db.collection("projects").doc("proj1").update({ creator_id: "user2" }));
     });
+
+    it("bloquea poison-pill en profiles, categoría inválida y borrado de campos obligatorios en update (SEC-01)", async () => {
+      const db = getAuthContext("user1", "user1@live.uem.es").firestore();
+      const baseProject = {
+        creator_id: "user1",
+        creatorName: "User 1",
+        title: "Valid title",
+        description: "Valid description with enough length",
+        category: "TFG",
+        profiles: ["Developer"],
+        createdAt: new Date(),
+      };
+
+      // Objetos, números, string vacío o >40 chars en profiles fallan
+      await assertFails(db.collection("projects").doc("p1").set({ ...baseProject, profiles: [{ evil: true }] }));
+      await assertFails(db.collection("projects").doc("p2").set({ ...baseProject, profiles: [999] }));
+      await assertFails(db.collection("projects").doc("p3").set({ ...baseProject, profiles: [""] }));
+      await assertFails(db.collection("projects").doc("p4").set({ ...baseProject, profiles: ["x".repeat(41)] }));
+
+      // Categorías fuera del enum canónico o tipo objeto fallan
+      await assertFails(db.collection("projects").doc("p5").set({ ...baseProject, category: "Categoría Falsa" }));
+      await assertFails(db.collection("projects").doc("p6").set({ ...baseProject, category: { nested: 1 } }));
+
+      // Crear proyecto válido y comprobar que en update NO se pueden borrar campos obligatorios
+      await assertSucceeds(db.collection("projects").doc("projOk").set(baseProject));
+      await assertFails(db.collection("projects").doc("projOk").set({ creator_id: "user1" }));
+    });
+
+    it("bloquea manipulación de ranking con createdAt futuro/pasado/ausente o mutación en update (SEC-04)", async () => {
+      const db = getAuthContext("user1", "user1@live.uem.es").firestore();
+      const base = {
+        creator_id: "user1",
+        creatorName: "User 1",
+        title: "Valid title",
+        description: "Valid description with enough length",
+        profiles: ["Developer"],
+      };
+
+      // Sin createdAt, tipo string, fecha futura (2099) o pasada lejana (1970) fallan
+      await assertFails(db.collection("projects").doc("pNoTs").set(base));
+      await assertFails(db.collection("projects").doc("pStrTs").set({ ...base, createdAt: "2026-11-24" }));
+      await assertFails(db.collection("projects").doc("pFuture").set({ ...base, createdAt: new Date(Date.now() + 3600 * 1000) }));
+      await assertFails(db.collection("projects").doc("pPast").set({ ...base, createdAt: new Date(0) }));
+
+      // Mutar createdAt en update falla
+      const initialDate = new Date();
+      await assertSucceeds(db.collection("projects").doc("pImmutable").set({ ...base, createdAt: initialDate }));
+      await assertFails(db.collection("projects").doc("pImmutable").update({ createdAt: new Date(Date.now() + 60 * 1000) }));
+    });
   });
 
   describe("Applications Collection", () => {
@@ -302,6 +374,7 @@ describe("CoFound-UE Firestore Rules", () => {
         applicantId: "user2",
         creatorId: "creator1",
         status: "pending",
+        createdAt: new Date(),
       }));
       
       await assertSucceeds(db.collection("applications").doc("proj1_user1").set({
@@ -309,6 +382,7 @@ describe("CoFound-UE Firestore Rules", () => {
         applicantId: "user1",
         creatorId: "creator1",
         status: "pending",
+        createdAt: new Date(),
       }));
     });
 
@@ -444,6 +518,7 @@ describe("CoFound-UE Firestore Rules", () => {
         applicantId: "user1",
         creatorId: "creator1",
         status: "pending",
+        createdAt: new Date(),
       }));
 
       // Postulante intentando autoaceptarse falla
@@ -517,6 +592,43 @@ describe("CoFound-UE Firestore Rules", () => {
         createdAt: new Date(),
       }));
     });
+
+    it("exige createdAt reciente en postulaciones y bloquea lastMessageAt cuando está rechazada permitiendo lectura (SEC-04, SEC-06)", async () => {
+      const applicantDb = getAuthContext("user1", "user1@live.uem.es").firestore();
+      const creatorDb = getAuthContext("creator1", "creator1@live.uem.es").firestore();
+
+      // Sin createdAt o con fecha futura falla
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+      }));
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+        createdAt: new Date(Date.now() + 3600 * 1000),
+      }));
+
+      // Crear postulación válida y rechazarla por parte del creador
+      await assertSucceeds(applicantDb.collection("applications").doc("proj1_user1").set({
+        projectId: "proj1",
+        applicantId: "user1",
+        creatorId: "creator1",
+        status: "pending",
+        createdAt: new Date(),
+      }));
+      await assertSucceeds(creatorDb.collection("applications").doc("proj1_user1").update({ status: "rejected" }));
+
+      // Con status rejected, el candidato puede limpiar su indicador de lectura pero NO actualizar lastMessageAt
+      await assertSucceeds(applicantDb.collection("applications").doc("proj1_user1").update({ lastReadByApplicant: new Date() }));
+      await assertFails(applicantDb.collection("applications").doc("proj1_user1").update({
+        lastMessageAt: new Date(),
+        lastMessageSenderId: "user1",
+      }));
+    });
   });
 
   describe("Messages Subcollection", () => {
@@ -544,12 +656,14 @@ describe("CoFound-UE Firestore Rules", () => {
       await assertSucceeds(user1Db.collection("applications").doc("app1").collection("messages").add({
         text: "Hello creator",
         senderId: "user1",
+        createdAt: new Date(),
       }));
 
       const creatorDb = getAuthContext("creator1", "creator@live.uem.es").firestore();
       await assertSucceeds(creatorDb.collection("applications").doc("app1").collection("messages").add({
         text: "Hello applicant",
         senderId: "creator1",
+        createdAt: new Date(),
       }));
     });
 
@@ -609,6 +723,30 @@ describe("CoFound-UE Firestore Rules", () => {
         lastReadByApplicant: new Date(),
       });
       await assertSucceeds(batch.commit());
+    });
+
+    it("bloquea envío de nuevos mensajes sobre postulaciones rechazadas y exige createdAt reciente (SEC-04, SEC-06)", async () => {
+      const user1Db = getAuthContext("user1", "test1@live.uem.es").firestore();
+      const creatorDb = getAuthContext("creator1", "creator@live.uem.es").firestore();
+
+      // Mensaje sin createdAt o con fecha futura falla
+      await assertFails(user1Db.collection("applications").doc("app1").collection("messages").add({
+        text: "Sin timestamp",
+        senderId: "user1",
+      }));
+      await assertFails(user1Db.collection("applications").doc("app1").collection("messages").add({
+        text: "Timestamp futuro",
+        senderId: "user1",
+        createdAt: new Date(Date.now() + 3600 * 1000),
+      }));
+
+      // Al rechazar la postulación, se bloquea la creación de mensajes nuevos
+      await assertSucceeds(creatorDb.collection("applications").doc("app1").update({ status: "rejected" }));
+      await assertFails(user1Db.collection("applications").doc("app1").collection("messages").add({
+        text: "Insistencia tras rechazo",
+        senderId: "user1",
+        createdAt: new Date(),
+      }));
     });
   });
 
@@ -705,10 +843,11 @@ describe("CoFound-UE Firestore Rules", () => {
   });
 
   describe("Client Errors Collection (Telemetría)", () => {
-    it("permite crear reporte válido propio pero bloquea lectura, edición, borrado, suplantación y campos extra", async () => {
+    it("permite crear reporte válido propio con TTL pero bloquea lectura, edición, borrado, suplantación y campos extra", async () => {
       const user1Db = getAuthContext("user1", "user1@live.uem.es").firestore();
+      const validExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-      // 1. Crear reporte de error válido propio succeed
+      // 1. Crear reporte de error válido propio con expiresAt succeed
       await assertSucceeds(user1Db.collection("client_errors").doc("err1").set({
         uid: "user1",
         context: "project_create",
@@ -717,6 +856,7 @@ describe("CoFound-UE Firestore Rules", () => {
         path: "/dashboard/nuevo",
         userAgent: "Mozilla/5.0",
         createdAt: new Date(),
+        expiresAt: validExpiresAt,
       }));
 
       // 2. Suplantar uid de otro usuario falla
@@ -728,6 +868,7 @@ describe("CoFound-UE Firestore Rules", () => {
         path: "/dashboard",
         userAgent: "Mozilla/5.0",
         createdAt: new Date(),
+        expiresAt: validExpiresAt,
       }));
 
       // 3. Inyectar campo extra (ej. email) o superar límite de message falla
@@ -740,6 +881,7 @@ describe("CoFound-UE Firestore Rules", () => {
         path: "/dashboard",
         userAgent: "Mozilla/5.0",
         createdAt: new Date(),
+        expiresAt: validExpiresAt,
       }));
       await assertFails(user1Db.collection("client_errors").doc("err4").set({
         uid: "user1",
@@ -749,6 +891,7 @@ describe("CoFound-UE Firestore Rules", () => {
         path: "/dashboard",
         userAgent: "Mozilla/5.0",
         createdAt: new Date(),
+        expiresAt: validExpiresAt,
       }));
 
       // 4. Ningún usuario puede leer, listar, actualizar ni borrar client_errors
@@ -756,6 +899,30 @@ describe("CoFound-UE Firestore Rules", () => {
       await assertFails(user1Db.collection("client_errors").get());
       await assertFails(user1Db.collection("client_errors").doc("err1").update({ message: "Edited" }));
       await assertFails(user1Db.collection("client_errors").doc("err1").delete());
+    });
+
+    it("exige expiresAt futuro y <= 31 días para cumplir retención TTL RGPD (SEC-09)", async () => {
+      const user1Db = getAuthContext("user1", "user1@live.uem.es").firestore();
+      const baseErr = {
+        uid: "user1",
+        context: "project_create",
+        message: "Failed",
+        code: "unknown",
+        path: "/dashboard",
+        userAgent: "Mozilla/5.0",
+        createdAt: new Date(),
+      };
+
+      // Sin expiresAt, expiresAt pasado o expiresAt > 31 días fallan
+      await assertFails(user1Db.collection("client_errors").doc("eNoTtl").set(baseErr));
+      await assertFails(user1Db.collection("client_errors").doc("ePastTtl").set({
+        ...baseErr,
+        expiresAt: new Date(Date.now() - 60 * 1000),
+      }));
+      await assertFails(user1Db.collection("client_errors").doc("eTooLongTtl").set({
+        ...baseErr,
+        expiresAt: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+      }));
     });
   });
 });

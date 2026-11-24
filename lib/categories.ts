@@ -10,7 +10,10 @@ export const CANONICAL_CATEGORIES = [
   "Startup Real"
 ] as const;
 
-export function getCategoryLabel(category: string, t: (key: string) => any): string {
+export function getCategoryLabel(category: unknown, t: (key: string) => string): string {
+  if (typeof category !== "string" || !category) {
+    return "";
+  }
   const key = categoryKeys[category];
   return key ? t(key) : category;
 }

@@ -10,6 +10,7 @@ import InitialsAvatar from "@/components/InitialsAvatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
+import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 
 interface PublicUser {
   uid: string;
@@ -50,16 +51,30 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
           return;
         }
 
-        setProfileUser({ uid, ...userDocSnap.data() } as PublicUser);
+        const uRaw = userDocSnap.data() as Record<string, unknown>;
+        setProfileUser({
+          uid,
+          name: sanitizeString(uRaw.name),
+          degree: sanitizeString(uRaw.degree),
+          campus: sanitizeString(uRaw.campus),
+          bio: sanitizeString(uRaw.bio),
+          skills: sanitizeStringArray(uRaw.skills, 20),
+        });
 
         // Fetch User Projects
         const qProjects = query(collection(db, "projects"), where("creator_id", "==", uid));
         const projectSnapshot = await getDocs(qProjects);
         
-        const projectsData = projectSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Project[];
+        const projectsData = projectSnapshot.docs.map((doc) => {
+          const pRaw = doc.data() as Record<string, unknown>;
+          return {
+            id: doc.id,
+            title: sanitizeString(pRaw.title),
+            description: sanitizeString(pRaw.description),
+            category: sanitizeString(pRaw.category),
+            profiles: sanitizeStringArray(pRaw.profiles, 10),
+          };
+        });
         
         setProjects(projectsData);
       } catch (err) {

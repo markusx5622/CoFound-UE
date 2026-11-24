@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { reportClientError } from "@/lib/error-logger";
+import { sanitizeString, toSafeDate } from "@/lib/firestore-guards";
 
 interface Application {
   id: string;
@@ -17,7 +18,7 @@ interface Application {
   projectTitle: string;
   applicantId: string;
   status: string;
-  createdAt: any;
+  createdAt: Date | null;
 }
 
 export default function MisPostulaciones() {
@@ -36,16 +37,23 @@ export default function MisPostulaciones() {
         const qApps = query(collection(db, "applications"), where("applicantId", "==", user.uid));
         const appSnapshot = await getDocs(qApps);
         
-        const appsData = appSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Application[];
+        const appsData = appSnapshot.docs.map((doc) => {
+          const raw = doc.data() as Record<string, unknown>;
+          return {
+            id: doc.id,
+            projectId: sanitizeString(raw.projectId),
+            projectTitle: sanitizeString(raw.projectTitle),
+            applicantId: sanitizeString(raw.applicantId),
+            status: sanitizeString(raw.status, "pending"),
+            createdAt: toSafeDate(raw.createdAt),
+          };
+        });
         
-        // Sort by createdAt (client side)
+        // Ordenar por fecha de creación en cliente de forma segura
         appsData.sort((a, b) => {
-          const dateA = a.createdAt?.toDate() || new Date(0);
-          const dateB = b.createdAt?.toDate() || new Date(0);
-          return dateB.getTime() - dateA.getTime();
+          const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+          const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+          return timeB - timeA;
         });
 
         setApplications(appsData);
@@ -93,7 +101,9 @@ export default function MisPostulaciones() {
                     <h2 className="text-lg font-bold text-white group-hover:text-[#E60000] transition-colors">{app.projectTitle}</h2>
                     <div className="text-sm text-zinc-500 mt-1">
                       {t("myApplications.submittedOn", {
-                        date: app.createdAt?.toDate().toLocaleDateString(language === "en" ? "en-US" : "es-ES")
+                        date: app.createdAt
+                          ? app.createdAt.toLocaleDateString(language === "en" ? "en-US" : "es-ES")
+                          : "-"
                       })}
                     </div>
                   </Link>

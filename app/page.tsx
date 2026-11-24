@@ -23,6 +23,7 @@ export default function LandingPage() {
   const [showMore, setShowMore] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkingVerification, setCheckingVerification] = useState(false);
@@ -88,6 +89,17 @@ export default function LandingPage() {
       return;
     }
 
+    if (!isLogin) {
+      if (password.length < 8) {
+        setError(t("auth.errors.weakPassword"));
+        return;
+      }
+      if (!acceptedPrivacy) {
+        setError(t("landing.auth.acceptLegalRequired"));
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       if (isLogin) {
@@ -118,6 +130,11 @@ export default function LandingPage() {
 
     if (!normalizedEmail) {
       setError(t("landing.auth.enterInstitutionalEmail"));
+      return;
+    }
+
+    if (!validateEmail(normalizedEmail)) {
+      setError(t("landing.auth.restrictedEmail"));
       return;
     }
 
@@ -300,6 +317,7 @@ export default function LandingPage() {
                       type="button"
                       onClick={() => {
                         setIsLogin(false);
+                        setAcceptedPrivacy(false);
                         setError("");
                       }}
                       className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
@@ -331,16 +349,26 @@ export default function LandingPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
-                        {t("landing.auth.passwordLabel")}
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label htmlFor="auth-password" className="block text-xs font-semibold text-zinc-300">
+                          {t("landing.auth.passwordLabel")}
+                        </label>
+                        {!isLogin && (
+                          <span className="text-[11px] text-zinc-500">
+                            {t("landing.auth.passwordMinHint")}
+                          </span>
+                        )}
+                      </div>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-[#E60000] transition-colors duration-200">
                           <Lock className="h-4 w-4" />
                         </div>
                         <input
+                          id="auth-password"
                           type="password"
                           required
+                          minLength={isLogin ? undefined : 8}
+                          autoComplete={isLogin ? "current-password" : "new-password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           className="block w-full pl-10 pr-3.5 py-3 border border-zinc-800 bg-zinc-950 rounded-xl focus:ring-2 focus:ring-[#E60000]/25 focus:border-[#E60000] outline-none transition-all duration-200 text-white text-sm placeholder:text-zinc-600 shadow-inner"
@@ -362,6 +390,27 @@ export default function LandingPage() {
                         </div>
                       )}
                     </div>
+
+                    {!isLogin && (
+                      <label className="flex items-start gap-2.5 text-xs text-zinc-400 cursor-pointer select-none pt-1">
+                        <input
+                          type="checkbox"
+                          checked={acceptedPrivacy}
+                          onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                          className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-950 accent-[#E60000] shrink-0 cursor-pointer"
+                        />
+                        <span className="leading-relaxed">
+                          {t("landing.auth.acceptLegalPrefix")}
+                          <Link href="/legal/privacidad" target="_blank" className="text-zinc-200 hover:text-[#E60000] underline transition-colors">
+                            {t("landing.auth.acceptLegalPrivacy")}
+                          </Link>
+                          {t("landing.auth.acceptLegalAnd")}
+                          <Link href="/legal/aviso-legal" target="_blank" className="text-zinc-200 hover:text-[#E60000] underline transition-colors">
+                            {t("landing.auth.acceptLegalNotice")}
+                          </Link>.
+                        </span>
+                      </label>
+                    )}
 
                     {error && (
                       <div className="p-3 bg-red-950/40 text-red-300 text-xs rounded-xl flex items-start gap-2 border border-red-900/50">

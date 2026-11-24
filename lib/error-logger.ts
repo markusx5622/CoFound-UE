@@ -1,8 +1,9 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
 const reportedInSession = new Set<string>();
 const MAX_REPORTS_PER_SESSION = 20;
+const ERROR_RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30 días para política TTL RGPD
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 
 function sanitizeText(input: string, maxLength: number): string {
@@ -13,10 +14,12 @@ function sanitizeText(input: string, maxLength: number): string {
 
 /**
  * Registra errores inesperados de cliente en la colección privada `client_errors`
- * de Firestore para diagnóstico técnico en la consola de Firebase, sin exponer PII.
+ * de Firestore para diagnóstico técnico con fecha de expiración (`expiresAt`, 30 días).
  */
 export async function reportClientError(context: string, error: unknown): Promise<void> {
-  console.error(`[CoFound UE Error · ${context}]:`, error);
+  if (process.env.NODE_ENV !== "production") {
+    console.error(`[CoFound UE Error · ${context}]:`, error);
+  }
 
   try {
     if (typeof window === "undefined") return;
@@ -34,7 +37,10 @@ export async function reportClientError(context: string, error: unknown): Promis
         : JSON.stringify(error || "Unknown error");
 
     const rawCode =
-      typeof error === "object" && error !== null && "code" in error && typeof (error as { code?: unknown }).code === "string"
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      typeof (error as { code?: unknown }).code === "string"
         ? String((error as { code: string }).code)
         : "unknown";
 
@@ -57,6 +63,7 @@ export async function reportClientError(context: string, error: unknown): Promis
       path: safePath,
       userAgent: safeUserAgent,
       createdAt: serverTimestamp(),
+      expiresAt: Timestamp.fromMillis(Date.now() + ERROR_RETENTION_MS),
     });
   } catch {
     // Nunca propagar errores secundarios desde el logger de telemetría

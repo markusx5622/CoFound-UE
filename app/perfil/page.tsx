@@ -2,16 +2,17 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc, deleteField } from "firebase/firestore";
-import { deleteUser, signOut } from "firebase/auth";
+import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc, deleteField, serverTimestamp } from "firebase/firestore";
+import { deleteUser, signOut, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { X, Plus, Save, LogOut } from "lucide-react";
+import { X, Plus, Save, LogOut, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { reportClientError } from "@/lib/error-logger";
+import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 
 export default function MiPerfil() {
   const { t } = useLanguage();
@@ -28,6 +29,7 @@ export default function MiPerfil() {
   const { user, loading: authLoading } = useAuth();
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
@@ -42,18 +44,18 @@ export default function MiPerfil() {
           const docSnap = await getDoc(docRef);
           
           if (docSnap.exists()) {
-            const data = docSnap.data();
-            setName(data.name || "");
-            setDegree(data.degree || "");
-            let initialCampus = data.campus || "Valencia";
+            const data = docSnap.data() as Record<string, unknown>;
+            setName(sanitizeString(data.name));
+            setDegree(sanitizeString(data.degree));
+            let initialCampus = sanitizeString(data.campus, "Valencia");
             if (initialCampus === "Campus Turia / Valencia" || initialCampus === "Campus Turia (Valencia)") initialCampus = "Valencia";
             if (initialCampus === "Campus Alameda / Valencia") initialCampus = "Alameda";
             if (initialCampus !== "Alameda" && initialCampus !== "Valencia") {
               initialCampus = "Valencia";
             }
             setCampus(initialCampus);
-            setBio(data.bio || "");
-            setSkills(data.skills || []);
+            setBio(sanitizeString(data.bio));
+            setSkills(sanitizeStringArray(data.skills, 20));
           }
         }
       } catch (error) {
@@ -93,13 +95,14 @@ export default function MiPerfil() {
       if (!user) throw new Error("No user logged in");
 
       await setDoc(doc(db, "users", user.uid), {
-        name,
-        degree,
+        name: name.trim(),
+        degree: degree.trim(),
         campus,
-        bio,
+        bio: bio.trim(),
         skills,
         email: deleteField(),
-        updatedAt: new Date()
+        photoURL: deleteField(),
+        updatedAt: serverTimestamp()
       }, { merge: true });
 
       toast.success(t("profile.saveSuccess"));
@@ -111,11 +114,21 @@ export default function MiPerfil() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!user) return;
+  const handleDeleteAccount = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!user || !user.email) return;
+    if (!deletePassword) {
+      toast.error(t("profile.deleteAccountPasswordRequired"));
+      return;
+    }
+
     setIsDeletingAccount(true);
     try {
-      // 1. Delete user's applications
+      // 0. Reautenticar primero con contraseña antes de tocar ningún documento de Firestore (SEC-02)
+      const credential = EmailAuthProvider.credential(user.email, deletePassword);
+      await reauthenticateWithCredential(user, credential);
+
+      // 1. Eliminar postulaciones y mensajes del usuario como candidato
       const qApps = query(collection(db, "applications"), where("applicantId", "==", user.uid));
       const appsSnap = await getDocs(qApps);
       const appsPromises = appsSnap.docs.map(async (d) => {
@@ -125,12 +138,11 @@ export default function MiPerfil() {
       });
       await Promise.all(appsPromises);
 
-      // 2. Delete user's projects and applications to those projects (hijos -> padre)
+      // 2. Eliminar proyectos propios y sus postulaciones/mensajes (hijos -> padre)
       const qProjects = query(collection(db, "projects"), where("creator_id", "==", user.uid));
       const projSnap = await getDocs(qProjects);
       
       const projPromises = projSnap.docs.map(async (projectDoc) => {
-        // Delete applications to this project (filtrando por creatorId para cumplir firestore.rules allow list)
         const qProjApps = query(
           collection(db, "applications"),
           where("projectId", "==", projectDoc.id),
@@ -144,20 +156,29 @@ export default function MiPerfil() {
         });
         await Promise.all(projAppsPromises);
         
-        // Delete project itself after its applications and messages are deleted
         await deleteDoc(projectDoc.ref);
       });
       await Promise.all(projPromises);
 
-      // 3. Delete user document
+      // 3. Eliminar perfil público
       await deleteDoc(doc(db, "users", user.uid));
 
-      // 4. Delete Auth user
+      // 4. Eliminar usuario en Firebase Auth (con sesión recién reautenticada)
       await deleteUser(user);
 
+      setDeletePassword("");
+      setShowDeleteModal(false);
       toast.success(t("profile.deleteAccountSuccess"));
-    } catch (error: any) {
-      if (error?.code === 'auth/requires-recent-login') {
+    } catch (error: unknown) {
+      const code =
+        typeof error === "object" && error !== null && "code" in error
+          ? String((error as { code?: unknown }).code)
+          : "";
+      if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        toast.error(t("profile.deleteAccountWrongPassword"));
+      } else if (code === "auth/too-many-requests") {
+        toast.error(t("auth.errors.tooManyRequests"));
+      } else if (code === "auth/requires-recent-login") {
         toast.error(t("profile.deleteAccountRequiresLogin"));
       } else {
         reportClientError("profile_delete_account", error);
@@ -165,7 +186,6 @@ export default function MiPerfil() {
       }
     } finally {
       setIsDeletingAccount(false);
-      setShowDeleteModal(false);
     }
   };
 
@@ -175,7 +195,9 @@ export default function MiPerfil() {
       await signOut(auth);
       router.push("/");
     } catch (error) {
-      console.error("Error signing out:", error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error signing out:", error);
+      }
       toast.error(t("protectedRoute.toastErrorSignOut") || "Error al cerrar sesión");
       setIsLoggingOut(false);
     }
@@ -318,12 +340,15 @@ export default function MiPerfil() {
                 className="w-full bg-red-950/40 border border-red-900/60 text-red-400 hover:text-white hover:bg-[#E60000] hover:border-red-600 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-sm flex items-center justify-center gap-2 group select-none disabled:opacity-50"
               >
                 <LogOut className="h-5 w-5 text-red-400 group-hover:text-white transition-colors" />
-                <span>{isLoggingOut ? t("auth.form.processing") : t("profile.logoutBtn")}</span>
+                <span>{isLoggingOut ? t("landing.auth.processing") : t("profile.logoutBtn")}</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setShowDeleteModal(true)}
+                onClick={() => {
+                  setDeletePassword("");
+                  setShowDeleteModal(true);
+                }}
                 className="w-full bg-transparent border border-red-900/30 text-red-500/80 hover:text-red-400 hover:bg-red-950/20 hover:border-red-800 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm"
               >
                 {t("profile.deleteAccountBtn")}
@@ -335,21 +360,47 @@ export default function MiPerfil() {
 
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-zinc-900 border border-red-900/50 p-6 sm:p-8 rounded-2xl w-full max-w-md shadow-[0_0_40px_rgba(230,0,0,0.15)] relative">
+          <form onSubmit={handleDeleteAccount} className="bg-zinc-900 border border-red-900/50 p-6 sm:p-8 rounded-2xl w-full max-w-md shadow-[0_0_40px_rgba(230,0,0,0.15)] relative">
             <h2 className="text-xl font-bold text-white mb-2">{t("profile.deleteAccountTitle")}</h2>
-            <p className="text-zinc-400 text-sm mb-8">{t("profile.deleteAccountWarning")}</p>
+            <p className="text-zinc-400 text-sm mb-6">{t("profile.deleteAccountWarning")}</p>
+
+            <div className="mb-6">
+              <label htmlFor="delete-account-password" className="block text-xs font-semibold text-zinc-300 mb-2">
+                {t("profile.deleteAccountPasswordLabel")}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                  <Lock className="h-4 w-4" />
+                </div>
+                <input
+                  id="delete-account-password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  disabled={isDeletingAccount}
+                  placeholder={t("profile.deleteAccountPasswordPlaceholder")}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm"
+                />
+              </div>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => setShowDeleteModal(false)}
+                type="button"
+                onClick={() => {
+                  setDeletePassword("");
+                  setShowDeleteModal(false);
+                }}
                 disabled={isDeletingAccount}
                 className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50"
               >
                 {t("profile.deleteAccountCancel")}
               </button>
               <button
-                onClick={handleDeleteAccount}
-                disabled={isDeletingAccount}
+                type="submit"
+                disabled={isDeletingAccount || !deletePassword}
                 className="flex-1 bg-[#E60000] hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center"
               >
                 {isDeletingAccount ? (
@@ -359,7 +410,7 @@ export default function MiPerfil() {
                 )}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
     </ProtectedRoute>

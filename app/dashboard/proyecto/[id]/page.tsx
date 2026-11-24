@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
+import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 
 interface Project {
   id: string;
@@ -53,7 +54,17 @@ export default function ProyectoDetalle() {
         const projectDoc = await getDoc(projectDocRef);
         
         if (projectDoc.exists()) {
-          const projectData = { id: projectDoc.id, ...projectDoc.data() } as Project;
+          const raw = projectDoc.data() as Record<string, unknown>;
+          const creatorName = sanitizeString(raw.creatorName);
+          const projectData: Project = {
+            id: projectDoc.id,
+            title: sanitizeString(raw.title),
+            description: sanitizeString(raw.description),
+            category: sanitizeString(raw.category),
+            profiles: sanitizeStringArray(raw.profiles, 10),
+            creator_id: sanitizeString(raw.creator_id),
+            ...(creatorName ? { creatorName } : {}),
+          };
           setProject(projectData);
           
           // Fetch creator
@@ -61,7 +72,12 @@ export default function ProyectoDetalle() {
             const creatorDocRef = doc(db, "users", projectData.creator_id);
             const creatorDoc = await getDoc(creatorDocRef);
             if (creatorDoc.exists()) {
-              setCreator(creatorDoc.data() as UserProfile);
+              const cRaw = creatorDoc.data() as Record<string, unknown>;
+              setCreator({
+                name: sanitizeString(cRaw.name),
+                degree: sanitizeString(cRaw.degree),
+                campus: sanitizeString(cRaw.campus),
+              });
             }
           }
 

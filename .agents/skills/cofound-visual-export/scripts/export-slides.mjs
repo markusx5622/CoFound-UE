@@ -126,8 +126,16 @@ function startStaticServer(rootDir) {
         const decodedPath = decodeURIComponent(reqUrl.pathname);
         const safeRel = path.normalize(decodedPath).replace(/^([/\\])+/, "");
         const fullPath = path.resolve(rootDir, safeRel);
+        const relToRoot = path.relative(rootDir, fullPath);
 
-        if (!fullPath.startsWith(rootDir)) {
+        if (relToRoot.startsWith("..") || path.isAbsolute(relToRoot)) {
+          res.writeHead(403);
+          res.end("Forbidden");
+          return;
+        }
+
+        const segments = relToRoot.split(/[\\/]/).filter(Boolean);
+        if (segments.some((seg) => seg.startsWith("."))) {
           res.writeHead(403);
           res.end("Forbidden");
           return;

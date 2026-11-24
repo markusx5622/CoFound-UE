@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
+import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 
 interface Project {
   id: string;
@@ -55,10 +56,17 @@ export default function MisProyectos() {
         // Fetch user's projects
         const qProjects = query(collection(db, "projects"), where("creator_id", "==", user.uid));
         const projectSnapshot = await getDocs(qProjects);
-        const projectsData = projectSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Project[];
+        const projectsData = projectSnapshot.docs.map((doc) => {
+          const raw = doc.data() as Record<string, unknown>;
+          return {
+            id: doc.id,
+            title: sanitizeString(raw.title),
+            description: sanitizeString(raw.description),
+            category: sanitizeString(raw.category),
+            profiles: sanitizeStringArray(raw.profiles, 10),
+            creator_id: sanitizeString(raw.creator_id),
+          };
+        });
         setProjects(projectsData);
 
         // Fetch applications for these projects
@@ -66,18 +74,26 @@ export default function MisProyectos() {
         const appSnapshot = await getDocs(qApps);
         
         const appsData = await Promise.all(appSnapshot.docs.map(async (appDoc) => {
-          const app = { id: appDoc.id, ...appDoc.data() } as Application;
+          const aRaw = appDoc.data() as Record<string, unknown>;
+          const app: Application = {
+            id: appDoc.id,
+            projectId: sanitizeString(aRaw.projectId),
+            projectTitle: sanitizeString(aRaw.projectTitle),
+            applicantId: sanitizeString(aRaw.applicantId),
+            status: sanitizeString(aRaw.status, "pending"),
+            createdAt: aRaw.createdAt,
+          };
           // Fetch applicant data
           const userDocRef = doc(db, "users", app.applicantId);
           const userDocSnapshot = await getDoc(userDocRef);
           if (userDocSnapshot.exists()) {
-            const data = userDocSnapshot.data();
+            const data = userDocSnapshot.data() as Record<string, unknown>;
             app.applicantData = {
-              name: data.name || t("myProjects.defaultName"),
-              degree: data.degree || "",
-              campus: data.campus || "",
-              bio: data.bio || "",
-              skills: data.skills || [],
+              name: sanitizeString(data.name) || t("myProjects.defaultName"),
+              degree: sanitizeString(data.degree),
+              campus: sanitizeString(data.campus),
+              bio: sanitizeString(data.bio),
+              skills: sanitizeStringArray(data.skills, 20),
             };
           }
           return app;

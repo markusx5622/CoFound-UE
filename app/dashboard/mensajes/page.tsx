@@ -157,7 +157,7 @@ export default function Mensajes() {
     const readField = isCreator ? "lastReadByCreator" : "lastReadByApplicant";
     updateDoc(doc(db, "applications", activeChat.id), {
       [readField]: serverTimestamp()
-    }).catch(err => console.error("Error updating read status:", err));
+    }).catch(() => {});
 
     const q = query(
       collection(db, "applications", activeChat.id, "messages"),
@@ -171,7 +171,7 @@ export default function Mensajes() {
       if (lastMsg && lastMsg.senderId !== user.uid) {
         updateDoc(doc(db, "applications", activeChat.id), {
           [readField]: serverTimestamp()
-        }).catch(err => console.error("Error updating read status on new message:", err));
+        }).catch(() => {});
       }
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -183,7 +183,7 @@ export default function Mensajes() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeChat || !user || sending) return;
+    if (!newMessage.trim() || !activeChat || !user || sending || activeChat.status === "rejected") return;
 
     const msgText = newMessage.trim();
     setNewMessage("");
@@ -316,19 +316,25 @@ export default function Mensajes() {
 
                 {/* Input Area */}
                 <div className="p-4 border-t border-zinc-800 bg-zinc-950/60 backdrop-blur-md">
-                  <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                    <input 
-                      type="text" 
-                      value={newMessage}
-                      onChange={e => setNewMessage(e.target.value)}
-                      placeholder={t("messages.inputPlaceholder")}
-                      maxLength={1000}
-                      className="flex-grow bg-zinc-900 border border-zinc-700 rounded-full px-5 py-3 text-white focus:outline-none focus:border-[#E60000] transition-colors placeholder:text-zinc-500 text-sm"
-                    />
-                    <button type="submit" disabled={!newMessage.trim() || sending} className="bg-[#E60000] hover:bg-red-700 text-white p-3 rounded-full disabled:opacity-50 transition-colors shadow-md">
-                      <Send className="h-5 w-5" />
-                    </button>
-                  </form>
+                  {activeChat.status === "rejected" ? (
+                    <div className="text-center text-xs text-zinc-400 bg-zinc-900/70 border border-zinc-800 rounded-xl py-3 px-4">
+                      {t("messages.rejectedChatNotice")}
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                      <input 
+                        type="text" 
+                        value={newMessage}
+                        onChange={e => setNewMessage(e.target.value)}
+                        placeholder={t("messages.inputPlaceholder")}
+                        maxLength={1000}
+                        className="flex-grow bg-zinc-900 border border-zinc-700 rounded-full px-5 py-3 text-white focus:outline-none focus:border-[#E60000] transition-colors placeholder:text-zinc-500 text-sm"
+                      />
+                      <button type="submit" disabled={!newMessage.trim() || sending} className="bg-[#E60000] hover:bg-red-700 text-white p-3 rounded-full disabled:opacity-50 transition-colors shadow-md" aria-label="Enviar mensaje">
+                        <Send className="h-5 w-5" />
+                      </button>
+                    </form>
+                  )}
                 </div>
               </>
             ) : (

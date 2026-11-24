@@ -9,14 +9,9 @@ export default function ServiceWorkerRegister() {
       typeof window !== "undefined" &&
       "serviceWorker" in navigator
     ) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("Service Worker registrado con éxito:", registration.scope);
-        })
-        .catch((error) => {
-          console.error("Error al registrar el Service Worker:", error);
-        });
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // Silenciar en producción si el navegador bloquea Service Workers (ej. modo privado estricto)
+      });
     }
   }, []);
 

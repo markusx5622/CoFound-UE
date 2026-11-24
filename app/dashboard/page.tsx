@@ -10,6 +10,7 @@ import { ProjectSkeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
+import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 
 interface Project {
   id: string;
@@ -19,6 +20,19 @@ interface Project {
   profiles: string[];
   creator_id: string;
   creatorName?: string;
+}
+
+function mapProjectDoc(id: string, data: Record<string, unknown>): Project {
+  const creatorName = sanitizeString(data.creatorName);
+  return {
+    id,
+    title: sanitizeString(data.title),
+    description: sanitizeString(data.description),
+    category: sanitizeString(data.category),
+    profiles: sanitizeStringArray(data.profiles, 10),
+    creator_id: sanitizeString(data.creator_id),
+    ...(creatorName ? { creatorName } : {}),
+  };
 }
 
 export default function Dashboard() {
@@ -49,10 +63,9 @@ export default function Dashboard() {
       }
 
       const querySnapshot = await getDocs(q);
-      const projectsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Project[];
+      const projectsData = querySnapshot.docs.map((doc) =>
+        mapProjectDoc(doc.id, doc.data() as Record<string, unknown>)
+      );
 
       if (projectsData.length < PROJECTS_PER_PAGE) {
         setHasMore(false);
@@ -83,10 +96,9 @@ export default function Dashboard() {
         setLoading(true);
         const q = query(collection(db, "projects"), orderBy("createdAt", "desc"), limit(PROJECTS_PER_PAGE));
         const querySnapshot = await getDocs(q);
-        const projectsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Project[];
+        const projectsData = querySnapshot.docs.map((doc) =>
+          mapProjectDoc(doc.id, doc.data() as Record<string, unknown>)
+        );
 
         setHasMore(projectsData.length >= PROJECTS_PER_PAGE);
         if (querySnapshot.docs.length > 0) {

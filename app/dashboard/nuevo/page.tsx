@@ -80,8 +80,8 @@ export default function NuevoProyecto() {
       }
 
       await addDoc(collection(db, "projects"), {
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim(),
         category,
         profiles,
         creator_id: user.uid,

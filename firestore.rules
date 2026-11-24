@@ -9,17 +9,85 @@ service cloud.firestore {
         && request.auth.token.email.lower().matches('^[^@]+@(live\\.uem\\.es|universidadeuropea\\.es)$');
     }
 
+    function isRecentTimestamp(ts) {
+      return ts is timestamp
+        && ts <= request.time
+        && ts >= request.time - duration.value(5, 'm');
+    }
+
+    function isValidStringItem(item, maxLen) {
+      return item is string && item.size() >= 1 && item.size() <= maxLen;
+    }
+
+    function isValidProfilesList(list) {
+      return list is list
+        && list.size() >= 1 && list.size() <= 10
+        && (list.size() < 1 || isValidStringItem(list[0], 40))
+        && (list.size() < 2 || isValidStringItem(list[1], 40))
+        && (list.size() < 3 || isValidStringItem(list[2], 40))
+        && (list.size() < 4 || isValidStringItem(list[3], 40))
+        && (list.size() < 5 || isValidStringItem(list[4], 40))
+        && (list.size() < 6 || isValidStringItem(list[5], 40))
+        && (list.size() < 7 || isValidStringItem(list[6], 40))
+        && (list.size() < 8 || isValidStringItem(list[7], 40))
+        && (list.size() < 9 || isValidStringItem(list[8], 40))
+        && (list.size() < 10 || isValidStringItem(list[9], 40));
+    }
+
+    function isValidSkillsList(list) {
+      return list is list
+        && list.size() <= 20
+        && (list.size() < 1 || isValidStringItem(list[0], 40))
+        && (list.size() < 2 || isValidStringItem(list[1], 40))
+        && (list.size() < 3 || isValidStringItem(list[2], 40))
+        && (list.size() < 4 || isValidStringItem(list[3], 40))
+        && (list.size() < 5 || isValidStringItem(list[4], 40))
+        && (list.size() < 6 || isValidStringItem(list[5], 40))
+        && (list.size() < 7 || isValidStringItem(list[6], 40))
+        && (list.size() < 8 || isValidStringItem(list[7], 40))
+        && (list.size() < 9 || isValidStringItem(list[8], 40))
+        && (list.size() < 10 || isValidStringItem(list[9], 40))
+        && (list.size() < 11 || isValidStringItem(list[10], 40))
+        && (list.size() < 12 || isValidStringItem(list[11], 40))
+        && (list.size() < 13 || isValidStringItem(list[12], 40))
+        && (list.size() < 14 || isValidStringItem(list[13], 40))
+        && (list.size() < 15 || isValidStringItem(list[14], 40))
+        && (list.size() < 16 || isValidStringItem(list[15], 40))
+        && (list.size() < 17 || isValidStringItem(list[16], 40))
+        && (list.size() < 18 || isValidStringItem(list[17], 40))
+        && (list.size() < 19 || isValidStringItem(list[18], 40))
+        && (list.size() < 20 || isValidStringItem(list[19], 40));
+    }
+
     function isValidUserPayload(data) {
-      return data.keys().hasOnly(['name', 'degree', 'campus', 'bio', 'skills', 'updatedAt', 'photoURL', 'email'])
+      return data.keys().hasOnly(['name', 'degree', 'campus', 'bio', 'skills', 'updatedAt', 'email'])
         && (!('name' in data) || (data.name is string && data.name.size() <= 100))
         && (!('degree' in data) || (data.degree is string && data.degree.size() <= 120))
         && (!('campus' in data) || (data.campus is string && data.campus.size() <= 80))
         && (!('bio' in data) || (data.bio is string && data.bio.size() <= 1000))
-        && (!('skills' in data) || (data.skills is list && data.skills.size() <= 20));
+        && (!('skills' in data) || isValidSkillsList(data.skills))
+        && (!('updatedAt' in data) || isRecentTimestamp(data.updatedAt));
+    }
+
+    function isValidProjectCore(data) {
+      return data.keys().hasOnly(['title', 'description', 'category', 'profiles', 'creator_id', 'creatorName', 'createdAt'])
+        && data.creatorName is string
+        && data.creatorName.size() > 0 && data.creatorName.size() <= 100
+        && data.title is string
+        && data.title.size() >= 3 && data.title.size() <= 100
+        && data.description is string
+        && data.description.size() >= 20 && data.description.size() <= 1500
+        && (!('category' in data) || data.category in ['Reto Académico', 'TFG', 'Startup Real'])
+        && isValidProfilesList(data.profiles);
+    }
+
+    function getAppData(appId) {
+      return get(/databases/$(database)/documents/applications/$(appId)).data;
     }
 
     match /users/{userId} {
-      allow read: if isAuthenticated();
+      allow get: if isAuthenticated();
+      allow list: if false;
       allow create: if isAuthenticated() 
                    && request.auth.uid == userId 
                    && (!('email' in request.resource.data))
@@ -37,23 +105,18 @@ service cloud.firestore {
     match /projects/{projectId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() 
-        && request.resource.data.keys().hasOnly(['title', 'description', 'category', 'profiles', 'creator_id', 'creatorName', 'createdAt'])
+        && isValidProjectCore(request.resource.data)
         && request.resource.data.creator_id == request.auth.uid
-        && request.resource.data.creatorName is string
-        && request.resource.data.creatorName.size() > 0 && request.resource.data.creatorName.size() <= 100
-        && request.resource.data.title is string
-        && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 100
-        && request.resource.data.description is string
-        && request.resource.data.description.size() >= 20 && request.resource.data.description.size() <= 1500
-        && request.resource.data.profiles is list
-        && request.resource.data.profiles.size() >= 1 && request.resource.data.profiles.size() <= 10;
+        && 'createdAt' in request.resource.data
+        && isRecentTimestamp(request.resource.data.createdAt);
       allow update: if isAuthenticated() 
         && resource.data.creator_id == request.auth.uid
-        && request.resource.data.keys().hasOnly(['title', 'description', 'category', 'profiles', 'creator_id', 'creatorName', 'createdAt'])
-        && (!('creator_id' in request.resource.data) || request.resource.data.creator_id == resource.data.creator_id)
-        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 100))
-        && (!('description' in request.resource.data) || (request.resource.data.description is string && request.resource.data.description.size() >= 20 && request.resource.data.description.size() <= 1500))
-        && (!('profiles' in request.resource.data) || (request.resource.data.profiles is list && request.resource.data.profiles.size() >= 1 && request.resource.data.profiles.size() <= 10));
+        && isValidProjectCore(request.resource.data)
+        && request.resource.data.creator_id == resource.data.creator_id
+        && (
+          (!('createdAt' in resource.data) && !('createdAt' in request.resource.data))
+          || ('createdAt' in resource.data && 'createdAt' in request.resource.data && request.resource.data.createdAt == resource.data.createdAt)
+        );
       allow delete: if isAuthenticated() && resource.data.creator_id == request.auth.uid;
     }
 
@@ -72,48 +135,61 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/projects/$(request.resource.data.projectId))
         && get(/databases/$(database)/documents/projects/$(request.resource.data.projectId)).data.creator_id == request.resource.data.creatorId
         && (!('projectTitle' in request.resource.data) || (request.resource.data.projectTitle is string && request.resource.data.projectTitle.size() <= 150))
-        && request.resource.data.status == 'pending';
+        && request.resource.data.status == 'pending'
+        && 'createdAt' in request.resource.data
+        && isRecentTimestamp(request.resource.data.createdAt);
       allow update: if isAuthenticated()
         && request.resource.data.applicantId == resource.data.applicantId
         && request.resource.data.creatorId == resource.data.creatorId
         && request.resource.data.projectId == resource.data.projectId
+        && (!('lastMessageAt' in request.resource.data.diff(resource.data).affectedKeys()) || isRecentTimestamp(request.resource.data.lastMessageAt))
+        && (!('lastReadByCreator' in request.resource.data.diff(resource.data).affectedKeys()) || isRecentTimestamp(request.resource.data.lastReadByCreator))
+        && (!('lastReadByApplicant' in request.resource.data.diff(resource.data).affectedKeys()) || isRecentTimestamp(request.resource.data.lastReadByApplicant))
         && (
           (
             resource.data.creatorId == request.auth.uid
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'lastMessageAt', 'lastMessageSenderId', 'lastReadByCreator'])
             && (!('status' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.status in ['pending', 'accepted', 'rejected'])
             && (!('lastMessageSenderId' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.lastMessageSenderId == request.auth.uid)
+            && (!('lastMessageAt' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.status != 'rejected')
           )
           || (
             resource.data.applicantId == request.auth.uid
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMessageAt', 'lastMessageSenderId', 'lastReadByApplicant'])
             && (!('lastMessageSenderId' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.lastMessageSenderId == request.auth.uid)
+            && (
+              !request.resource.data.diff(resource.data).affectedKeys().hasAny(['lastMessageAt', 'lastMessageSenderId'])
+              || resource.data.status != 'rejected'
+            )
           )
         );
       allow delete: if isAuthenticated() && (resource.data.applicantId == request.auth.uid || resource.data.creatorId == request.auth.uid);
       
       match /messages/{messageId} {
         allow read: if isAuthenticated() && 
-          (get(/databases/$(database)/documents/applications/$(applicationId)).data.applicantId == request.auth.uid || 
-           get(/databases/$(database)/documents/applications/$(applicationId)).data.creatorId == request.auth.uid);
+          (getAppData(applicationId).applicantId == request.auth.uid || 
+           getAppData(applicationId).creatorId == request.auth.uid);
         allow create: if isAuthenticated() && 
-          (get(/databases/$(database)/documents/applications/$(applicationId)).data.applicantId == request.auth.uid || 
-           get(/databases/$(database)/documents/applications/$(applicationId)).data.creatorId == request.auth.uid) &&
+          (getAppData(applicationId).applicantId == request.auth.uid || 
+           getAppData(applicationId).creatorId == request.auth.uid) &&
+          getAppData(applicationId).status != 'rejected' &&
           request.resource.data.keys().hasOnly(['text', 'senderId', 'createdAt']) &&
           request.resource.data.senderId == request.auth.uid &&
           request.resource.data.text is string &&
           request.resource.data.text.size() >= 1 &&
-          request.resource.data.text.size() <= 1000;
+          request.resource.data.text.size() <= 1000 &&
+          'createdAt' in request.resource.data &&
+          isRecentTimestamp(request.resource.data.createdAt);
         allow delete: if isAuthenticated() && 
-          (get(/databases/$(database)/documents/applications/$(applicationId)).data.applicantId == request.auth.uid || 
-           get(/databases/$(database)/documents/applications/$(applicationId)).data.creatorId == request.auth.uid);
+          (getAppData(applicationId).applicantId == request.auth.uid || 
+           getAppData(applicationId).creatorId == request.auth.uid);
       }
     }
 
     match /client_errors/{errorId} {
       allow read, update, delete: if false;
       allow create: if isAuthenticated()
-        && request.resource.data.keys().hasOnly(['uid', 'context', 'message', 'code', 'path', 'userAgent', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['uid', 'context', 'message', 'code', 'path', 'userAgent', 'createdAt', 'expiresAt'])
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.context is string
         && request.resource.data.context.size() >= 1 && request.resource.data.context.size() <= 100
@@ -124,7 +200,13 @@ service cloud.firestore {
         && request.resource.data.path is string
         && request.resource.data.path.size() <= 200
         && request.resource.data.userAgent is string
-        && request.resource.data.userAgent.size() <= 300;
+        && request.resource.data.userAgent.size() <= 300
+        && 'createdAt' in request.resource.data
+        && isRecentTimestamp(request.resource.data.createdAt)
+        && 'expiresAt' in request.resource.data
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt > request.time
+        && request.resource.data.expiresAt <= request.time + duration.value(31, 'd');
     }
   }
 }
