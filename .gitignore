@@ -37,6 +37,8 @@ Contexto CoFound UE — Handoff.md
 marketing/**/*.png
 marketing/**/*.jpg
 marketing/**/*.webp
+marketing/**/*.mp4
+marketing/**/*.mov
 !marketing/assets/**
 !marketing/assets/**/*.png
 !marketing/assets/**/*.jpg
