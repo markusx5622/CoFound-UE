@@ -14,7 +14,7 @@
   🇪🇸 [Versión en español disponible](README.md)
  
   <p align="center">
-    <strong>Connect with Business, Marketing, Tech, and Design students to turn university ideas into high-impact startups.</strong>
+    <strong>Connect with Business, Engineering, Health, Sports, Marketing, Tech, and Design students to turn university ideas into real projects.</strong>
   
   [Key Features](#-key-features) •
   [Architecture](#-project-architecture) •
@@ -41,7 +41,7 @@
 
 ## 📌 Overview
 
-Across a campus with hundreds of students, team formation often boils down to physical proximity in the classroom rather than complementary skillsets. Talent across Business, Engineering, Marketing, Design, and Tech walks the same hallways daily, yet rarely crosses paths productively. Great ideas emerge constantly at university, but often lose momentum in inactive chat groups due to the absence of the right technical or business profiles required to bring them to life.
+Across a campus with hundreds of students, team formation often boils down to physical proximity in the classroom rather than complementary skillsets. Talent across Business, Engineering, Health & Sports, Marketing, Design, and Tech coexists across the Turia and Alameda campuses, yet rarely crosses paths productively. Great ideas emerge constantly at university, but often lose momentum in inactive chat groups due to the absence of the right technical, health, or business profiles required to bring them to life.
 
 To resolve this friction, **CoFound UE** was created: a full-stack web platform specifically designed to break academic silos at the **European University**. The application acts as an internal talent marketplace where students and graduates can strategically discover one another, collaborate on interdisciplinary projects, publish academic challenges, find Final Degree Project (TFG) partners, or launch real startups directly from campus.
 
@@ -57,16 +57,16 @@ To resolve this friction, **CoFound UE** was created: a full-stack web platform 
 
 | Module | Description | Key Technology |
 | :--- | :--- | :--- |
-| **🛡️ Restricted Auth** | Registration and sign-in validated via regular expressions ensuring access strictly to users with European University institutional emails, with mandatory email verification (hard-gate in UI and Firestore rules). | Firebase Auth & TypeScript regex validation |
-| **🎨 Immersive Interface** | Modern dark-mode aesthetics featuring fluid particle canvas, glassmorphism (`backdrop-blur`) effects, and UE institutional color accents (`#E60000`). | Tailwind CSS, Framer Motion & HTML5 Canvas |
-| **👤 Student Profiles** | Comprehensive student profile management with locally generated initials avatars (no image storage or external dependencies), full name, degree, campus selection (Campus Turia / Valencia and Campus Alameda / Valencia during the pilot; remaining campuses will be enabled in the expansion), bio, and interactive skill tags. | Firestore Document Merge, InitialsAvatar & Sonner Toasts |
-| **💡 Project Marketplace** | Real-time central board to browse active projects, filter by challenge category, and explore sought-after roles. | Firestore Queries & Lucide Icons |
-| **📝 Project Creator** | Idea publisher featuring categorization, rich description, and dynamic role definition (*e.g., Frontend Developer, Growth Hacker*). | Controlled Dynamic Forms |
-| **🤝 Applications & Matching** | One-click application system, self-application prevention, and duplicate prevention. | Realtime Firestore Collections |
-| **💬 Real-Time Messaging** | Direct chat between project creator and applicants, secured by Firestore rules allowing access only to both participants. | Firestore Subcollections & Realtime Listeners (`onSnapshot`) |
-| **📂 Personal Management** | Dedicated dashboards to manage *My Projects* created and monitor the status of *My Applications*. | Protected Route System |
-| **🌐 Internationalization (ES/EN)** | Fully bilingual interface (Spanish and English) with strictly typed dictionaries, category translation, and persistent language preference. | React Context (`LanguageContext`) & Typed Dictionaries |
-| **🔒 GDPR Privacy & Right to Erasure** | Public email hiding and full account deletion with automatic cascading cleanup of projects, applications, and messages. | Firestore Security Rules & Cascading Deletes |
+| **🛡️ Restricted Auth** | Registration and sign-in validated for European University institutional emails with mandatory email verification (hard-gate in UI and Firestore rules), password visibility toggle, email enumeration protection, and domain/API-restricted Google Cloud API Key. | Firebase Auth, GCP API Restrictions & TypeScript regex |
+| **🎨 Immersive Interface** | Modern dark-mode aesthetics featuring fluid particle canvas (optimized on mobile respecting `prefers-reduced-motion`), `2×2` Turia × Alameda team equations showcase, glassmorphism effects, and UE institutional accents (`#E60000`). | Tailwind CSS, Framer Motion & HTML5 Canvas |
+| **👤 Student Profiles** | Comprehensive student profile management with locally generated initials avatars, onboarding banner, quick skill chips, public profile link, profile completeness guard before applying, and campus selection (Turia and Alameda during the pilot). | Firestore Document Merge, InitialsAvatar & Sonner Toasts |
+| **💡 Project Marketplace** | Real-time board with clearable search, live result counter, category & *Hide examples* filters, share button, and official showcase (`demo-cofound-ue`) with `Example` badge protected in rules against applications. | Firestore Queries & Lucide Icons |
+| **📝 Project Creator** | Idea publisher featuring categorization, guided description template, and quick role chips (*e.g., Frontend Developer, Growth Hacker, Physiotherapist*). | Controlled Dynamic Forms |
+| **🤝 Applications & Matching** | Presentation modal (`ApplyProjectModal`) that submits the application along with the first intro message via atomic `writeBatch`, self-application/duplicate prevention, pending application withdrawal, and custom `ConfirmModal`. | Firestore Atomic Batches & Realtime Collections |
+| **💬 Real-Time Messaging** | Direct chat between creator and applicant restricted by Firestore rules, featuring message timestamps and relative dates, live status badges, and a clickable project link in the chat header. | Firestore Subcollections & Realtime Listeners (`onSnapshot`) |
+| **📂 Personal Management** | Dedicated dashboards to manage *My Projects* created (with quick edit access) and monitor or withdraw pending requests in *My Applications*. | Protected Route System |
+| **🌐 Internationalization (ES/EN)** | Bilingual interface with typed dictionaries and 2-layer project translation: native English localization for the official showcase and its search (`Layer 1`), plus a zero-dependency on-demand translation button on real projects (`Layer 2`). | React Context (`LanguageContext`), `demo-i18n.ts` & Typed Dictionaries |
+| **🔒 GDPR Privacy & Right to Erasure** | Public email hiding, affirmative registration consent, and full account deletion after password re-authentication with automatic cascading cleanup of projects, applications, and messages. | Firestore Security Rules & Cascading Deletes |
 | **📲 Installable PWA** | Add to home screen (mobile and desktop) with maskable icons, custom service worker, standalone experience, and non-invasive install prompt (max once per session, persistent 30-day dismissal, standalone detection). | Web App Manifest & Service Worker |
 
 ---
@@ -123,14 +123,16 @@ CoFound-UE/
 │   └── sitemap.ts                        # Dynamic sitemap.xml generator with canonical URLs
 ├── components/                           # Reusable UI components
 │   ├── ui/                               # Primitives and base visual elements (Skeleton loaders)
-│   ├── campus-feed-preview.tsx           # Interactive social feed on Landing
+│   ├── ApplyProjectModal.tsx             # Presentation modal to apply with an automatic first chat message
+│   ├── campus-feed-preview.tsx           # 2×2 Team Equations grid (Turia × Alameda)
+│   ├── ConfirmModal.tsx                  # Accessible confirmation modal (replaces window.confirm)
 │   ├── footer.tsx                        # Footer with legal links and public GitHub repository link
 │   ├── hero-section.tsx                  # Main welcome and high-impact visual section
 │   ├── how-it-works.tsx                  # Step-by-step platform walkthrough
 │   ├── InitialsAvatar.tsx                # Local initials avatar generator (privacy by design)
 │   ├── LanguageSelector.tsx              # ES/EN language switcher with persistence
 │   ├── Navbar.tsx                        # Responsive navigation bar with user state
-│   ├── particle-background.tsx           # HTML5 Canvas particle matrix effect
+│   ├── particle-background.tsx           # HTML5 Canvas particle matrix effect (desktop & lightweight mobile)
 │   ├── ProtectedRoute.tsx                # Private route guardian with verified email hard-gate
 │   ├── PwaInstallPrompt.tsx              # Non-invasive PWA install prompt (session, 30d dismiss, standalone)
 │   ├── ServiceWorkerRegister.tsx         # PWA Service Worker registration in production
@@ -144,8 +146,12 @@ CoFound-UE/
 │   │   └── es.ts                         # Spanish translations (canonical source & Dictionary type)
 │   ├── auth-errors.ts                    # Firebase Auth error code mapper with i18n keys
 │   ├── categories.ts                     # Canonical project categories and translation helper
+│   ├── date-utils.ts                     # Relative date and chat timestamp formatters (ES/EN)
+│   ├── demo.ts                           # Official showcase constants and helpers (demo-cofound-ue)
+│   ├── demo-i18n.ts                      # Layer 1 (native demo localization) & Layer 2 (on-demand translation)
 │   ├── error-logger.ts                   # Native client error telemetry to Firestore (PII-free)
 │   ├── firebase.ts                       # Firebase SDK, Auth, and Firestore initialization
+│   ├── firestore-guards.ts               # Safe Firestore sanitization and deletion helpers
 │   └── site.ts                           # SITE_URL constant, single source of truth for canonical domain
 ├── public/                               # Static assets and PWA files
 │   ├── icons/                            # Responsive and maskable PWA icons
@@ -155,18 +161,20 @@ CoFound-UE/
 │   ├── favicon.ico                       # Public platform favicon
 │   ├── og-image.jpg                      # Optimized OpenGraph preview image (1200x630)
 │   └── sw.js                             # Service Worker for PWA offline caching
-├── scripts/                              # Local development utilities
-│   └── seed-database.mjs                 # Example projects seed script (local emulator only, supports --dry-run)
+├── scripts/                              # Local development & showcase sync utilities
+│   ├── demo-showcase-data.mjs            # Official showcase dataset (profile + 6 example projects)
+│   ├── seed-database.mjs                 # Example projects seed script (local emulator only, supports --dry-run)
+│   └── sync-demo-showcase.mjs            # Official showcase synchronizer (dry-run by default, --apply-prod)
 ├── tests/                                # Automated test suite
-│   └── rules.test.ts                     # Firestore security rules tests with Vitest and local emulator
+│   └── rules.test.ts                     # 41 Firestore security rules tests with Vitest and local emulator
 ├── .eslintrc.json                        # ESLint configuration (next/core-web-vitals)
 ├── .nvmrc                                # Pinned Node.js version for development and CI (Node 20)
-├── CoFound UE — Protocolo de Smoke Test.md # Pre-pilot manual testing protocol
+├── CoFound UE — Protocolo de Smoke Test.md # Pre-pilot manual testing protocol (v2.1)
 ├── firebase.json                         # Firebase configuration and local emulator ports
 ├── firestore.indexes.json                # Firestore composite index definitions
-├── firestore.rules                       # Firestore security rules (verified email required, granular access, messaging)
+├── firestore.rules                       # Firestore security rules (verified email, demo-* block, messaging)
 ├── LICENSE                               # Proprietary license (All rights reserved)
-├── next.config.mjs                       # Next.js config: 308 apex/subdomain redirect to www.cofoundue.es and SW headers
+├── next.config.mjs                       # Next.js config: 308 redirect to www.cofoundue.es, 7 security headers, strict CSP & SW headers
 ├── package.json                          # Dependencies, scripts, engines, and metadata
 ├── postcss.config.mjs                    # CSS processing plugins (Autoprefixer, Tailwind)
 ├── tailwind.config.ts                    # Tailwind theme configuration
@@ -373,6 +381,10 @@ erDiagram
         string creatorId FK
         string status
         timestamp createdAt
+        timestamp lastMessageAt
+        string lastMessageSenderId
+        timestamp lastReadByCreator
+        timestamp lastReadByApplicant
     }
 
     MESSAGES {
@@ -380,6 +392,14 @@ erDiagram
         string senderId FK
         string text
         timestamp createdAt
+    }
+
+    CLIENT_ERRORS {
+        string id PK
+        string message
+        string route
+        timestamp createdAt
+        timestamp expiresAt
     }
 ```
 
@@ -397,12 +417,13 @@ In the project directory, you can run:
 | `npm run lint` | Runs ESLint (`next/core-web-vitals`, configured in `.eslintrc.json`) to detect code and style issues. |
 | `npm test` | Runs the Firestore rules test suite with Vitest (requires emulator). |
 | `node scripts/seed-database.mjs` | Seeds example profiles and projects into the local Firestore emulator (blocked against production; supports `--dry-run`). |
+| `node scripts/sync-demo-showcase.mjs` | Syncs the official showcase (`demo-cofound-ue` + 6 example projects). Runs `--dry-run` by default; requires `--apply-prod` and `GOOGLE_APPLICATION_CREDENTIALS` to write to production. |
 
 ---
 
 ## 🧪 Testing
 
-The project includes an automated unit testing environment configured with **Vitest** and the local Firestore Emulator to rigorously validate security rules (`firestore.rules`). The current test suite consists of **38 tests** validating access control, user directory scraping prevention (`allow list: if false`), backend institutional domain enforcement, GDPR email protection and legacy profile migration, chat anti-spoofing and read-only lock on rejected applications, referential integrity and deterministic uniqueness (`{projectId}_{applicantId}`), strict array-element and `request.time` validation, closed schema allowlists (`keys().hasOnly`), TTL retention on client error logs, and the rejection of unverified users.
+The project includes an automated unit testing environment configured with **Vitest** and the local Firestore Emulator to rigorously validate security rules (`firestore.rules`). The current test suite consists of **41 tests** validating access control, user directory scraping prevention (`allow list: if false`), backend institutional domain enforcement, GDPR email protection and legacy profile migration, chat anti-spoofing and read-only lock on rejected applications, referential integrity and deterministic uniqueness (`{projectId}_{applicantId}`), blocking applications to official `demo-*` projects, atomic apply-with-intro-message and pending application withdrawal, full 4-account E2E lifecycle, strict array-element and `request.time` validation, closed schema allowlists (`keys().hasOnly`), TTL retention on client error logs, and the rejection of unverified users.
 
 ### Run tests locally
 Make sure dependencies are installed (`npm install`). To launch the emulator and execute the test suite, run:
@@ -427,7 +448,9 @@ The platform incorporates a multi-layer validation engine to safeguard the unive
 3. **Strict Security Rules (`firestore.rules`):**
    Granular access in Firestore: users can only edit their own profile (forbidding injecting or altering the `email` field in public documents and automatically stripping any legacy `email` field on save), creators manage their projects, and the messages subcollection is strictly limited to the two participants of the application (creator and applicant), preventing any unauthorized access. In production, `isAuthenticated()` requires `request.auth.token.email_verified == true`: unverified users are blocked from direct SDK/REST requests; and rules validate write fields: title 3–100 chars, description 20–1500 chars, 1–10 profiles, `creatorName` mandatory, messages 1–1000 chars.
 4. **Automated CI Coverage:**
-   The 38-test suite (`tests/rules.test.ts`, Vitest + emulator) covers role-based access control, user directory scraping prevention, institutional domain enforcement in rules, profile `email` protection and migration, chat anti-spoofing and rejection lock, application referential integrity and deterministic uniqueness, array-element and timestamp validation, closed schema allowlists (`keys().hasOnly`), atomic message batches, telemetry TTL, and unverified user rejection. CI executes this on every push to main.
+   The **41-test** suite (`tests/rules.test.ts`, Vitest + emulator) covers role-based access control, user directory scraping prevention, institutional domain enforcement in rules, profile `email` protection and migration, chat anti-spoofing and rejection lock, application referential integrity and deterministic uniqueness, `demo-*` application blocking, atomic apply-with-intro-message and pending withdrawal, 4-account E2E lifecycle, array-element and timestamp validation, closed schema allowlists (`keys().hasOnly`), atomic message batches, telemetry TTL, and unverified user rejection. CI executes this on every push to main.
+5. **Production Hardening (Phase 3):**
+   Google Cloud Browser API Key restricted to 4 authorized origins and 4 Firebase APIs, Firebase Auth Email Enumeration Protection and password policy (minimum 8 characters) active, plus 7 HTTP security headers and strict Content-Security-Policy (CSP) in `next.config.mjs`.
 
 ---
 
@@ -453,10 +476,11 @@ The roadmap of **CoFound UE** is structured into strategic phases designed to co
   * **Phase 2:** Real-time messaging, user profiles, and skeleton loaders.
   * **Phase 3A:** Installable PWA, custom domain (`www.cofoundue.es`), technical SEO (Sitemap, Robots), and CI with automated Firestore rules tests.
   * **Phase 3B:** Security hardening (verified email enforced in rules and UI hard-gate), SEO unification to canonical domain `www.cofoundue.es` (metadataBase, og:url, canonical, 308 redirect from Vercel subdomain), orphaned asset cleanup (−8.2 MB), non-invasive PWA prompt, and pilot expansion to Turia and Alameda campuses.
-  * **Phase 3C:** Full ES/EN internationalization with language selector and typed dictionaries, GDPR privacy (public email hiding, affirmative registration consent, password re-authentication before cascading account erasure, and 30-day TTL diagnostics), JSON-LD structured data, blocking ESLint and SHA-pinned Actions in CI, Firestore security hardening (backend institutional domain check, user directory scraping block, application referential integrity and deterministic uniqueness, array-element and `request.time` checks, closed `keys().hasOnly` schema allowlists, chat anti-spoofing and rejection lock), Content-Security-Policy (CSP) and HTTP security headers, 38-test security rules suite, and local emulator example seed script.
+  * **Phase 3C:** Full ES/EN internationalization with language selector and typed dictionaries, GDPR privacy (public email hiding, affirmative registration consent, password re-authentication before cascading account erasure, and 30-day TTL diagnostics), JSON-LD structured data, blocking ESLint and SHA-pinned Actions in CI, Firestore security hardening (backend institutional domain check, user directory scraping block, application referential integrity and deterministic uniqueness, array-element and `request.time` checks, closed `keys().hasOnly` schema allowlists, chat anti-spoofing and rejection lock), Content-Security-Policy (CSP) and HTTP security headers, and local emulator example seed script.
+  * **Phase 3D (Pre-Pilot):** Phase 3 console hardening (origin/API-restricted API Key and email enumeration protection), official `demo-cofound-ue` showcase (`Example` badge, rules block, and dedicated sync script), UX/QoL upgrades (onboarding banner, presentation modal with automatic first chat message, pending application withdrawal, guided project template, quick chips, `ConfirmModal`, password visibility toggle, *Hide examples* filter, share button, and chat enhancements), Landing redesign featuring Turia × Alameda (`2×2`), 2-layer project translation (`Layer 1` native + `Layer 2` zero-dependency on-demand), Smoke Test v2.1 protocol, and test suite expanded to **41 tests**.
 
 * **In Progress / Upcoming Phases:**
-  * Final smoke test execution and pilot launch at Turia and Alameda campuses.
+  * Smoke test v2.1 execution and pilot launch at Turia and Alameda campuses.
   * Transactional email notifications.
   * Advanced global project and talent search.
   * Creator metrics dashboard.
