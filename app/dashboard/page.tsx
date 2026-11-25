@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, doc, getDoc, getDocs, query, orderBy, limit, startAfter, QueryDocumentSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, UserCircle, Tag, Search, Filter, Sparkles, UserCheck, ArrowRight, Clock, X, EyeOff, RotateCcw } from "lucide-react";
+import { Briefcase, UserCircle, Tag, Search, Filter, BookOpen, UserCheck, ArrowRight, Clock, X, EyeOff, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { ProjectSkeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
@@ -342,7 +342,7 @@ export default function Dashboard() {
                       </span>
                       {isDemo && (
                         <span className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-400 border border-amber-500/25 text-[11px] font-semibold px-2.5 py-1 rounded-md">
-                          <Sparkles className="h-3 w-3" />
+                          <BookOpen className="h-3 w-3" />
                           {t("dashboard.demoBadge")}
                         </span>
                       )}

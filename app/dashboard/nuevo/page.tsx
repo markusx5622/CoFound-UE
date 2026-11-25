@@ -6,7 +6,7 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/fires
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { X, Plus, Sparkles } from "lucide-react";
+import { X, Plus, LayoutTemplate } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
@@ -150,7 +150,7 @@ export default function NuevoProyecto() {
                     onClick={handleInsertTemplate}
                     className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 px-3 py-1 rounded-lg transition-colors"
                   >
-                    <Sparkles className="h-3.5 w-3.5" />
+                    <LayoutTemplate className="h-3.5 w-3.5" />
                     <span>{t("projectNew.useTemplateBtn")}</span>
                   </button>
                 </div>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Rocket, ShieldCheck, UserPlus, Sparkles } from "lucide-react";
+import { Rocket, ShieldCheck, UserPlus, BadgeCheck } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function HeroSection() {
@@ -95,7 +95,7 @@ export default function HeroSection() {
       {/* Value Proposition Badges */}
       <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3 text-zinc-300 text-xs sm:text-sm pt-1">
         <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">
-          <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+          <BadgeCheck className="h-3.5 w-3.5 text-amber-400" />
           <span>{t("landing.hero.badgeFree")}</span>
         </span>
         <span className="flex items-center gap-1.5 bg-zinc-900/80 hover:bg-zinc-900 hover:border-zinc-700 hover:text-white transition-all duration-200 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-inner cursor-default select-none">

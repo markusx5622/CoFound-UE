@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, Sparkles, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, Eye, EyeOff } from "lucide-react";
 import HeroSection from "@/components/hero-section";
 import CampusFeedPreview from "@/components/campus-feed-preview";
 import HowItWorks from "@/components/how-it-works";

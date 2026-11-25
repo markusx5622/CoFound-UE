@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Code2, TrendingUp, Palette, CheckCircle2, ShieldCheck, ArrowUpRight } from "lucide-react";
+import { Network, ArrowRight, Code2, TrendingUp, Palette, CheckCircle2, ShieldCheck, ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface CampusFeedPreviewProps {
@@ -60,7 +60,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
   };
 
   return (
-    <section className="py-24 border-t border-zinc-900 bg-zinc-950/60 relative overflow-hidden">
+    <section className="py-24 bg-transparent relative overflow-hidden">
       {/* Background ambient light */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-96 bg-[#E60000]/5 rounded-full blur-[140px] pointer-events-none -z-10"></div>
 
@@ -69,7 +69,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md shadow-inner">
-            <Sparkles className="h-3.5 w-3.5 text-[#E60000]" />
+            <Network className="h-3.5 w-3.5 text-[#E60000]" />
             <span>{t("feedPreview.tag")}</span>
           </div>
 

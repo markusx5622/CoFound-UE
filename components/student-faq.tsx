@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronDown, HelpCircle, Users, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface FAQItem {
@@ -46,7 +46,7 @@ export default function StudentFaq() {
   };
 
   return (
-    <section id="faq" className="py-20 border-t border-zinc-900 bg-zinc-950/80 relative overflow-hidden">
+    <section id="faq" className="py-20 bg-transparent relative overflow-hidden">
       {/* Background soft ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-80 bg-[#E60000]/5 rounded-full blur-[130px] pointer-events-none -z-10" />
 
@@ -122,7 +122,7 @@ export default function StudentFaq() {
         <div className="p-6 rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-zinc-900 border border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl text-center sm:text-left">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-red-950/60 border border-red-500/30 text-[#E60000] flex items-center justify-center shrink-0">
-              <Sparkles className="w-5 h-5" />
+              <Users className="w-5 h-5" />
             </div>
             <div>
               <h4 className="text-sm sm:text-base font-bold text-white">

@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { UserCircle, Briefcase, Tag, MapPin, GraduationCap, ShieldCheck, Sparkles } from "lucide-react";
+import { UserCircle, Briefcase, Tag, MapPin, GraduationCap, ShieldCheck, BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import InitialsAvatar from "@/components/InitialsAvatar";
@@ -214,7 +214,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                           </span>
                           {isOfficialDemo && (
                             <span className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-400 border border-amber-500/25 text-[11px] font-semibold px-2 py-0.5 rounded-md">
-                              <Sparkles className="h-3 w-3" />
+                              <BookOpen className="h-3 w-3" />
                               {t("dashboard.demoBadge")}
                             </span>
                           )}

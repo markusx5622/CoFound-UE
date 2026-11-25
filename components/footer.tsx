@@ -10,7 +10,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-transparent border-t border-zinc-900 pt-16 pb-8 relative z-10 text-zinc-400">
+    <footer className="bg-transparent pt-16 pb-8 relative z-10 text-zinc-400">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Col */}
@@ -140,7 +140,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
+        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
           <p>© {currentYear} Marc Cubero Cantavella · CoFound UE. {t("footer.rights")}</p>
           <p className="text-zinc-400 text-sm mb-4 md:mb-0">
             {t("footer.designedBy")} Marc Cubero Cantavella

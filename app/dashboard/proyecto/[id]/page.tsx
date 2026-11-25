@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { UserCircle, Tag, ArrowLeft, Send, Sparkles, ArrowRight, Share2, Clock, Edit, MessageSquare, CheckCircle2 } from "lucide-react";
+import { UserCircle, Tag, ArrowLeft, Send, BookOpen, Info, ArrowRight, Share2, Clock, Edit, MessageSquare, CheckCircle2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -300,7 +300,7 @@ export default function ProyectoDetalle() {
                     </span>
                     {isDemo && (
                       <span className="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-400 border border-amber-500/25 text-xs font-semibold px-3 py-1.5 rounded-md">
-                        <Sparkles className="h-3.5 w-3.5" />
+                        <BookOpen className="h-3.5 w-3.5" />
                         {t("projectDetail.demoBadge")}
                       </span>
                     )}
@@ -383,7 +383,7 @@ export default function ProyectoDetalle() {
               {isDemo && (
                 <div className="mb-10 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3.5">
                   <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
-                    <Sparkles className="h-4 w-4" />
+                    <Info className="h-4 w-4" />
                   </div>
                   <div>
                     <h2 className="text-sm font-bold text-amber-300 mb-1">{t("projectDetail.demoNoticeTitle")}</h2>
