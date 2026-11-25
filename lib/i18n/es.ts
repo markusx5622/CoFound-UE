@@ -300,7 +300,9 @@ export const es = {
     applyRoleMessagePrefix: "Perfil de interés",
     applyRoleDefaultMsg: "Hola, me gustaría postularme para el perfil de {role}.",
     openChatBtn: "Abrir chat",
-    editProjectBtn: "Editar proyecto"
+    editProjectBtn: "Editar proyecto",
+    translateBtn: "Traducir",
+    translateTooltip: "Abrir traducción automática al español en una pestaña nueva"
   },
   projectEdit: {
     noPermissionError: "No tienes permiso para editar este proyecto",

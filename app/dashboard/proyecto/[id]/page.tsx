@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { UserCircle, Tag, ArrowLeft, Send, BookOpen, Info, ArrowRight, Share2, Clock, Edit, MessageSquare, CheckCircle2 } from "lucide-react";
+import { UserCircle, Tag, ArrowLeft, Send, BookOpen, Info, ArrowRight, Share2, Clock, Edit, MessageSquare, CheckCircle2, Languages, ExternalLink } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 import { isDemoId, cleanProjectTitle } from "@/lib/demo";
+import { localizeDemoProject, localizeDemoProfile, buildExternalTranslateUrl } from "@/lib/demo-i18n";
 import { formatRelativeDate } from "@/lib/date-utils";
 import ApplyProjectModal from "@/components/ApplyProjectModal";
 
@@ -216,7 +217,8 @@ export default function ProyectoDetalle() {
   const handleShare = async () => {
     if (!project || typeof window === "undefined") return;
     const shareUrl = window.location.href;
-    const shareTitle = `${cleanProjectTitle(project.title)} · CoFound UE`;
+    const localized = localizeDemoProject(project, language);
+    const shareTitle = `${cleanProjectTitle(localized.title)} · CoFound UE`;
 
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
@@ -265,8 +267,13 @@ export default function ProyectoDetalle() {
   }
 
   const isDemo = isDemoId(project.creator_id);
+  const displayProject = localizeDemoProject(project, language);
+  const displayCreator = creator ? localizeDemoProfile(creator, project.creator_id, language) : null;
   const publishedLabel = formatRelativeDate(project.createdAt, language);
-  const displayTitle = cleanProjectTitle(project.title);
+  const displayTitle = cleanProjectTitle(displayProject.title);
+  const translateUrl = !isDemo
+    ? buildExternalTranslateUrl(`${displayTitle}\n\n${displayProject.description}`, language)
+    : "";
 
   return (
     <ProtectedRoute>
@@ -355,18 +362,18 @@ export default function ProyectoDetalle() {
               <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-8 pb-8 border-b border-zinc-800/50">
                 <div className="flex items-center gap-2">
                   <UserCircle className="h-5 w-5 text-zinc-500" />
-                  <span>{t("projectDetail.createdBy")} <Link href={`/perfil/${project.creator_id}`} className="text-zinc-200 font-bold hover:text-[#E60000] hover:underline transition-colors">{project.creatorName || creator?.name || t("projectDetail.defaultCreator")}</Link></span>
+                  <span>{t("projectDetail.createdBy")} <Link href={`/perfil/${project.creator_id}`} className="text-zinc-200 font-bold hover:text-[#E60000] hover:underline transition-colors">{displayProject.creatorName || displayCreator?.name || t("projectDetail.defaultCreator")}</Link></span>
                 </div>
-                {creator?.degree && (
+                {displayCreator?.degree && (
                   <>
                     <span className="w-1.5 h-1.5 rounded-full bg-zinc-700"></span>
-                    <span>{creator.degree}</span>
+                    <span>{displayCreator.degree}</span>
                   </>
                 )}
-                {creator?.campus && (
+                {displayCreator?.campus && (
                   <>
                     <span className="w-1.5 h-1.5 rounded-full bg-zinc-700"></span>
-                    <span>{creator.campus.toLowerCase().includes("campus") ? creator.campus : `Campus ${creator.campus}`}</span>
+                    <span>{displayCreator.campus.toLowerCase().includes("campus") ? displayCreator.campus : `Campus ${displayCreator.campus}`}</span>
                   </>
                 )}
                 {publishedLabel && (
@@ -393,16 +400,31 @@ export default function ProyectoDetalle() {
               )}
 
               <div className="mb-10">
-                <h3 className="text-xl font-bold text-white mb-4">{t("projectDetail.aboutProject")}</h3>
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                  <h3 className="text-xl font-bold text-white">{t("projectDetail.aboutProject")}</h3>
+                  {!isDemo && translateUrl && (
+                    <a
+                      href={translateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={t("projectDetail.translateTooltip")}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      <Languages className="h-3.5 w-3.5 text-[#E60000]" />
+                      <span>{t("projectDetail.translateBtn")}</span>
+                      <ExternalLink className="h-3 w-3 text-zinc-400" />
+                    </a>
+                  )}
+                </div>
                 <div className="text-zinc-300 text-lg leading-relaxed whitespace-pre-wrap">
-                  {project.description}
+                  {displayProject.description}
                 </div>
               </div>
 
               <div>
                 <h3 className="text-lg font-bold text-white mb-4">{t("projectDetail.profilesWanted")}</h3>
                 <div className="flex flex-wrap gap-3">
-                  {project.profiles && project.profiles.map((profile, idx) => (
+                  {displayProject.profiles && displayProject.profiles.map((profile, idx) => (
                     <span key={idx} className="bg-red-950/40 text-[#E60000] text-sm font-medium px-4 py-2 rounded-lg border border-red-900/40">
                       {profile}
                     </span>

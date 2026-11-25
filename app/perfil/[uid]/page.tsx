@@ -13,6 +13,7 @@ import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 import { isDemoId, cleanProjectTitle } from "@/lib/demo";
+import { localizeDemoProfile, localizeDemoProject } from "@/lib/demo-i18n";
 
 interface PublicUser {
   uid: string;
@@ -32,7 +33,7 @@ interface Project {
 }
 
 export default function PublicProfile({ params }: { params: { uid: string } }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [profileUser, setProfileUser] = useState<PublicUser | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -113,6 +114,8 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
           ) : (
             (() => {
               const isOfficialDemo = isDemoId(profileUser.uid);
+              const displayProfile = localizeDemoProfile(profileUser, profileUser.uid, language);
+              const displayProjects = projects.map((proj) => localizeDemoProject(proj, language));
               return (
             <>
               {/* Profile Card */}
@@ -123,19 +126,19 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                     {isOfficialDemo ? (
                       <Image
                         src="/CoFoundUE_logo.png"
-                        alt={profileUser.name || "CoFound UE"}
+                        alt={displayProfile.name || "CoFound UE"}
                         width={112}
                         height={112}
                         className="w-full h-full object-cover rounded-full"
                       />
                     ) : (
-                      <InitialsAvatar name={profileUser.name} className="w-full h-full text-3xl font-bold" />
+                      <InitialsAvatar name={displayProfile.name} className="w-full h-full text-3xl font-bold" />
                     )}
                   </div>
                   
                   <div className="pt-16">
                     <div className="flex flex-wrap items-center gap-3 mb-5">
-                      <h1 className="text-3xl font-extrabold text-white">{profileUser.name || t("publicProfile.defaultName")}</h1>
+                      <h1 className="text-3xl font-extrabold text-white">{displayProfile.name || t("publicProfile.defaultName")}</h1>
                       {isOfficialDemo && (
                         <span className="inline-flex items-center gap-1.5 bg-red-950/60 text-red-300 border border-[#E60000]/40 text-xs font-semibold px-3 py-1 rounded-full">
                           <ShieldCheck className="h-3.5 w-3.5 text-[#E60000]" />
@@ -145,16 +148,16 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                     </div>
                     
                     <div className="flex flex-wrap gap-4 mb-8">
-                      {profileUser.degree && (
+                      {displayProfile.degree && (
                         <div className="flex items-center gap-2 text-zinc-300 bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-700/50">
                           <GraduationCap className="h-4 w-4 text-zinc-400" />
-                          <span className="text-sm">{profileUser.degree}</span>
+                          <span className="text-sm">{displayProfile.degree}</span>
                         </div>
                       )}
-                      {profileUser.campus && (
+                      {displayProfile.campus && (
                         <div className="flex items-center gap-2 text-zinc-300 bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-700/50">
                           <MapPin className="h-4 w-4 text-zinc-400" />
-                          <span className="text-sm">{profileUser.campus}</span>
+                          <span className="text-sm">{displayProfile.campus}</span>
                         </div>
                       )}
                     </div>
@@ -164,7 +167,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                         <div>
                           <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">{t("publicProfile.aboutMe")}</h3>
                           <p className="text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                            {profileUser.bio || <span className="italic text-zinc-600">{t("publicProfile.noBio")}</span>}
+                            {displayProfile.bio || <span className="italic text-zinc-600">{t("publicProfile.noBio")}</span>}
                           </p>
                         </div>
                       </div>
@@ -172,8 +175,8 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                       <div>
                         <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">{t("publicProfile.skills")}</h3>
                         <div className="flex flex-wrap gap-2">
-                          {profileUser.skills && profileUser.skills.length > 0 ? (
-                            profileUser.skills.map((skill, idx) => (
+                          {displayProfile.skills && displayProfile.skills.length > 0 ? (
+                            displayProfile.skills.map((skill, idx) => (
                               <span key={idx} className="bg-zinc-800 text-zinc-300 text-xs px-2.5 py-1.5 rounded-md border border-zinc-700">
                                 {skill}
                               </span>
@@ -194,17 +197,17 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
                 {isOfficialDemo
                   ? t("publicProfile.demoProjectsTitle")
                   : t("publicProfile.userProjects", {
-                      name: profileUser.name?.split(" ")[0] || t("publicProfile.defaultUser")
+                      name: displayProfile.name?.split(" ")[0] || t("publicProfile.defaultUser")
                     })}
               </h2>
               
-              {projects.length === 0 ? (
+              {displayProjects.length === 0 ? (
                 <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-8 text-center">
                   <p className="text-zinc-500">{t("publicProfile.noProjects")}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {projects.map((project) => (
+                  {displayProjects.map((project) => (
                     <Link href={`/dashboard/proyecto/${project.id}`} key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_0_15px_rgba(230,0,0,0.1)] transition-all border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group">
                       <div className="flex-grow">
                         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">

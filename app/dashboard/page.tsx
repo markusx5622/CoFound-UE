@@ -13,6 +13,7 @@ import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 import { isDemoId, cleanProjectTitle } from "@/lib/demo";
+import { localizeDemoProject } from "@/lib/demo-i18n";
 import { formatRelativeDate } from "@/lib/date-utils";
 
 interface Project {
@@ -147,7 +148,9 @@ export default function Dashboard() {
     checkProfileStatus();
   }, [user]);
 
-  const filteredProjects = projects.filter(project => {
+  const localizedProjects = projects.map((project) => localizeDemoProject(project, language));
+
+  const filteredProjects = localizedProjects.filter(project => {
     const q = searchQuery.trim().toLowerCase();
     const matchesSearch =
       !q ||

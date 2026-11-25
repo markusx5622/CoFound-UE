@@ -302,7 +302,9 @@ export const en: Dictionary = {
     applyRoleMessagePrefix: "Target profile",
     applyRoleDefaultMsg: "Hi, I would like to apply for the {role} role.",
     openChatBtn: "Open chat",
-    editProjectBtn: "Edit project"
+    editProjectBtn: "Edit project",
+    translateBtn: "Translate",
+    translateTooltip: "Open automatic English translation in a new tab"
   },
   projectEdit: {
     noPermissionError: "You do not have permission to edit this project",
