@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, Sparkles } from "lucide-react";
+import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, Sparkles, Eye, EyeOff } from "lucide-react";
 import HeroSection from "@/components/hero-section";
 import CampusFeedPreview from "@/components/campus-feed-preview";
 import HowItWorks from "@/components/how-it-works";
@@ -23,6 +23,7 @@ export default function LandingPage() {
   const [showMore, setShowMore] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -305,6 +306,7 @@ export default function LandingPage() {
                       type="button"
                       onClick={() => {
                         setIsLogin(true);
+                        setShowPassword(false);
                         setError("");
                       }}
                       className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
@@ -317,6 +319,7 @@ export default function LandingPage() {
                       type="button"
                       onClick={() => {
                         setIsLogin(false);
+                        setShowPassword(false);
                         setAcceptedPrivacy(false);
                         setError("");
                       }}
@@ -365,15 +368,23 @@ export default function LandingPage() {
                         </div>
                         <input
                           id="auth-password"
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           required
                           minLength={isLogin ? undefined : 8}
                           autoComplete={isLogin ? "current-password" : "new-password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="block w-full pl-10 pr-3.5 py-3 border border-zinc-800 bg-zinc-950 rounded-xl focus:ring-2 focus:ring-[#E60000]/25 focus:border-[#E60000] outline-none transition-all duration-200 text-white text-sm placeholder:text-zinc-600 shadow-inner"
+                          className="block w-full pl-10 pr-11 py-3 border border-zinc-800 bg-zinc-950 rounded-xl focus:ring-2 focus:ring-[#E60000]/25 focus:border-[#E60000] outline-none transition-all duration-200 text-white text-sm placeholder:text-zinc-600 shadow-inner"
                           placeholder="••••••••"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          aria-label={showPassword ? t("landing.auth.hidePassword") : t("landing.auth.showPassword")}
+                          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
                       </div>
                       {isLogin && (
                         <div className="text-right mt-1.5">

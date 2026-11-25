@@ -5,13 +5,14 @@ import { useState, useEffect, useRef } from "react";
 import { collection, query, where, onSnapshot, serverTimestamp, orderBy, doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Send, MessageSquare } from "lucide-react";
+import { Send, MessageSquare, ExternalLink } from "lucide-react";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { reportClientError } from "@/lib/error-logger";
 import { formatMessageTime, formatRelativeDate } from "@/lib/date-utils";
+import { cleanProjectTitle } from "@/lib/demo";
 
 interface UserData {
   name: string;
@@ -19,6 +20,7 @@ interface UserData {
 
 interface Conversation {
   id: string;
+  projectId?: string;
   applicantId: string;
   creatorId: string;
   projectTitle: string;
@@ -29,6 +31,25 @@ interface Conversation {
   lastMessageSenderId?: string;
   lastReadByApplicant?: any;
   lastReadByCreator?: any;
+}
+
+function getStatusBadgeMeta(status: string, t: (key: string) => string): { label: string; className: string } {
+  if (status === "accepted") {
+    return {
+      label: t("messages.statusAccepted"),
+      className: "bg-green-500/15 text-green-400 border-green-500/30",
+    };
+  }
+  if (status === "rejected") {
+    return {
+      label: t("messages.statusRejected"),
+      className: "bg-red-500/15 text-red-400 border-red-500/30",
+    };
+  }
+  return {
+    label: t("messages.statusPending"),
+    className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
+  };
 }
 
 interface Message {
@@ -62,7 +83,9 @@ export default function Mensajes() {
   const { t, language } = useLanguage();
   const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeChat, setActiveChat] = useState<Conversation | null>(null);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const activeChat = conversations.find((c) => c.id === activeChatId) || null;
+  const activeChatCreatorId = activeChat?.creatorId || null;
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -118,7 +141,7 @@ export default function Mensajes() {
           if (requestedChatId) {
             const matched = enhancedConvos.find((c) => c.id === requestedChatId);
             if (matched) {
-              setActiveChat((prev) => prev || matched);
+              setActiveChatId((prev) => prev || matched.id);
             }
           }
         }
@@ -152,16 +175,16 @@ export default function Mensajes() {
   }, [user, t]);
 
   useEffect(() => {
-    if (!activeChat || !user) return;
+    if (!activeChatId || !activeChatCreatorId || !user) return;
 
-    const isCreator = activeChat.creatorId === user.uid;
+    const isCreator = activeChatCreatorId === user.uid;
     const readField = isCreator ? "lastReadByCreator" : "lastReadByApplicant";
-    updateDoc(doc(db, "applications", activeChat.id), {
+    updateDoc(doc(db, "applications", activeChatId), {
       [readField]: serverTimestamp()
     }).catch(() => {});
 
     const q = query(
-      collection(db, "applications", activeChat.id, "messages"),
+      collection(db, "applications", activeChatId, "messages"),
       orderBy("createdAt", "asc")
     );
 
@@ -170,7 +193,7 @@ export default function Mensajes() {
       setMessages(msgs);
       const lastMsg = msgs[msgs.length - 1];
       if (lastMsg && lastMsg.senderId !== user.uid) {
-        updateDoc(doc(db, "applications", activeChat.id), {
+        updateDoc(doc(db, "applications", activeChatId), {
           [readField]: serverTimestamp()
         }).catch(() => {});
       }
@@ -180,7 +203,7 @@ export default function Mensajes() {
     });
 
     return () => unsubscribe();
-  }, [activeChat, user]);
+  }, [activeChatId, activeChatCreatorId, user]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,16 +265,18 @@ export default function Mensajes() {
               ) : (
                 conversations.map(convo => {
                   const isUnread = user ? hasUnreadMessages(convo, user.uid) : false;
+                  const statusMeta = getStatusBadgeMeta(convo.status, t);
+                  const displayProjectTitle = cleanProjectTitle(convo.projectTitle);
                   return (
                     <div 
                       key={convo.id}
                       role="button"
                       tabIndex={0}
-                      onClick={() => setActiveChat(convo)}
+                      onClick={() => setActiveChatId(convo.id)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          setActiveChat(convo);
+                          setActiveChatId(convo.id);
                         }
                       }}
                       className={`p-4 border-b border-zinc-800/50 cursor-pointer transition-colors flex items-center gap-3 focus:outline-none focus:bg-zinc-900/80 ${activeChat?.id === convo.id ? 'bg-zinc-900 border-l-2 border-l-[#E60000]' : 'hover:bg-zinc-900/50'}`}
@@ -271,7 +296,12 @@ export default function Mensajes() {
                             )}
                           </div>
                         </div>
-                        <p className="text-zinc-400 text-xs truncate">{t("messages.projectPrefix")}: {convo.projectTitle}</p>
+                        <div className="flex items-center justify-between gap-2 mt-0.5">
+                          <p className="text-zinc-400 text-xs truncate">{t("messages.projectPrefix")}: {displayProjectTitle}</p>
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border shrink-0 ${statusMeta.className}`}>
+                            {statusMeta.label}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -285,17 +315,40 @@ export default function Mensajes() {
             {activeChat ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-zinc-800 bg-zinc-950/60 backdrop-blur-md flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <button className="md:hidden text-zinc-400 hover:text-white" onClick={() => setActiveChat(null)}>
+                <div className="p-4 border-b border-zinc-800 bg-zinc-950/60 backdrop-blur-md flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <button className="md:hidden text-zinc-400 hover:text-white shrink-0" onClick={() => setActiveChatId(null)}>
                       {t("messages.back")}
                     </button>
-                    <div className="flex flex-col">
-                      <h3 className="text-white font-bold">{activeChat.otherUser.name}</h3>
-                      <span className="text-xs text-zinc-400 truncate max-w-[200px] md:max-w-sm">{t("messages.projectPrefix")}: {activeChat.projectTitle}</span>
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-white font-bold truncate">{activeChat.otherUser.name}</h3>
+                        {(() => {
+                          const headerStatus = getStatusBadgeMeta(activeChat.status, t);
+                          return (
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 ${headerStatus.className}`}>
+                              {headerStatus.label}
+                            </span>
+                          );
+                        })()}
+                      </div>
+                      {activeChat.projectId ? (
+                        <Link
+                          href={`/dashboard/proyecto/${activeChat.projectId}`}
+                          title={t("messages.viewProjectTooltip")}
+                          className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-[#E60000] transition-colors truncate max-w-[220px] md:max-w-md mt-0.5 group"
+                        >
+                          <span className="truncate">{t("messages.projectPrefix")}: {cleanProjectTitle(activeChat.projectTitle)}</span>
+                          <ExternalLink className="h-3 w-3 shrink-0 opacity-70 group-hover:opacity-100" />
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-zinc-400 truncate max-w-[220px] md:max-w-md mt-0.5">
+                          {t("messages.projectPrefix")}: {cleanProjectTitle(activeChat.projectTitle)}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <Link href={`/perfil/${activeChat.creatorId === user?.uid ? activeChat.applicantId : activeChat.creatorId}`} className="text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors border border-zinc-700">
+                  <Link href={`/perfil/${activeChat.creatorId === user?.uid ? activeChat.applicantId : activeChat.creatorId}`} className="shrink-0 text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors border border-zinc-700">
                     {t("messages.viewProfile")}
                   </Link>
                 </div>

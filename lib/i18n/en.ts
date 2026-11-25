@@ -65,7 +65,9 @@ export const en: Dictionary = {
       acceptLegalNotice: "Legal Notice",
       acceptLegalRequired: "You must accept the Privacy Policy and the Legal Notice to create your account.",
       verificationGuarantee: "Automatic verification for @live.uem.es",
-      campusGuarantee: "Open access for Turia and Alameda campus students"
+      campusGuarantee: "Open access for Turia and Alameda campus students",
+      showPassword: "Show password",
+      hidePassword: "Hide password"
     },
     showMore: {
       hideTitle: "Hide information",
@@ -229,7 +231,12 @@ export const en: Dictionary = {
     loadMoreBtn: "Load more projects",
     completeProfileBannerTitle: "Complete your profile in 20 seconds",
     completeProfileBannerDesc: "Add your name, degree, and skills so other founders know who you are when you apply or publish projects.",
-    completeProfileBannerCta: "Complete my profile"
+    completeProfileBannerCta: "Complete my profile",
+    clearSearchAria: "Clear search",
+    clearFiltersBtn: "Clear filters",
+    hideExamples: "Hide examples",
+    showingCount: "{count} projects shown",
+    showingCountSingle: "1 project shown"
   },
   projectNew: {
     title: "Publish New Project",
@@ -288,7 +295,9 @@ export const en: Dictionary = {
     applyModalCancel: "Cancel",
     applyModalSubmit: "Send application",
     applyRoleMessagePrefix: "Target profile",
-    applyRoleDefaultMsg: "Hi, I would like to apply for the {role} role."
+    applyRoleDefaultMsg: "Hi, I would like to apply for the {role} role.",
+    openChatBtn: "Open chat",
+    editProjectBtn: "Edit project"
   },
   projectEdit: {
     noPermissionError: "You do not have permission to edit this project",
@@ -382,7 +391,11 @@ export const en: Dictionary = {
     selectConversation: "Select a conversation to start chatting.",
     unknownUser: "UE User",
     sendError: "Could not send message. Check your connection.",
-    rejectedChatNotice: "This application was rejected. The chat is now read-only."
+    rejectedChatNotice: "This application was rejected. The chat is now read-only.",
+    statusPending: "Pending",
+    statusAccepted: "Accepted",
+    statusRejected: "Rejected",
+    viewProjectTooltip: "View project details"
   },
   errorBoundary: {
     title: "Something went wrong",
@@ -402,7 +415,11 @@ export const en: Dictionary = {
     bioPlaceholder: "Tell us a bit about yourself, your interests, and what kind of projects you are seeking...",
     skills: "Skills (Tags)",
     skillsPlaceholder: "Ex: React, Finance, SEO, Figma...",
+    suggestedSkillsLabel: "Quick suggestions:",
     addSkill: "Add",
+    viewPublicProfile: "View my public profile",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
     saving: "Saving...",
     saveBtn: "Save Changes",
     saveSuccess: "Profile saved successfully.",

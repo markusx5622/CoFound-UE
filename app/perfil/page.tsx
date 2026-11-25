@@ -5,14 +5,28 @@ import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc, deleteField, serverTimestamp } from "firebase/firestore";
 import { deleteUser, signOut, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { X, Plus, Save, LogOut, Lock } from "lucide-react";
+import { X, Plus, Save, LogOut, Lock, Eye, EyeOff, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
+
+const SUGGESTED_SKILLS = [
+  "Desarrollo Web",
+  "Python",
+  "Figma / UI",
+  "Marketing Digital",
+  "Finanzas / ADE",
+  "Excel",
+  "Gestión de Proyectos",
+  "Diseño Gráfico",
+  "Ventas / Pitch",
+  "Datos / IA",
+];
 
 export default function MiPerfil() {
   const { t } = useLanguage();
@@ -30,6 +44,7 @@ export default function MiPerfil() {
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
@@ -68,12 +83,14 @@ export default function MiPerfil() {
     fetchProfile();
   }, [user, authLoading]);
 
-  const handleAddSkill = () => {
-    const trimmed = skillInput.trim();
+  const handleAddSkill = (valueOverride?: string) => {
+    const trimmed = (typeof valueOverride === "string" ? valueOverride : skillInput).trim();
     if (trimmed !== "" && !skills.includes(trimmed)) {
       if (skills.length >= 20) return;
       setSkills([...skills, trimmed]);
-      setSkillInput("");
+      if (typeof valueOverride !== "string") {
+        setSkillInput("");
+      }
     }
   };
 
@@ -217,7 +234,18 @@ export default function MiPerfil() {
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-8 sm:py-12 px-4 sm:px-6 relative z-10">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">{t("profile.title")}</h1>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">{t("profile.title")}</h1>
+            {user && (
+              <Link
+                href={`/perfil/${user.uid}`}
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 px-3.5 py-2 rounded-xl transition-all"
+              >
+                <span>{t("profile.viewPublicProfile")}</span>
+                <ExternalLink className="h-4 w-4 text-[#E60000]" />
+              </Link>
+            )}
+          </div>
           
           <div className="bg-zinc-900/60 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)] border border-zinc-800">
             <form onSubmit={handleSave} className="space-y-6">
@@ -294,13 +322,33 @@ export default function MiPerfil() {
                   />
                   <button
                     type="button"
-                    onClick={handleAddSkill}
+                    onClick={() => handleAddSkill()}
                     className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                   >
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     <span>{t("profile.addSkill")}</span>
                   </button>
                 </div>
+
+                {/* Sugerencias rápidas de habilidades */}
+                {skills.length < 20 && (
+                  <div className="mb-3">
+                    <p className="text-xs text-zinc-500 mb-2">{t("profile.suggestedSkillsLabel")}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SUGGESTED_SKILLS.filter((item) => !skills.includes(item)).map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          type="button"
+                          onClick={() => handleAddSkill(suggestion)}
+                          className="text-xs text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-600 px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1"
+                        >
+                          <Plus className="h-3 w-3 text-[#E60000]" />
+                          <span>{suggestion}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 {skills.length > 0 && (
                   <div className="flex flex-wrap gap-2 p-4 bg-zinc-950/50 rounded-xl border border-zinc-800">
@@ -347,6 +395,7 @@ export default function MiPerfil() {
                 type="button"
                 onClick={() => {
                   setDeletePassword("");
+                  setShowDeletePassword(false);
                   setShowDeleteModal(true);
                 }}
                 className="w-full bg-transparent border border-red-900/30 text-red-500/80 hover:text-red-400 hover:bg-red-950/20 hover:border-red-800 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm"
@@ -374,15 +423,24 @@ export default function MiPerfil() {
                 </div>
                 <input
                   id="delete-account-password"
-                  type="password"
+                  type={showDeletePassword ? "text" : "password"}
                   required
                   autoComplete="current-password"
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
                   disabled={isDeletingAccount}
                   placeholder={t("profile.deleteAccountPasswordPlaceholder")}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm"
+                  className="w-full pl-10 pr-11 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowDeletePassword((prev) => !prev)}
+                  disabled={isDeletingAccount}
+                  aria-label={showDeletePassword ? t("profile.hidePassword") : t("profile.showPassword")}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {showDeletePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
             
@@ -391,6 +449,7 @@ export default function MiPerfil() {
                 type="button"
                 onClick={() => {
                   setDeletePassword("");
+                  setShowDeletePassword(false);
                   setShowDeleteModal(false);
                 }}
                 disabled={isDeletingAccount}

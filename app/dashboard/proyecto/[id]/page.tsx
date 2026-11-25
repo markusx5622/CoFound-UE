@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { UserCircle, Tag, ArrowLeft, Send, Sparkles, ArrowRight, Share2, Clock } from "lucide-react";
+import { UserCircle, Tag, ArrowLeft, Send, Sparkles, ArrowRight, Share2, Clock, Edit, MessageSquare, CheckCircle2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -317,20 +317,36 @@ export default function ProyectoDetalle() {
                       <span>{t("projectDetail.demoPublishCta")}</span>
                       <ArrowRight className="h-5 w-5" />
                     </Link>
+                  ) : user?.uid === project.creator_id ? (
+                    <Link
+                      href={`/dashboard/proyecto/${project.id}/editar`}
+                      className="px-7 py-4 rounded-xl font-bold inline-flex items-center gap-2 transition-all duration-200 shadow-md bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+                    >
+                      <Edit className="h-5 w-5 text-[#E60000]" />
+                      <span>{t("projectDetail.editProjectBtn")}</span>
+                    </Link>
+                  ) : hasApplied && user ? (
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="px-5 py-3.5 rounded-xl font-bold inline-flex items-center gap-2 bg-green-600/15 text-green-400 border border-green-600/30">
+                        <CheckCircle2 className="h-5 w-5" />
+                        <span>{t("projectDetail.alreadyApplied")}</span>
+                      </span>
+                      <Link
+                        href={`/dashboard/mensajes?chat=${project.id}_${user.uid}`}
+                        className="px-6 py-3.5 rounded-xl font-bold inline-flex items-center gap-2 bg-[#E60000] hover:bg-red-700 text-white transition-all shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
+                      >
+                        <MessageSquare className="h-5 w-5" />
+                        <span>{t("projectDetail.openChatBtn")}</span>
+                      </Link>
+                    </div>
                   ) : (
                     <button
                       onClick={handleOpenApplyModal}
-                      disabled={hasApplied || applying || checkingProfile || user?.uid === project.creator_id}
-                      className={`px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 shadow-md ${
-                        hasApplied 
-                          ? "bg-green-600/20 text-green-500 border border-green-600/30 cursor-default" 
-                          : user?.uid === project.creator_id
-                          ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                          : "bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
-                      }`}
+                      disabled={applying || checkingProfile}
+                      className="px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 shadow-md bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)] disabled:opacity-70"
                     >
-                      {applying || checkingProfile ? t("projectDetail.processing") : hasApplied ? t("projectDetail.alreadyApplied") : t("projectDetail.applyBtn")}
-                      {!hasApplied && !applying && !checkingProfile && user?.uid !== project.creator_id && <Send className="h-5 w-5" />}
+                      {applying || checkingProfile ? t("projectDetail.processing") : t("projectDetail.applyBtn")}
+                      {!applying && !checkingProfile && <Send className="h-5 w-5" />}
                     </button>
                   )}
                 </div>

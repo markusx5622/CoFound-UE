@@ -63,7 +63,9 @@ export const es = {
       acceptLegalNotice: "Aviso Legal",
       acceptLegalRequired: "Debes aceptar la Política de Privacidad y el Aviso Legal para crear tu cuenta.",
       verificationGuarantee: "Verificación automática para @live.uem.es",
-      campusGuarantee: "Acceso libre para alumnos de campus Turia y Alameda"
+      campusGuarantee: "Acceso libre para alumnos de campus Turia y Alameda",
+      showPassword: "Mostrar contraseña",
+      hidePassword: "Ocultar contraseña"
     },
     showMore: {
       hideTitle: "Ocultar información",
@@ -227,7 +229,12 @@ export const es = {
     loadMoreBtn: "Cargar más proyectos",
     completeProfileBannerTitle: "Completa tu perfil en 20 segundos",
     completeProfileBannerDesc: "Añade tu nombre, titulación y habilidades para que otros estudiantes te conozcan al postularte o publicar proyectos.",
-    completeProfileBannerCta: "Completar mi perfil"
+    completeProfileBannerCta: "Completar mi perfil",
+    clearSearchAria: "Limpiar búsqueda",
+    clearFiltersBtn: "Limpiar filtros",
+    hideExamples: "Ocultar ejemplos",
+    showingCount: "{count} proyectos mostrados",
+    showingCountSingle: "1 proyecto mostrado"
   },
   projectNew: {
     title: "Publicar Nuevo Proyecto",
@@ -286,7 +293,9 @@ export const es = {
     applyModalCancel: "Cancelar",
     applyModalSubmit: "Enviar postulación",
     applyRoleMessagePrefix: "Perfil de interés",
-    applyRoleDefaultMsg: "Hola, me gustaría postularme para el perfil de {role}."
+    applyRoleDefaultMsg: "Hola, me gustaría postularme para el perfil de {role}.",
+    openChatBtn: "Abrir chat",
+    editProjectBtn: "Editar proyecto"
   },
   projectEdit: {
     noPermissionError: "No tienes permiso para editar este proyecto",
@@ -380,7 +389,11 @@ export const es = {
     selectConversation: "Selecciona una conversación para empezar a chatear.",
     unknownUser: "Usuario UE",
     sendError: "No se pudo enviar el mensaje. Comprueba tu conexión.",
-    rejectedChatNotice: "Esta candidatura fue rechazada. El chat permanece en modo de solo lectura."
+    rejectedChatNotice: "Esta candidatura fue rechazada. El chat permanece en modo de solo lectura.",
+    statusPending: "Pendiente",
+    statusAccepted: "Aceptada",
+    statusRejected: "Rechazada",
+    viewProjectTooltip: "Ver detalles del proyecto"
   },
   errorBoundary: {
     title: "Algo no ha salido como esperábamos",
@@ -400,7 +413,11 @@ export const es = {
     bioPlaceholder: "Cuéntanos un poco sobre ti, tus intereses y qué tipo de proyectos buscas...",
     skills: "Habilidades (Tags)",
     skillsPlaceholder: "Ej: React, Finanzas, SEO, Figma...",
+    suggestedSkillsLabel: "Sugerencias rápidas:",
     addSkill: "Añadir",
+    viewPublicProfile: "Ver mi perfil público",
+    showPassword: "Mostrar contraseña",
+    hidePassword: "Ocultar contraseña",
     saving: "Guardando...",
     saveBtn: "Guardar Cambios",
     saveSuccess: "Perfil guardado correctamente.",

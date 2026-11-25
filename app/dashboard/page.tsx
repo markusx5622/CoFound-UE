@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, doc, getDoc, getDocs, query, orderBy, limit, startAfter, QueryDocumentSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, UserCircle, Tag, Search, Filter, Sparkles, UserCheck, ArrowRight, Clock } from "lucide-react";
+import { Briefcase, UserCircle, Tag, Search, Filter, Sparkles, UserCheck, ArrowRight, Clock, X, EyeOff, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { ProjectSkeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
@@ -50,6 +50,7 @@ export default function Dashboard() {
   // Filtros
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Todas");
+  const [hideDemos, setHideDemos] = useState(false);
   
   // Paginación
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot | null>(null);
@@ -156,9 +157,19 @@ export default function Dashboard() {
       (project.creatorName && project.creatorName.toLowerCase().includes(q));
     
     const matchesCategory = categoryFilter === "Todas" || project.category === categoryFilter;
+    const matchesDemoFilter = !hideDemos || !isDemoId(project.creator_id);
     
-    return matchesSearch && matchesCategory;
+    return matchesSearch && matchesCategory && matchesDemoFilter;
   });
+
+  const hasDemoProjects = projects.some((p) => isDemoId(p.creator_id));
+  const hasActiveFilters = searchQuery.trim() !== "" || categoryFilter !== "Todas" || hideDemos;
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setCategoryFilter("Todas");
+    setHideDemos(false);
+  };
 
   return (
     <ProtectedRoute>
@@ -193,36 +204,86 @@ export default function Dashboard() {
           )}
           
           {/* Barra de Filtros */}
-          <div className="bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-zinc-800 mb-8 flex flex-col md:flex-row gap-4">
-            <div className="relative flex-grow">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-zinc-500" />
+          <div className="bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-zinc-800 mb-8 space-y-3">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-grow">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-zinc-500" />
+                </div>
+                <input
+                  type="text"
+                  placeholder={t("dashboard.searchPlaceholder")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="block w-full pl-10 pr-10 py-3 border border-zinc-700 bg-zinc-950 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none text-white placeholder-zinc-500 transition-colors"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    aria-label={t("dashboard.clearSearchAria")}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-white transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-              <input
-                type="text"
-                placeholder={t("dashboard.searchPlaceholder")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-10 pr-3 py-3 border border-zinc-700 bg-zinc-950 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none text-white placeholder-zinc-500 transition-colors"
-              />
-            </div>
-            <div className="relative w-full md:w-64 shrink-0">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Filter className="h-5 w-5 text-zinc-500" />
+              <div className="relative w-full md:w-64 shrink-0">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Filter className="h-5 w-5 text-zinc-500" />
+                </div>
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="block w-full pl-10 pr-10 py-3 border border-zinc-700 bg-zinc-950 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none text-white appearance-none transition-colors"
+                >
+                  <option value="Todas">{t("categories.all")}</option>
+                  {CANONICAL_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {getCategoryLabel(cat, t)}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="block w-full pl-10 pr-10 py-3 border border-zinc-700 bg-zinc-950 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none text-white appearance-none transition-colors"
-              >
-                <option value="Todas">{t("categories.all")}</option>
-                {CANONICAL_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {getCategoryLabel(cat, t)}
-                  </option>
-                ))}
-              </select>
             </div>
+
+            {!loading && projects.length > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-800/70 text-xs">
+                <span className="text-zinc-400">
+                  {filteredProjects.length === 1
+                    ? t("dashboard.showingCountSingle")
+                    : t("dashboard.showingCount", { count: String(filteredProjects.length) })}
+                </span>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {hasDemoProjects && (
+                    <button
+                      type="button"
+                      onClick={() => setHideDemos((prev) => !prev)}
+                      aria-pressed={hideDemos}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-medium transition-colors ${
+                        hideDemos
+                          ? "bg-[#E60000]/15 text-red-300 border-[#E60000]/40"
+                          : "bg-zinc-950/70 text-zinc-400 hover:text-white border-zinc-800 hover:border-zinc-700"
+                      }`}
+                    >
+                      <EyeOff className="h-3.5 w-3.5" />
+                      <span>{t("dashboard.hideExamples")}</span>
+                    </button>
+                  )}
+                  {hasActiveFilters && (
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/70 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700/60 font-medium transition-colors"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      <span>{t("dashboard.clearFiltersBtn")}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           
           {loading ? (
@@ -243,6 +304,16 @@ export default function Dashboard() {
                 <Briefcase className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">{t("dashboard.noResultsTitle")}</h3>
                 <p className="text-zinc-400 mb-6">{t("dashboard.noResultsDesc")}</p>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold border border-zinc-700 transition-colors"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    <span>{t("dashboard.clearFiltersBtn")}</span>
+                  </button>
+                )}
               </div>
               {hasMore && (
                 <div className="flex justify-center mt-8">
