@@ -4,7 +4,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, doc, getDoc, getDocs, query, orderBy, limit, startAfter, QueryDocumentSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, UserCircle, Tag, Search, Filter, BookOpen, UserCheck, ArrowRight, Clock, X, EyeOff, RotateCcw } from "lucide-react";
+import { Briefcase, UserCircle, Tag, Search, Filter, BookOpen, UserCheck, ArrowRight, Clock, X, EyeOff, RotateCcw, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ProjectSkeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
@@ -178,11 +179,16 @@ export default function Dashboard() {
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-extrabold text-white mb-8 tracking-tight">{t("dashboard.title")}</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-6 sm:mb-8 tracking-tight">{t("dashboard.title")}</h1>
 
           {/* Banner de onboarding si falta completar el perfil */}
           {needsProfileSetup && (
-            <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-950/50 via-zinc-900/90 to-zinc-900/80 border border-[#E60000]/35 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-950/50 via-zinc-900/90 to-zinc-900/80 border border-[#E60000]/35 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg"
+            >
               <div className="flex items-start gap-3.5">
                 <div className="w-10 h-10 rounded-xl bg-red-950/70 border border-[#E60000]/40 flex items-center justify-center text-[#E60000] shrink-0 mt-0.5">
                   <UserCheck className="h-5 w-5" />
@@ -198,12 +204,12 @@ export default function Dashboard() {
               </div>
               <Link
                 href="/perfil"
-                className="shrink-0 bg-[#E60000] hover:bg-red-700 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all inline-flex items-center justify-center gap-1.5 shadow-md"
+                className="shrink-0 bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all inline-flex items-center justify-center gap-1.5 shadow-md touch-manipulation"
               >
                 <span>{t("dashboard.completeProfileBannerCta")}</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
+            </motion.div>
           )}
           
           {/* Barra de Filtros */}
@@ -238,7 +244,7 @@ export default function Dashboard() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-3 border border-zinc-700 bg-zinc-950 rounded-xl focus:ring-[#E60000] focus:border-[#E60000] outline-none text-white appearance-none transition-colors"
+                  className="block w-full pl-10 pr-10 py-3 border border-zinc-700 bg-zinc-950 rounded-xl focus:ring-2 focus:ring-[#E60000]/30 focus:border-[#E60000] outline-none text-white appearance-none transition-colors cursor-pointer"
                 >
                   <option value="Todas">{t("categories.all")}</option>
                   {CANONICAL_CATEGORIES.map((cat) => (
@@ -247,6 +253,9 @@ export default function Dashboard() {
                     </option>
                   ))}
                 </select>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <ChevronDown className="h-4 w-4 text-zinc-400" />
+                </div>
               </div>
             </div>
 
@@ -333,10 +342,17 @@ export default function Dashboard() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-                {filteredProjects.map((project) => {
+                {filteredProjects.map((project, index) => {
                   const isDemo = isDemoId(project.creator_id);
                   return (
-                <Link href={`/dashboard/proyecto/${project.id}`} key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_0_20px_rgba(230,0,0,0.15)] transition-all duration-300 border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group">
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.24, delay: Math.min(index * 0.03, 0.24), ease: [0.22, 1, 0.36, 1] }}
+                  className="h-full"
+                >
+                <Link href={`/dashboard/proyecto/${project.id}`} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_12px_30px_rgba(230,0,0,0.14)] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200 border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group touch-manipulation">
                   <div className="flex-grow">
                     <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
                       <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2.5 py-1 rounded-md">
@@ -385,6 +401,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                 </Link>
+                </motion.div>
                   );
                 })}
             </div>

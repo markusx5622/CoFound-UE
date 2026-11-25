@@ -6,6 +6,7 @@ import { collection, query, where, onSnapshot, serverTimestamp, orderBy, doc, ge
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Send, MessageSquare, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -365,8 +366,14 @@ export default function Mensajes() {
                       const isMe = msg.senderId === user?.uid;
                       const timeLabel = formatMessageTime(msg.createdAt, language);
                       return (
-                        <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-2 shadow-sm ${isMe ? 'bg-[#E60000] text-white rounded-br-none' : 'bg-zinc-800 text-zinc-200 rounded-bl-none border border-zinc-700'}`}>
+                        <motion.div
+                          key={msg.id}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                          className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-[82%] sm:max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-2.5 shadow-sm ${isMe ? 'bg-[#E60000] text-white rounded-br-none' : 'bg-zinc-800 text-zinc-200 rounded-bl-none border border-zinc-700'}`}>
                             <p className="text-sm whitespace-pre-wrap break-words">{msg.text}</p>
                             {timeLabel && (
                               <div className={`text-[10px] mt-1 text-right ${isMe ? 'text-red-100/80' : 'text-zinc-400'}`}>
@@ -374,7 +381,7 @@ export default function Mensajes() {
                               </div>
                             )}
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })
                   )}
@@ -397,7 +404,7 @@ export default function Mensajes() {
                         maxLength={1000}
                         className="flex-grow bg-zinc-900 border border-zinc-700 rounded-full px-5 py-3 text-white focus:outline-none focus:border-[#E60000] transition-colors placeholder:text-zinc-500 text-sm"
                       />
-                      <button type="submit" disabled={!newMessage.trim() || sending} className="bg-[#E60000] hover:bg-red-700 text-white p-3 rounded-full disabled:opacity-50 transition-colors shadow-md" aria-label="Enviar mensaje">
+                      <button type="submit" disabled={!newMessage.trim() || sending} className="bg-[#E60000] hover:bg-red-700 active:scale-[0.94] text-white p-3 rounded-full disabled:opacity-50 transition-all shadow-md hover:shadow-[0_0_16px_rgba(230,0,0,0.35)] touch-manipulation" aria-label="Enviar mensaje">
                         <Send className="h-5 w-5" />
                       </button>
                     </form>

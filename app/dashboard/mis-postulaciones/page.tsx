@@ -96,11 +96,11 @@ export default function MisPostulaciones() {
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-extrabold text-white mb-10 tracking-tight">{t("myApplications.title")}</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-8 sm:mb-10 tracking-tight">{t("myApplications.title")}</h1>
           
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-800 border-t-[#E60000]"></div>
             </div>
           ) : applications.length === 0 ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
@@ -109,7 +109,7 @@ export default function MisPostulaciones() {
               <p className="text-zinc-400 mb-6">{t("myApplications.emptyDesc")}</p>
               <Link 
                 href="/dashboard" 
-                className="bg-[#E60000] hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md inline-block"
+                className="bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md inline-block touch-manipulation"
               >
                 {t("myApplications.exploreBtn")}
               </Link>
@@ -119,7 +119,7 @@ export default function MisPostulaciones() {
               {applications.map((app) => (
                 <div 
                   key={app.id} 
-                  className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-zinc-800 hover:border-zinc-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                  className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-5 sm:p-6 shadow-sm border border-zinc-800 hover:border-zinc-700 hover:-translate-y-0.5 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
                 >
                   <Link href={`/dashboard/proyecto/${app.projectId}`} className="flex-grow">
                     <h2 className="text-lg font-bold text-white group-hover:text-[#E60000] transition-colors">{app.projectTitle}</h2>

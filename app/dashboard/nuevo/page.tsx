@@ -6,7 +6,8 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/fires
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { X, Plus, LayoutTemplate } from "lucide-react";
+import { X, Plus, LayoutTemplate, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
@@ -168,17 +169,20 @@ export default function NuevoProyecto() {
 
               <div>
                 <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectNew.categoryLabel")}</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all"
-                >
-                  {CANONICAL_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {getCategoryLabel(cat, t)}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-4 pr-10 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none appearance-none transition-all cursor-pointer"
+                  >
+                    {CANONICAL_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {getCategoryLabel(cat, t)}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="h-4 w-4 text-zinc-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
 
               <div>
@@ -196,7 +200,7 @@ export default function NuevoProyecto() {
                   <button
                     type="button"
                     onClick={() => handleAddProfile()}
-                    className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
+                    className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 active:scale-[0.97] border border-zinc-700 text-white rounded-xl font-medium transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base touch-manipulation"
                   >
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     <span>{t("projectNew.addBtn")}</span>
@@ -213,7 +217,7 @@ export default function NuevoProyecto() {
                           key={suggestion}
                           type="button"
                           onClick={() => handleAddProfile(suggestion)}
-                          className="text-xs text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-600 px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1"
+                          className="text-xs text-zinc-300 hover:text-white active:scale-[0.96] bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-600 px-2.5 py-1.5 rounded-lg transition-all inline-flex items-center gap-1 touch-manipulation"
                         >
                           <Plus className="h-3 w-3 text-[#E60000]" />
                           <span>{suggestion}</span>
@@ -225,17 +229,23 @@ export default function NuevoProyecto() {
                 
                 {profiles.length > 0 && (
                   <div className="flex flex-wrap gap-2 p-4 bg-zinc-950/50 rounded-xl border border-zinc-800">
-                    {profiles.map((profile, idx) => (
-                      <span key={idx} className="flex items-center gap-1.5 bg-red-950/30 px-3 py-1.5 rounded-lg border border-red-900/30 text-sm font-medium shadow-sm text-[#E60000]">
+                    {profiles.map((profile) => (
+                      <motion.span
+                        key={profile}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.16 }}
+                        className="flex items-center gap-1.5 bg-red-950/30 px-3 py-1.5 rounded-lg border border-red-900/30 text-sm font-medium shadow-sm text-[#E60000]"
+                      >
                         {profile}
                         <button
                           type="button"
                           onClick={() => handleRemoveProfile(profile)}
-                          className="text-red-400 hover:text-red-300 transition-colors"
+                          className="text-red-400 hover:text-red-300 transition-colors p-0.5 touch-manipulation"
                         >
                           <X className="h-4 w-4" />
                         </button>
-                      </span>
+                      </motion.span>
                     ))}
                   </div>
                 )}
@@ -245,7 +255,7 @@ export default function NuevoProyecto() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#E60000] text-white hover:bg-red-700 font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70"
+                  className="w-full bg-[#E60000] text-white hover:bg-red-700 active:scale-[0.98] font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70 touch-manipulation"
                 >
                   {loading ? t("projectNew.publishing") : t("projectNew.publishBtn")}
                 </button>

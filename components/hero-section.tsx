@@ -31,7 +31,7 @@ export default function HeroSection() {
       className="space-y-6 relative z-10"
     >
       {/* Background glowing blob */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] sm:w-[320px] md:w-[620px] h-[220px] sm:h-[320px] md:h-[620px] bg-[#E60000]/10 rounded-full blur-[110px] md:blur-[160px] -z-10 pointer-events-none animate-pulse duration-1000"></div>
+      <div className="absolute top-1/2 left-1/2 w-[220px] sm:w-[320px] md:w-[620px] h-[220px] sm:h-[320px] md:h-[620px] bg-[#E60000]/10 rounded-full blur-[110px] md:blur-[160px] -z-10 pointer-events-none animate-ambient-breathe"></div>
 
       {/* Logo container: squircle curvature without rectangular box-shadow artifacts */}
       <motion.div variants={itemVariants} className="relative inline-block group">
@@ -41,8 +41,9 @@ export default function HeroSection() {
         {/* Clean squircle wrapper with filter drop-shadow and smooth reactive spring */}
         <motion.div 
           whileHover={{ scale: 1.04, y: -4 }}
-          transition={{ type: "spring", stiffness: 350, damping: 22 }}
-          className="relative rounded-[22%] overflow-hidden filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.7)] sm:drop-shadow-[0_14px_28px_rgba(0,0,0,0.7)] group-hover:drop-shadow-[0_20px_40px_rgba(230,0,0,0.45)] transition-all duration-500 ease-out cursor-pointer"
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 380, damping: 24 }}
+          className="relative rounded-[22%] overflow-hidden filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.7)] sm:drop-shadow-[0_14px_28px_rgba(0,0,0,0.7)] group-hover:drop-shadow-[0_20px_40px_rgba(230,0,0,0.45)] transition-[filter] duration-500 ease-out cursor-pointer touch-manipulation"
         >
           <Image 
             src="/CoFoundUE_logo.png" 
@@ -73,9 +74,8 @@ export default function HeroSection() {
       {/* Honest Early-Adopter Callout with Interactive Feedback */}
       <motion.div 
         variants={itemVariants}
-        whileHover={{ scale: 1.015, y: -2 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="hidden sm:block p-4 rounded-2xl bg-zinc-900/70 hover:bg-zinc-900/95 border border-zinc-800/80 hover:border-zinc-700 backdrop-blur-md max-w-lg transition-all duration-300 group cursor-default shadow-lg"
+        whileHover={{ scale: 1.015, y: -2, transition: { type: "spring", stiffness: 420, damping: 26 } }}
+        className="hidden sm:block p-4 rounded-2xl bg-zinc-900/70 hover:bg-zinc-900/95 border border-zinc-800/80 hover:border-zinc-700 backdrop-blur-md max-w-lg transition-[background-color,border-color,box-shadow] duration-300 group cursor-default shadow-lg"
       >
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-xl bg-red-950/60 border border-[#E60000]/30 group-hover:border-[#E60000]/70 group-hover:scale-105 flex items-center justify-center text-[#E60000] shrink-0 mt-0.5 transition-all duration-300 shadow-sm">

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { 
   X, 
@@ -148,14 +149,22 @@ export default function PwaInstallPrompt() {
     };
   }, []);
 
-  // Si ya está ejecutándose como PWA instalada, no renderizamos
-  if (isStandalone || !isOpen) return null;
-
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     localStorage.setItem(DISMISSED_KEY, Date.now().toString());
     sessionStorage.setItem(SESSION_SHOWN_KEY, "true");
     setIsOpen(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen || isStandalone) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleDismiss();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isStandalone, handleDismiss]);
 
   const handleDismissPermanent = () => {
     localStorage.setItem(INSTALLED_KEY, "true");
@@ -177,17 +186,35 @@ export default function PwaInstallPrompt() {
     setDeferredPrompt(null);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in">
-      {/* Click outside to close (recordar más tarde) */}
-      <div 
-        className="absolute inset-0 cursor-pointer" 
-        onClick={handleDismiss}
-        aria-hidden="true"
-      />
+  const visible = !isStandalone && isOpen;
 
-      {/* Modal Card Compacta y Coherente */}
-      <div className="relative w-full max-w-sm sm:max-w-[400px] bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-[0_15px_40px_rgba(0,0,0,0.85)] z-10 overflow-hidden">
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm"
+        >
+          {/* Click outside to close (recordar más tarde) */}
+          <div 
+            className="absolute inset-0 cursor-pointer" 
+            onClick={handleDismiss}
+            aria-hidden="true"
+          />
+
+          {/* Modal Card Compacta y Coherente */}
+          <motion.div
+            initial={{ opacity: 0, y: 28, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-full max-w-sm sm:max-w-[400px] max-h-[90dvh] overflow-y-auto overscroll-contain bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-[0_15px_40px_rgba(0,0,0,0.85)] z-10"
+          >
         {/* Subtle top accent gradient */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent"></div>
 
@@ -317,19 +344,23 @@ export default function PwaInstallPrompt() {
         {/* Acciones Finales compactas */}
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={handleDismissPermanent}
-            className="flex-1 bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98] text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs text-center border border-zinc-700/60 shadow-sm"
+            className="flex-1 bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98] text-white font-semibold py-2.5 px-3 rounded-xl transition-all duration-200 text-xs text-center border border-zinc-700/60 shadow-sm touch-manipulation"
           >
             {t("pwaPrompt.understoodBtn")}
           </button>
           <button
+            type="button"
             onClick={handleDismiss}
-            className="py-2 px-3 text-xs text-zinc-400 hover:text-zinc-200 transition-colors text-center"
+            className="py-2.5 px-3 text-xs text-zinc-400 hover:text-zinc-200 transition-colors text-center touch-manipulation"
           >
             {t("pwaPrompt.notNowBtn")}
           </button>
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

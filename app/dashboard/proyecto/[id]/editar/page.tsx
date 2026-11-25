@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useParams } from "next/navigation";
-import { X, Plus, ArrowLeft } from "lucide-react";
+import { X, Plus, ArrowLeft, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
@@ -128,8 +128,8 @@ export default function EditarProyecto() {
   if (fetching) {
     return (
       <ProtectedRoute>
-        <div className="flex-grow flex items-center justify-center bg-transparent min-h-screen relative z-10">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+        <div className="flex-grow flex items-center justify-center bg-transparent min-h-[70dvh] relative z-10">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-800 border-t-[#E60000]"></div>
         </div>
       </ProtectedRoute>
     );
@@ -178,17 +178,20 @@ export default function EditarProyecto() {
 
               <div>
                 <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("projectEdit.categoryLabel")}</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all"
-                >
-                  {CANONICAL_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {getCategoryLabel(cat, t)}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-4 pr-10 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none appearance-none transition-all cursor-pointer"
+                  >
+                    {CANONICAL_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {getCategoryLabel(cat, t)}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="h-4 w-4 text-zinc-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
 
               <div>
@@ -235,7 +238,7 @@ export default function EditarProyecto() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#E60000] text-white hover:bg-red-700 font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70"
+                  className="w-full bg-[#E60000] text-white hover:bg-red-700 active:scale-[0.98] font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70 touch-manipulation"
                 >
                   {loading ? t("projectEdit.updating") : t("projectEdit.saveBtn")}
                 </button>

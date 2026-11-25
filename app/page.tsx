@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import HeroSection from "@/components/hero-section";
 import CampusFeedPreview from "@/components/campus-feed-preview";
@@ -186,8 +187,13 @@ export default function LandingPage() {
           <HeroSection />
 
           {/* Formulario de Auth Estilo App Social */}
-          <div className="w-full max-w-md mx-auto">
-            <div className="bg-zinc-900/90 backdrop-blur-2xl p-5 sm:p-8 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] relative overflow-hidden border border-zinc-800/90 transition-all duration-300">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="bg-zinc-900/90 backdrop-blur-2xl p-5 sm:p-8 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] relative overflow-hidden border border-zinc-800/90">
               {/* Subtle top accent gradient */}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent"></div>
               
@@ -273,17 +279,26 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {error && (
-                      <div className="p-3 bg-red-950/40 text-red-300 text-xs rounded-xl flex items-start gap-2 border border-red-900/50">
-                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#E60000]" />
-                        <span>{error}</span>
-                      </div>
-                    )}
+                    <AnimatePresence mode="wait">
+                      {error && (
+                        <motion.div
+                          key={error}
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.18 }}
+                          className="p-3 bg-red-950/40 text-red-300 text-xs rounded-xl flex items-start gap-2 border border-red-900/50"
+                        >
+                          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#E60000]" />
+                          <span>{error}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.35)] disabled:opacity-70 text-sm cursor-pointer"
+                      className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.35)] disabled:opacity-70 text-sm cursor-pointer touch-manipulation"
                     >
                       {loading ? t("landing.auth.sending") : t("landing.auth.sendRecoveryEmail")}
                       {!loading && <ArrowRight className="h-4 w-4" />}
@@ -314,7 +329,7 @@ export default function LandingPage() {
                   </div>
 
                   {/* Switch Tab (Iniciar Sesión / Crear Cuenta) */}
-                  <div className="flex rounded-xl bg-zinc-950 p-1 mb-6 border border-zinc-800">
+                  <div className="flex rounded-xl bg-zinc-950 p-1 mb-6 border border-zinc-800 relative">
                     <button
                       type="button"
                       onClick={() => {
@@ -322,11 +337,18 @@ export default function LandingPage() {
                         setShowPassword(false);
                         setError("");
                       }}
-                      className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
-                        isLogin ? "bg-[#E60000] text-white shadow-md" : "text-zinc-400 hover:text-white"
+                      className={`relative flex-1 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200 cursor-pointer touch-manipulation ${
+                        isLogin ? "text-white" : "text-zinc-400 hover:text-white"
                       }`}
                     >
-                      {t("landing.auth.loginTab")}
+                      {isLogin && (
+                        <motion.span
+                          layoutId="landing-auth-tab"
+                          transition={{ type: "spring", stiffness: 460, damping: 34 }}
+                          className="absolute inset-0 bg-[#E60000] rounded-lg shadow-md"
+                        />
+                      )}
+                      <span className="relative z-10">{t("landing.auth.loginTab")}</span>
                     </button>
                     <button
                       type="button"
@@ -336,11 +358,18 @@ export default function LandingPage() {
                         setAcceptedPrivacy(false);
                         setError("");
                       }}
-                      className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
-                        !isLogin ? "bg-[#E60000] text-white shadow-md" : "text-zinc-400 hover:text-white"
+                      className={`relative flex-1 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-200 cursor-pointer touch-manipulation ${
+                        !isLogin ? "text-white" : "text-zinc-400 hover:text-white"
                       }`}
                     >
-                      {t("landing.auth.createAccountTab")}
+                      {!isLogin && (
+                        <motion.span
+                          layoutId="landing-auth-tab"
+                          transition={{ type: "spring", stiffness: 460, damping: 34 }}
+                          className="absolute inset-0 bg-[#E60000] rounded-lg shadow-md"
+                        />
+                      )}
+                      <span className="relative z-10">{t("landing.auth.createAccountTab")}</span>
                     </button>
                   </div>
 
@@ -415,38 +444,57 @@ export default function LandingPage() {
                       )}
                     </div>
 
-                    {!isLogin && (
-                      <label className="flex items-start gap-2.5 text-xs text-zinc-400 cursor-pointer select-none pt-1">
-                        <input
-                          type="checkbox"
-                          checked={acceptedPrivacy}
-                          onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                          className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-950 accent-[#E60000] shrink-0 cursor-pointer"
-                        />
-                        <span className="leading-relaxed">
-                          {t("landing.auth.acceptLegalPrefix")}
-                          <Link href="/legal/privacidad" target="_blank" className="text-zinc-200 hover:text-[#E60000] underline transition-colors">
-                            {t("landing.auth.acceptLegalPrivacy")}
-                          </Link>
-                          {t("landing.auth.acceptLegalAnd")}
-                          <Link href="/legal/aviso-legal" target="_blank" className="text-zinc-200 hover:text-[#E60000] underline transition-colors">
-                            {t("landing.auth.acceptLegalNotice")}
-                          </Link>.
-                        </span>
-                      </label>
-                    )}
+                    <AnimatePresence initial={false}>
+                      {!isLogin && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <label className="flex items-start gap-2.5 text-xs text-zinc-400 cursor-pointer select-none pt-1">
+                            <input
+                              type="checkbox"
+                              checked={acceptedPrivacy}
+                              onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                              className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-950 accent-[#E60000] shrink-0 cursor-pointer"
+                            />
+                            <span className="leading-relaxed">
+                              {t("landing.auth.acceptLegalPrefix")}
+                              <Link href="/legal/privacidad" target="_blank" className="text-zinc-200 hover:text-[#E60000] underline transition-colors">
+                                {t("landing.auth.acceptLegalPrivacy")}
+                              </Link>
+                              {t("landing.auth.acceptLegalAnd")}
+                              <Link href="/legal/aviso-legal" target="_blank" className="text-zinc-200 hover:text-[#E60000] underline transition-colors">
+                                {t("landing.auth.acceptLegalNotice")}
+                              </Link>.
+                            </span>
+                          </label>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
-                    {error && (
-                      <div className="p-3 bg-red-950/40 text-red-300 text-xs rounded-xl flex items-start gap-2 border border-red-900/50">
-                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#E60000]" />
-                        <span>{error}</span>
-                      </div>
-                    )}
+                    <AnimatePresence mode="wait">
+                      {error && (
+                        <motion.div
+                          key={error}
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.18 }}
+                          className="p-3 bg-red-950/40 text-red-300 text-xs rounded-xl flex items-start gap-2 border border-red-900/50"
+                        >
+                          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#E60000]" />
+                          <span>{error}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] disabled:opacity-70 text-sm mt-2 cursor-pointer"
+                      className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-[0_0_25px_rgba(230,0,0,0.4)] disabled:opacity-70 text-sm mt-2 cursor-pointer touch-manipulation"
                     >
                       {loading
                         ? t("landing.auth.processing")
@@ -471,7 +519,7 @@ export default function LandingPage() {
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 

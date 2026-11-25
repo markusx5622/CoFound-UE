@@ -97,7 +97,13 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-3xl mx-auto mb-12 space-y-4"
+        >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md shadow-inner">
             <Network className="h-3.5 w-3.5 text-[#E60000]" />
             <span>{t("feedPreview.tag")}</span>
@@ -111,10 +117,16 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
           <p className="text-zinc-400 text-base sm:text-lg leading-relaxed">
             {t("feedPreview.subtitle")}
           </p>
-        </div>
+        </motion.div>
 
         {/* Barra compacta Turia & Alameda */}
-        <div className="mb-10 p-3.5 sm:px-5 rounded-2xl bg-zinc-900/70 border border-zinc-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm shadow-md">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-10 p-3.5 sm:px-5 rounded-2xl bg-zinc-900/70 border border-zinc-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm shadow-md"
+        >
           <div className="flex items-center gap-2.5 text-zinc-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             <span className="font-semibold text-white">{t("feedPreview.trustBarQ")}</span>
@@ -124,7 +136,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
             <span>{t("feedPreview.trustBarLoc")}</span>
           </span>
-        </div>
+        </motion.div>
 
         {/* Grid 2x2 de Ecuaciones de Equipo */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -132,11 +144,15 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
             <motion.div
               key={eq.id}
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1], delay: idx * 0.06 },
+              }}
               viewport={{ once: true, margin: "-50px" }}
-              whileHover={{ y: -4 }}
-              transition={{ type: "spring", stiffness: 350, damping: 25, delay: idx * 0.06 }}
-              className="bg-zinc-900/70 hover:bg-zinc-900/95 border border-zinc-800/90 hover:border-zinc-700 rounded-3xl p-6 transition-colors duration-300 flex flex-col justify-between group relative overflow-hidden backdrop-blur-md shadow-xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
+              whileHover={{ y: -4, transition: { type: "spring", stiffness: 420, damping: 28, delay: 0 } }}
+              transition={{ type: "spring", stiffness: 420, damping: 28, delay: 0 }}
+              className="bg-zinc-900/70 hover:bg-zinc-900/95 border border-zinc-800/90 hover:border-zinc-700 rounded-3xl p-6 transition-[background-color,border-color,box-shadow] duration-300 flex flex-col justify-between group relative overflow-hidden backdrop-blur-md shadow-xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
             >
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#E60000]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -181,7 +197,7 @@ export default function CampusFeedPreview({ onSelectProject }: CampusFeedPreview
               <button
                 type="button"
                 onClick={handleActionClick}
-                className="w-full group/btn inline-flex items-center justify-between text-xs font-semibold text-zinc-300 hover:text-white py-2.5 px-3.5 rounded-xl bg-zinc-950/60 hover:bg-zinc-800 border border-zinc-800/80 hover:border-zinc-700 transition-all duration-200"
+                className="w-full group/btn inline-flex items-center justify-between text-xs font-semibold text-zinc-300 hover:text-white active:scale-[0.98] py-3 px-3.5 rounded-xl bg-zinc-950/60 hover:bg-zinc-800 border border-zinc-800/80 hover:border-zinc-700 transition-[background-color,border-color,color,transform] duration-200 touch-manipulation"
               >
                 <span>{t("feedPreview.createSimilarBtn")}</span>
                 <ArrowUpRight className="h-4 w-4 text-[#E60000] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-200" />

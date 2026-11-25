@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { UserCircle, Tag, ArrowLeft, Send, BookOpen, Info, ArrowRight, Share2, Clock, Edit, MessageSquare, CheckCircle2, Languages, ExternalLink } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
@@ -244,8 +245,8 @@ export default function ProyectoDetalle() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="flex-grow flex items-center justify-center bg-transparent min-h-screen relative z-10">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+        <div className="flex-grow flex items-center justify-center bg-transparent min-h-[70dvh] relative z-10">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-800 border-t-[#E60000]"></div>
         </div>
       </ProtectedRoute>
     );
@@ -287,14 +288,19 @@ export default function ProyectoDetalle() {
             <button
               type="button"
               onClick={handleShare}
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 px-3.5 py-2 rounded-xl transition-all"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 active:scale-[0.97] px-3.5 py-2 rounded-xl transition-all touch-manipulation"
             >
               <Share2 className="h-4 w-4 text-[#E60000]" />
               <span>{t("projectDetail.shareBtn")}</span>
             </button>
           </div>
 
-          <div className="bg-zinc-900/60 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-sm border border-zinc-800 relative overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+            className="bg-zinc-900/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 shadow-sm border border-zinc-800 relative overflow-hidden"
+          >
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#E60000] rounded-full blur-[150px] opacity-5 pointer-events-none"></div>
             
             <div className="relative z-10">
@@ -319,7 +325,7 @@ export default function ProyectoDetalle() {
                   {isDemo ? (
                     <Link
                       href="/dashboard/nuevo"
-                      className="px-7 py-4 rounded-xl font-bold inline-flex items-center gap-2 transition-all duration-200 shadow-md bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
+                      className="w-full sm:w-auto justify-center px-7 py-4 rounded-xl font-bold inline-flex items-center gap-2 transition-all duration-200 active:scale-[0.98] shadow-md bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)] touch-manipulation"
                     >
                       <span>{t("projectDetail.demoPublishCta")}</span>
                       <ArrowRight className="h-5 w-5" />
@@ -327,7 +333,7 @@ export default function ProyectoDetalle() {
                   ) : user?.uid === project.creator_id ? (
                     <Link
                       href={`/dashboard/proyecto/${project.id}/editar`}
-                      className="px-7 py-4 rounded-xl font-bold inline-flex items-center gap-2 transition-all duration-200 shadow-md bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+                      className="w-full sm:w-auto justify-center px-7 py-4 rounded-xl font-bold inline-flex items-center gap-2 transition-all duration-200 active:scale-[0.98] shadow-md bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 touch-manipulation"
                     >
                       <Edit className="h-5 w-5 text-[#E60000]" />
                       <span>{t("projectDetail.editProjectBtn")}</span>
@@ -340,7 +346,7 @@ export default function ProyectoDetalle() {
                       </span>
                       <Link
                         href={`/dashboard/mensajes?chat=${project.id}_${user.uid}`}
-                        className="px-6 py-3.5 rounded-xl font-bold inline-flex items-center gap-2 bg-[#E60000] hover:bg-red-700 text-white transition-all shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
+                        className="px-6 py-3.5 rounded-xl font-bold inline-flex items-center gap-2 bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white transition-all shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.3)] touch-manipulation"
                       >
                         <MessageSquare className="h-5 w-5" />
                         <span>{t("projectDetail.openChatBtn")}</span>
@@ -350,7 +356,7 @@ export default function ProyectoDetalle() {
                     <button
                       onClick={handleOpenApplyModal}
                       disabled={applying || checkingProfile}
-                      className="px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 shadow-md bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)] disabled:opacity-70"
+                      className="w-full sm:w-auto justify-center px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 active:scale-[0.98] shadow-md bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)] disabled:opacity-70 touch-manipulation"
                     >
                       {applying || checkingProfile ? t("projectDetail.processing") : t("projectDetail.applyBtn")}
                       {!applying && !checkingProfile && <Send className="h-5 w-5" />}
@@ -433,7 +439,7 @@ export default function ProyectoDetalle() {
               </div>
 
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 

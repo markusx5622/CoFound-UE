@@ -61,7 +61,13 @@ export default function StudentFaq({ onCreateProfile }: StudentFaqProps) {
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         
         {/* Header de Sección */}
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-2xl mx-auto mb-12 space-y-3"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/90 border border-zinc-800 text-xs font-semibold text-zinc-300 backdrop-blur-md shadow-inner">
             <HelpCircle className="h-3.5 w-3.5 text-[#E60000]" />
             <span>{t("faq.tag")}</span>
@@ -74,7 +80,7 @@ export default function StudentFaq({ onCreateProfile }: StudentFaqProps) {
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
             {t("faq.subtitle")}
           </p>
-        </div>
+        </motion.div>
 
         {/* Acordeón de FAQs */}
         <div className="space-y-3 mb-12">
@@ -84,23 +90,26 @@ export default function StudentFaq({ onCreateProfile }: StudentFaqProps) {
             return (
               <div 
                 key={idx}
-                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                className={`rounded-2xl border transition-[background-color,border-color,box-shadow] duration-200 overflow-hidden ${
                   isOpen 
                     ? "bg-zinc-900/90 border-zinc-700/80 shadow-lg shadow-black/40" 
                     : "bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/70 hover:border-zinc-700"
                 }`}
               >
                 <button
+                  type="button"
                   onClick={() => toggleAccordion(idx)}
-                  className="w-full py-4 px-5 sm:px-6 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer select-none"
+                  className="w-full py-4 px-5 sm:px-6 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer select-none touch-manipulation"
                   aria-expanded={isOpen}
                 >
                   <span className="text-sm sm:text-base font-semibold text-white">
                     {faq.question}
                   </span>
                   <div 
-                    className={`w-7 h-7 rounded-xl bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-300 shrink-0 transition-transform duration-300 ${
-                      isOpen ? "rotate-180 bg-[#E60000]/20 text-[#E60000] border-red-500/40" : ""
+                    className={`w-7 h-7 rounded-xl border flex items-center justify-center shrink-0 transition-[transform,background-color,color,border-color] duration-300 ${
+                      isOpen
+                        ? "rotate-180 bg-[#E60000]/20 text-[#E60000] border-red-500/40"
+                        : "bg-zinc-800/80 border-zinc-700/60 text-zinc-300"
                     }`}
                   >
                     <ChevronDown className="w-4 h-4" />
@@ -113,9 +122,9 @@ export default function StudentFaq({ onCreateProfile }: StudentFaqProps) {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                     >
-                      <div className="px-5 sm:px-6 pb-5 pt-1 text-xs sm:text-sm text-zinc-300 leading-relaxed border-t border-zinc-800/60 mt-1">
+                      <div className="px-5 sm:px-6 pb-5 pt-2 text-xs sm:text-sm text-zinc-300 leading-relaxed border-t border-zinc-800/60 mt-1">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -127,7 +136,13 @@ export default function StudentFaq({ onCreateProfile }: StudentFaqProps) {
         </div>
 
         {/* Mini Banner CTA final */}
-        <div className="p-6 rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-zinc-900 border border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl text-center sm:text-left">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="p-6 rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-zinc-900 border border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl text-center sm:text-left"
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-red-950/60 border border-red-500/30 text-[#E60000] flex items-center justify-center shrink-0">
               <Users className="w-5 h-5" />
@@ -143,13 +158,14 @@ export default function StudentFaq({ onCreateProfile }: StudentFaqProps) {
           </div>
 
           <button
+            type="button"
             onClick={handleCtaClick}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold py-3 px-5 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.35)] shrink-0"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold py-3 px-5 rounded-xl transition-all duration-200 shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.35)] shrink-0 touch-manipulation"
           >
             <span>{t("faq.ctaButton")}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
-        </div>
+        </motion.div>
 
       </div>
     </section>

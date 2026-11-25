@@ -55,12 +55,16 @@ export default function HowItWorks() {
           {steps.map((step, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1], delay: idx * 0.09 },
+              }}
               viewport={{ once: true, margin: "-50px" }}
-              whileHover={{ y: -6 }}
-              transition={{ type: "spring", stiffness: 350, damping: 25, delay: idx * 0.12 }}
-              className="relative z-10 flex flex-col items-center text-center p-6 sm:p-8 rounded-3xl bg-zinc-900/30 hover:bg-zinc-900/70 border border-transparent hover:border-zinc-800 backdrop-blur-sm transition-all duration-300 group cursor-default shadow-lg hover:shadow-[0_15px_35px_rgba(0,0,0,0.5)]"
+              whileHover={{ y: -5, transition: { type: "spring", stiffness: 420, damping: 28, delay: 0 } }}
+              transition={{ type: "spring", stiffness: 420, damping: 28, delay: 0 }}
+              className="relative z-10 flex flex-col items-center text-center p-6 sm:p-8 rounded-3xl bg-zinc-900/30 hover:bg-zinc-900/70 border border-transparent hover:border-zinc-800 backdrop-blur-sm transition-[background-color,border-color,box-shadow] duration-300 group cursor-default shadow-lg hover:shadow-[0_15px_35px_rgba(0,0,0,0.5)]"
             >
               {/* Círculo del Icono */}
               <div 

@@ -6,6 +6,7 @@ import { collection, query, where, getDocs, doc, deleteDoc, getDoc, updateDoc } 
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Briefcase, UserCircle, Tag, Trash2, Users, X, Check, XCircle, Edit, MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -115,6 +116,15 @@ export default function MisProyectos() {
     fetchData();
   }, [user, authLoading, t]);
 
+  useEffect(() => {
+    if (!selectedApplicant) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedApplicant(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedApplicant]);
+
   const handleConfirmDelete = async () => {
     if (!user || !projectToDelete) return;
     const projectId = projectToDelete.id;
@@ -169,11 +179,11 @@ export default function MisProyectos() {
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-10">
-            <h1 className="text-4xl font-extrabold text-white tracking-tight">{t("myProjects.title")}</h1>
+          <div className="flex flex-wrap justify-between items-center gap-4 mb-8 sm:mb-10">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{t("myProjects.title")}</h1>
             <Link 
               href="/dashboard/nuevo" 
-              className="bg-[#E60000] hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md"
+              className="bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white px-5 sm:px-6 py-2.5 rounded-xl font-semibold transition-all shadow-md hover:shadow-[0_0_20px_rgba(230,0,0,0.3)] touch-manipulation"
             >
               {t("myProjects.createBtn")}
             </Link>
@@ -181,7 +191,7 @@ export default function MisProyectos() {
           
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-800 border-t-[#E60000]"></div>
             </div>
           ) : projects.length === 0 ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-10 rounded-2xl shadow-sm text-center border border-zinc-800 mb-12">
@@ -192,7 +202,7 @@ export default function MisProyectos() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
               {projects.map((project) => (
-                <div key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-zinc-800 flex flex-col h-full relative group">
+                <div key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_12px_30px_rgba(230,0,0,0.12)] hover:-translate-y-0.5 hover:border-zinc-700 transition-all duration-200 border border-zinc-800 flex flex-col h-full relative group">
                   <div className="absolute top-4 right-4 flex items-center gap-1 z-20">
                     <Link
                       href={`/dashboard/proyecto/${project.id}/editar`}
@@ -325,58 +335,83 @@ export default function MisProyectos() {
         </div>
       </div>
 
-      {selectedApplicant && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
-            <button 
+      <AnimatePresence>
+        {selectedApplicant && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-3 sm:p-4"
+          >
+            <div
+              className="absolute inset-0"
               onClick={() => setSelectedApplicant(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.96 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-md max-h-[90dvh] overflow-y-auto overscroll-contain shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative"
             >
-              <X className="h-5 w-5" />
-            </button>
-            <div className="text-center mb-6">
-              <InitialsAvatar name={selectedApplicant.name} size={80} className="w-20 h-20 mx-auto mb-4 text-2xl font-bold" />
-              <h3 className="text-2xl font-bold text-white">{selectedApplicant.name || t("myProjects.defaultName")}</h3>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalDegreeCampus")}</h4>
-                <p className="text-zinc-300">{selectedApplicant.degree || t("myProjects.notSpecified")} - {selectedApplicant.campus || t("myProjects.notSpecified")}</p>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent" />
+              <button 
+                type="button"
+                onClick={() => setSelectedApplicant(null)}
+                aria-label={t("myProjects.modalClose")}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-lg hover:bg-zinc-800 transition-colors touch-manipulation"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="text-center mb-6 pt-2">
+                <InitialsAvatar name={selectedApplicant.name} size={80} className="w-20 h-20 mx-auto mb-4 text-2xl font-bold" />
+                <h3 className="text-2xl font-bold text-white">{selectedApplicant.name || t("myProjects.defaultName")}</h3>
               </div>
               
-              <div>
-                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalAboutMe")}</h4>
-                <p className="text-zinc-300 whitespace-pre-wrap">{selectedApplicant.bio || t("myProjects.modalNoBio")}</p>
-              </div>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalDegreeCampus")}</h4>
+                  <p className="text-zinc-300">{selectedApplicant.degree || t("myProjects.notSpecified")} - {selectedApplicant.campus || t("myProjects.notSpecified")}</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalAboutMe")}</h4>
+                  <p className="text-zinc-300 whitespace-pre-wrap">{selectedApplicant.bio || t("myProjects.modalNoBio")}</p>
+                </div>
 
-              <div>
-                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalSkills")}</h4>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {selectedApplicant.skills && selectedApplicant.skills.length > 0 ? (
-                    selectedApplicant.skills.map((skill: string, idx: number) => (
-                      <span key={idx} className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded-md">
-                        {skill}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-zinc-500 italic text-sm">{t("myProjects.modalNoSkills")}</span>
-                  )}
+                <div>
+                  <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">{t("myProjects.modalSkills")}</h4>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {selectedApplicant.skills && selectedApplicant.skills.length > 0 ? (
+                      selectedApplicant.skills.map((skill: string, idx: number) => (
+                        <span key={idx} className="bg-zinc-800 text-zinc-300 text-xs px-2.5 py-1 rounded-md border border-zinc-700/60">
+                          {skill}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-zinc-500 italic text-sm">{t("myProjects.modalNoSkills")}</span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-8">
-              <button 
-                onClick={() => setSelectedApplicant(null)}
-                className="w-full bg-[#E60000] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200"
-              >
-                {t("myProjects.modalClose")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              
+              <div className="mt-8">
+                <button 
+                  type="button"
+                  onClick={() => setSelectedApplicant(null)}
+                  className="w-full bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 touch-manipulation"
+                >
+                  {t("myProjects.modalClose")}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <ConfirmModal
         isOpen={Boolean(projectToDelete)}
         title={t("myProjects.deleteModalTitle")}

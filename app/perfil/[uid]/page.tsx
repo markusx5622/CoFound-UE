@@ -97,7 +97,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
         <div className="max-w-4xl mx-auto">
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-800 border-t-[#E60000]"></div>
             </div>
           ) : error || !profileUser ? (
             <div className="bg-zinc-900/60 backdrop-blur-md p-6 sm:p-10 rounded-2xl shadow-sm text-center border border-zinc-800">
@@ -208,7 +208,7 @@ export default function PublicProfile({ params }: { params: { uid: string } }) {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {displayProjects.map((project) => (
-                    <Link href={`/dashboard/proyecto/${project.id}`} key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_0_15px_rgba(230,0,0,0.1)] transition-all border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group">
+                    <Link href={`/dashboard/proyecto/${project.id}`} key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_12px_28px_rgba(230,0,0,0.12)] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200 border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group touch-manipulation">
                       <div className="flex-grow">
                         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                           <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2 py-1 rounded-md">

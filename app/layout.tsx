@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { Analytics } from "@vercel/analytics/react";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import PwaInstallPrompt from "@/components/PwaInstallPrompt";
+import MotionProvider from "@/components/MotionProvider";
 import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -131,21 +132,23 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <LanguageProvider>
-          <AuthProvider>
-            <ServiceWorkerRegister />
-            <PwaInstallPrompt />
-            <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
-              <ParticleBackground />
-            </div>
-            <Navbar />
-            <main className="flex-grow flex flex-col relative z-10">
-              {children}
-            </main>
-            <Toaster position="top-center" richColors theme="dark" />
-            <Analytics />
-          </AuthProvider>
-        </LanguageProvider>
+        <MotionProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <ServiceWorkerRegister />
+              <PwaInstallPrompt />
+              <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+                <ParticleBackground />
+              </div>
+              <Navbar />
+              <main className="flex-grow flex flex-col relative z-10">
+                {children}
+              </main>
+              <Toaster position="top-center" richColors theme="dark" />
+              <Analytics />
+            </AuthProvider>
+          </LanguageProvider>
+        </MotionProvider>
       </body>
     </html>
   );

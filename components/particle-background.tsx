@@ -24,7 +24,8 @@ export default function ParticleBackground() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
+    let animationFrameId = 0;
+    let isRunning = false;
     let particles: Particle[] = [];
     let lastWidth = 0;
     let lastHeight = 0;
@@ -127,8 +128,9 @@ export default function ParticleBackground() {
     };
 
     const animate = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      if (!isRunning) return;
+      const w = lastWidth || window.innerWidth;
+      const h = lastHeight || window.innerHeight;
 
       ctx.clearRect(0, 0, w, h);
 
@@ -142,6 +144,26 @@ export default function ParticleBackground() {
       animationFrameId = requestAnimationFrame(animate);
     };
 
+    const startLoop = () => {
+      if (isRunning) return;
+      isRunning = true;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    const stopLoop = () => {
+      if (!isRunning) return;
+      isRunning = false;
+      cancelAnimationFrame(animationFrameId);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopLoop();
+      } else {
+        startLoop();
+      }
+    };
+
     const handleResize = () => {
       // Evitar reinicios por la barra de direcciones al hacer scroll en móvil
       const widthChanged = Math.abs(window.innerWidth - lastWidth) > 20;
@@ -151,10 +173,10 @@ export default function ParticleBackground() {
       }
     };
 
+    // El canvas es fixed inset-0: clientX/clientY evitan lecturas de layout (getBoundingClientRect)
     const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
     };
 
     const handleMouseLeave = () => {
@@ -164,9 +186,8 @@ export default function ParticleBackground() {
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        const rect = canvas.getBoundingClientRect();
-        mouse.x = e.touches[0].clientX - rect.left;
-        mouse.y = e.touches[0].clientY - rect.top;
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
       }
     };
 
@@ -176,16 +197,20 @@ export default function ParticleBackground() {
     };
 
     init();
-    animate();
+    if (!document.hidden) {
+      startLoop();
+    }
 
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      stopLoop();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);

@@ -104,8 +104,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   if (loading) {
     return (
-      <div className="flex-grow flex items-center justify-center bg-zinc-950 min-h-screen z-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+      <div className="flex-grow flex items-center justify-center bg-transparent min-h-[70dvh] relative z-10">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-800 border-t-[#E60000]"></div>
       </div>
     );
   }
@@ -114,8 +114,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   if (!user.emailVerified) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 relative z-50">
-        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
+      <div className="min-h-[85dvh] bg-transparent flex items-center justify-center p-4 sm:p-6 relative z-10">
+        <div className="max-w-md w-full bg-zinc-900/90 backdrop-blur-xl border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-center relative overflow-hidden">
           {/* Subtle top accent gradient */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent"></div>
           

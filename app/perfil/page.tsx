@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc, deleteField, serverTimestamp } from "firebase/firestore";
 import { deleteUser, signOut, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { X, Plus, Save, LogOut, Lock, Eye, EyeOff, ExternalLink } from "lucide-react";
+import { X, Plus, Save, LogOut, Lock, Eye, EyeOff, ExternalLink, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -82,6 +83,19 @@ export default function MiPerfil() {
     
     fetchProfile();
   }, [user, authLoading]);
+
+  useEffect(() => {
+    if (!showDeleteModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isDeletingAccount) {
+        setDeletePassword("");
+        setShowDeletePassword(false);
+        setShowDeleteModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showDeleteModal, isDeletingAccount]);
 
   const handleAddSkill = (valueOverride?: string) => {
     const trimmed = (typeof valueOverride === "string" ? valueOverride : skillInput).trim();
@@ -223,8 +237,8 @@ export default function MiPerfil() {
   if (fetching) {
     return (
       <ProtectedRoute>
-        <div className="flex-grow flex items-center justify-center bg-transparent min-h-screen relative z-10">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E60000]"></div>
+        <div className="flex-grow flex items-center justify-center bg-transparent min-h-[70dvh] relative z-10">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-800 border-t-[#E60000]"></div>
         </div>
       </ProtectedRoute>
     );
@@ -285,14 +299,17 @@ export default function MiPerfil() {
 
               <div>
                 <label className="block text-sm font-semibold text-zinc-300 mb-2">{t("profile.campus")}</label>
-                <select
-                  value={campus}
-                  onChange={(e) => setCampus(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all"
-                >
-                  <option value="Valencia">Campus Turia / Valencia</option>
-                  <option value="Alameda">Campus Alameda / Valencia</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={campus}
+                    onChange={(e) => setCampus(e.target.value)}
+                    className="w-full px-4 pr-10 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none appearance-none transition-all cursor-pointer"
+                  >
+                    <option value="Valencia">Campus Turia / Valencia</option>
+                    <option value="Alameda">Campus Alameda / Valencia</option>
+                  </select>
+                  <ChevronDown className="h-4 w-4 text-zinc-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
 
               <div>
@@ -323,7 +340,7 @@ export default function MiPerfil() {
                   <button
                     type="button"
                     onClick={() => handleAddSkill()}
-                    className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base"
+                    className="shrink-0 px-3.5 sm:px-4 py-3 bg-zinc-800 hover:bg-zinc-700 active:scale-[0.97] border border-zinc-700 text-white rounded-xl font-medium transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base touch-manipulation"
                   >
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     <span>{t("profile.addSkill")}</span>
@@ -340,7 +357,7 @@ export default function MiPerfil() {
                           key={suggestion}
                           type="button"
                           onClick={() => handleAddSkill(suggestion)}
-                          className="text-xs text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-600 px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1"
+                          className="text-xs text-zinc-300 hover:text-white active:scale-[0.96] bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-600 px-2.5 py-1.5 rounded-lg transition-all inline-flex items-center gap-1 touch-manipulation"
                         >
                           <Plus className="h-3 w-3 text-[#E60000]" />
                           <span>{suggestion}</span>
@@ -352,17 +369,23 @@ export default function MiPerfil() {
                 
                 {skills.length > 0 && (
                   <div className="flex flex-wrap gap-2 p-4 bg-zinc-950/50 rounded-xl border border-zinc-800">
-                    {skills.map((skill, idx) => (
-                      <span key={idx} className="flex items-center gap-1.5 bg-zinc-800 text-white px-3 py-1.5 rounded-lg border border-zinc-700 text-sm font-medium shadow-sm">
+                    {skills.map((skill) => (
+                      <motion.span
+                        key={skill}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.16 }}
+                        className="flex items-center gap-1.5 bg-zinc-800 text-white px-3 py-1.5 rounded-lg border border-zinc-700 text-sm font-medium shadow-sm"
+                      >
                         {skill}
                         <button
                           type="button"
                           onClick={() => handleRemoveSkill(skill)}
-                          className="text-zinc-400 hover:text-white transition-colors ml-1"
+                          className="text-zinc-400 hover:text-white transition-colors ml-1 p-0.5 touch-manipulation"
                         >
                           <X className="h-4 w-4" />
                         </button>
-                      </span>
+                      </motion.span>
                     ))}
                   </div>
                 )}
@@ -372,7 +395,7 @@ export default function MiPerfil() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#E60000] text-white hover:bg-red-700 font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70 flex items-center justify-center gap-2"
+                  className="w-full bg-[#E60000] text-white hover:bg-red-700 active:scale-[0.98] font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(230,0,0,0.3)] hover:shadow-[0_0_25px_rgba(230,0,0,0.5)] disabled:opacity-70 flex items-center justify-center gap-2 touch-manipulation"
                 >
                   <Save className="h-5 w-5" />
                   {loading ? t("profile.saving") : t("profile.saveBtn")}
@@ -407,71 +430,100 @@ export default function MiPerfil() {
         </div>
       </div>
 
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <form onSubmit={handleDeleteAccount} className="bg-zinc-900 border border-red-900/50 p-6 sm:p-8 rounded-2xl w-full max-w-md shadow-[0_0_40px_rgba(230,0,0,0.15)] relative">
-            <h2 className="text-xl font-bold text-white mb-2">{t("profile.deleteAccountTitle")}</h2>
-            <p className="text-zinc-400 text-sm mb-6">{t("profile.deleteAccountWarning")}</p>
-
-            <div className="mb-6">
-              <label htmlFor="delete-account-password" className="block text-xs font-semibold text-zinc-300 mb-2">
-                {t("profile.deleteAccountPasswordLabel")}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
-                  <Lock className="h-4 w-4" />
-                </div>
-                <input
-                  id="delete-account-password"
-                  type={showDeletePassword ? "text" : "password"}
-                  required
-                  autoComplete="current-password"
-                  value={deletePassword}
-                  onChange={(e) => setDeletePassword(e.target.value)}
-                  disabled={isDeletingAccount}
-                  placeholder={t("profile.deleteAccountPasswordPlaceholder")}
-                  className="w-full pl-10 pr-11 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowDeletePassword((prev) => !prev)}
-                  disabled={isDeletingAccount}
-                  aria-label={showDeletePassword ? t("profile.hidePassword") : t("profile.showPassword")}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
-                >
-                  {showDeletePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                type="button"
-                onClick={() => {
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <div
+              className="absolute inset-0"
+              onClick={() => {
+                if (!isDeletingAccount) {
                   setDeletePassword("");
                   setShowDeletePassword(false);
                   setShowDeleteModal(false);
-                }}
-                disabled={isDeletingAccount}
-                className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50"
-              >
-                {t("profile.deleteAccountCancel")}
-              </button>
-              <button
-                type="submit"
-                disabled={isDeletingAccount || !deletePassword}
-                className="flex-1 bg-[#E60000] hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center"
-              >
-                {isDeletingAccount ? (
-                  <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  t("profile.deleteAccountConfirm")
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+                }
+              }}
+              aria-hidden="true"
+            />
+            <motion.form
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.96 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              onSubmit={handleDeleteAccount}
+              className="bg-zinc-900 border border-red-900/50 p-6 sm:p-8 rounded-2xl w-full max-w-md max-h-[90dvh] overflow-y-auto overscroll-contain shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E60000] to-transparent" />
+              <h2 className="text-xl font-bold text-white mb-2">{t("profile.deleteAccountTitle")}</h2>
+              <p className="text-zinc-400 text-sm mb-6">{t("profile.deleteAccountWarning")}</p>
+
+              <div className="mb-6">
+                <label htmlFor="delete-account-password" className="block text-xs font-semibold text-zinc-300 mb-2">
+                  {t("profile.deleteAccountPasswordLabel")}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                  <input
+                    id="delete-account-password"
+                    type={showDeletePassword ? "text" : "password"}
+                    required
+                    autoComplete="current-password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    disabled={isDeletingAccount}
+                    placeholder={t("profile.deleteAccountPasswordPlaceholder")}
+                    className="w-full pl-10 pr-11 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-white focus:ring-2 focus:ring-[#E60000] focus:border-[#E60000] outline-none transition-all placeholder:text-zinc-600 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDeletePassword((prev) => !prev)}
+                    disabled={isDeletingAccount}
+                    aria-label={showDeletePassword ? t("profile.hidePassword") : t("profile.showPassword")}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    {showDeletePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex flex-col-reverse sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeletePassword("");
+                    setShowDeletePassword(false);
+                    setShowDeleteModal(false);
+                  }}
+                  disabled={isDeletingAccount}
+                  className="flex-1 bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98] text-white font-medium py-3 px-4 rounded-xl transition-all disabled:opacity-50 touch-manipulation"
+                >
+                  {t("profile.deleteAccountCancel")}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isDeletingAccount || !deletePassword}
+                  className="flex-1 bg-[#E60000] hover:bg-red-700 active:scale-[0.98] text-white font-medium py-3 px-4 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center touch-manipulation"
+                >
+                  {isDeletingAccount ? (
+                    <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    t("profile.deleteAccountConfirm")
+                  )}
+                </button>
+              </div>
+            </motion.form>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </ProtectedRoute>
   );
 }
