@@ -4,20 +4,20 @@ import { useEffect, useRef, useState } from "react";
 
 export default function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   useEffect(() => {
-    if (isMobile) return;
-    
+    if (prefersReducedMotion) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -26,6 +26,8 @@ export default function ParticleBackground() {
 
     let animationFrameId: number;
     let particles: Particle[] = [];
+    let lastWidth = 0;
+    let lastHeight = 0;
     const mouse = { x: null as number | null, y: null as number | null, radius: 150 };
 
     class Particle {
@@ -39,11 +41,9 @@ export default function ParticleBackground() {
       constructor(w: number, h: number) {
         this.x = Math.random() * w;
         this.y = Math.random() * h;
-        // Velocidad aleatoria muy suave para dar sensación de flotación tranquila
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.radius = Math.random() * 2 + 1;
-        // 80% partículas rojas (color corporativo de la UE) y 20% blancas/grises
+        this.vx = (Math.random() - 0.5) * 0.45;
+        this.vy = (Math.random() - 0.5) * 0.45;
+        this.radius = Math.random() * 1.8 + 1;
         this.color = Math.random() > 0.2 ? "rgba(230, 0, 0, 0.7)" : "rgba(255, 255, 255, 0.5)";
       }
 
@@ -51,7 +51,6 @@ export default function ParticleBackground() {
         this.x += this.vx;
         this.y += this.vy;
 
-        // Rebote en bordes con tolerancia
         if (this.x < 0 || this.x > w) this.vx = -this.vx;
         if (this.y < 0 || this.y > h) this.vy = -this.vy;
       }
@@ -67,29 +66,31 @@ export default function ParticleBackground() {
     const init = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      const dpr = window.devicePixelRatio || 1;
-      
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      lastWidth = w;
+      lastHeight = h;
+
       canvas.width = w * dpr;
       canvas.height = h * dpr;
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
 
-      // Densidad de partículas adaptada a pantallas móviles y de escritorio para rendimiento óptimo
-      const density = w < 768 ? 40 : 100;
+      // Densidad ligera en móvil para conservar rendimiento y batería
+      const density = w < 768 ? 28 : 90;
       particles = [];
       for (let i = 0; i < density; i++) {
         particles.push(new Particle(w, h));
       }
     };
 
-    const drawLines = (w: number, h: number) => {
+    const drawLines = () => {
       const maxDistance = 120;
       for (let i = 0; i < particles.length; i++) {
         const p1 = particles[i];
 
-        // Conectar con el puntero si está activo (interacción de red)
         if (mouse.x !== null && mouse.y !== null) {
           const dx = p1.x - mouse.x;
           const dy = p1.y - mouse.y;
@@ -106,7 +107,6 @@ export default function ParticleBackground() {
           }
         }
 
-        // Conectar partículas entre sí (red de nodos como en el logotipo)
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p1.x - p2.x;
@@ -137,13 +137,18 @@ export default function ParticleBackground() {
         p.draw(ctx);
       });
 
-      drawLines(w, h);
+      drawLines();
 
       animationFrameId = requestAnimationFrame(animate);
     };
 
     const handleResize = () => {
-      init();
+      // Evitar reinicios por la barra de direcciones al hacer scroll en móvil
+      const widthChanged = Math.abs(window.innerWidth - lastWidth) > 20;
+      const heightChangedSignificantly = Math.abs(window.innerHeight - lastHeight) > 140;
+      if (widthChanged || heightChangedSignificantly) {
+        init();
+      }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -157,7 +162,6 @@ export default function ParticleBackground() {
       mouse.y = null;
     };
 
-    // Soporte táctil interactivo en móviles
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         const rect = canvas.getBoundingClientRect();
@@ -188,9 +192,9 @@ export default function ParticleBackground() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [isMobile]);
+  }, [prefersReducedMotion]);
 
-  if (isMobile) return null;
+  if (prefersReducedMotion) return null;
 
   return (
     <canvas

@@ -10,7 +10,11 @@ interface FAQItem {
   answer: string;
 }
 
-export default function StudentFaq() {
+interface StudentFaqProps {
+  onCreateProfile?: () => void;
+}
+
+export default function StudentFaq({ onCreateProfile }: StudentFaqProps) {
   const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(0); // Primera abierta por defecto
 
@@ -38,6 +42,10 @@ export default function StudentFaq() {
   };
 
   const handleCtaClick = () => {
+    if (onCreateProfile) {
+      onCreateProfile();
+      return;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
     const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
     if (emailInput) {

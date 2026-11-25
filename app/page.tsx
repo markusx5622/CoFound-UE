@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import HeroSection from "@/components/hero-section";
 import CampusFeedPreview from "@/components/campus-feed-preview";
 import HowItWorks from "@/components/how-it-works";
@@ -20,7 +20,6 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [isResetPassword, setIsResetPassword] = useState(false);
-  const [showMore, setShowMore] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -150,6 +149,20 @@ export default function LandingPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const focusSignupForm = () => {
+    setIsLogin(false);
+    setIsResetPassword(false);
+    setShowPassword(false);
+    setError("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement | null;
+      if (emailInput) {
+        emailInput.focus();
+      }
+    }, 120);
   };
 
   return (
@@ -467,56 +480,11 @@ export default function LandingPage() {
         {/* Sección de Cómo Funciona (Rápida visualización de onboarding) */}
         <HowItWorks />
 
-        {/* Mobile "Saber más" Toggle con alta reactividad táctil */}
-        <div className="md:hidden flex justify-center py-6 px-4">
-          <button
-            onClick={() => setShowMore(!showMore)}
-            className="group relative flex items-center justify-between gap-4 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-zinc-900/95 via-zinc-900/90 to-zinc-900/95 hover:bg-zinc-850 active:scale-[0.97] transition-all duration-200 border border-zinc-800 hover:border-red-500/40 shadow-lg shadow-black/60 hover:shadow-[0_0_25px_rgba(230,0,0,0.18)] cursor-pointer w-full max-w-xs backdrop-blur-md"
-            aria-expanded={showMore}
-          >
-            <div className="flex items-center gap-3 text-left">
-              {/* Micro-baliza de actividad viva */}
-              {!showMore ? (
-                <span className="relative flex h-2.5 w-2.5 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E60000]"></span>
-                </span>
-              ) : (
-                <span className="h-2.5 w-2.5 rounded-full bg-zinc-600 shrink-0"></span>
-              )}
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-200 group-hover:text-white transition-colors">
-                  {showMore ? t("landing.showMore.hideTitle") : t("landing.showMore.showTitle")}
-                </span>
-                <span className="text-[10px] text-zinc-400 font-normal">
-                  {showMore ? t("landing.showMore.hideSubtitle") : t("landing.showMore.showSubtitle")}
-                </span>
-              </div>
-            </div>
+        {/* Ecuaciones de Equipo (Campus Turia x Alameda) */}
+        <CampusFeedPreview onSelectProject={focusSignupForm} />
 
-            {/* Chevron interactivo con micro-rebote al hover */}
-            <div className={`w-7 h-7 rounded-xl bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-red-500/40 transition-all duration-300 shrink-0 ${showMore ? "rotate-180 bg-zinc-800 text-white" : "group-hover:translate-y-0.5"}`}>
-              <ChevronDown className="w-4 h-4 transition-transform duration-300" />
-            </div>
-          </button>
-        </div>
-
-        {/* Marketing Sections */}
-        <div className={`${showMore ? "block" : "hidden"} md:block`}>
-          {/* Showcase de Sinergias Multidisciplinares (Ejemplos densos de proyectos) */}
-          <CampusFeedPreview
-            onSelectProject={() => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
-              if (emailInput) {
-                emailInput.focus();
-              }
-            }}
-          />
-          
-          {/* Preguntas frecuentes y resolución de objeciones para estudiantes */}
-          <StudentFaq />
-        </div>
+        {/* Preguntas frecuentes y resolución de objeciones para estudiantes */}
+        <StudentFaq onCreateProfile={focusSignupForm} />
         
         <Footer />
       </div>

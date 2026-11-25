@@ -66,7 +66,7 @@ export default function HeroSection() {
       </motion.h1>
       
       {/* Subtitle */}
-      <motion.p variants={itemVariants} className="hidden sm:block text-lg md:text-xl text-zinc-300 max-w-xl leading-relaxed">
+      <motion.p variants={itemVariants} className="text-sm sm:text-lg md:text-xl text-zinc-300 max-w-xl leading-relaxed">
         {t("landing.hero.subtitle1")}<strong className="text-white font-semibold">{t("landing.hero.subtitleHighlight")}</strong>{t("landing.hero.subtitle2")}
       </motion.p>
 
