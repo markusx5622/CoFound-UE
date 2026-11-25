@@ -2,16 +2,18 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy, limit, startAfter, QueryDocumentSnapshot } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, orderBy, limit, startAfter, QueryDocumentSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, UserCircle, Tag, Search, Filter, Sparkles } from "lucide-react";
+import { Briefcase, UserCircle, Tag, Search, Filter, Sparkles, UserCheck, ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
 import { ProjectSkeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 import { isDemoId, cleanProjectTitle } from "@/lib/demo";
+import { formatRelativeDate } from "@/lib/date-utils";
 
 interface Project {
   id: string;
@@ -21,6 +23,7 @@ interface Project {
   profiles: string[];
   creator_id: string;
   creatorName?: string;
+  createdAt?: unknown;
 }
 
 function mapProjectDoc(id: string, data: Record<string, unknown>): Project {
@@ -33,13 +36,16 @@ function mapProjectDoc(id: string, data: Record<string, unknown>): Project {
     profiles: sanitizeStringArray(data.profiles, 10),
     creator_id: sanitizeString(data.creator_id),
     ...(creatorName ? { creatorName } : {}),
+    createdAt: data.createdAt,
   };
 }
 
 export default function Dashboard() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
   
   // Filtros
   const [searchQuery, setSearchQuery] = useState("");
@@ -116,6 +122,30 @@ export default function Dashboard() {
     loadInitialProjects();
   }, []);
 
+  useEffect(() => {
+    const checkProfileStatus = async () => {
+      if (!user || !user.emailVerified) {
+        setNeedsProfileSetup(false);
+        return;
+      }
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (!snap.exists()) {
+          setNeedsProfileSetup(true);
+          return;
+        }
+        const data = snap.data() as Record<string, unknown>;
+        const hasName = sanitizeString(data.name).length > 0;
+        const hasDegree = sanitizeString(data.degree).length > 0;
+        setNeedsProfileSetup(!hasName || !hasDegree);
+      } catch {
+        // No bloquear el tablero si falla la comprobación auxiliar
+      }
+    };
+
+    checkProfileStatus();
+  }, [user]);
+
   const filteredProjects = projects.filter(project => {
     const q = searchQuery.trim().toLowerCase();
     const matchesSearch =
@@ -135,6 +165,32 @@ export default function Dashboard() {
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-extrabold text-white mb-8 tracking-tight">{t("dashboard.title")}</h1>
+
+          {/* Banner de onboarding si falta completar el perfil */}
+          {needsProfileSetup && (
+            <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-950/50 via-zinc-900/90 to-zinc-900/80 border border-[#E60000]/35 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-red-950/70 border border-[#E60000]/40 flex items-center justify-center text-[#E60000] shrink-0 mt-0.5">
+                  <UserCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-white">
+                    {t("dashboard.completeProfileBannerTitle")}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-zinc-300 mt-0.5 leading-relaxed">
+                    {t("dashboard.completeProfileBannerDesc")}
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/perfil"
+                className="shrink-0 bg-[#E60000] hover:bg-red-700 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all inline-flex items-center justify-center gap-1.5 shadow-md"
+              >
+                <span>{t("dashboard.completeProfileBannerCta")}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          )}
           
           {/* Barra de Filtros */}
           <div className="bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-zinc-800 mb-8 flex flex-col md:flex-row gap-4">
@@ -221,9 +277,17 @@ export default function Dashboard() {
                       )}
                     </div>
                     <h2 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#E60000] transition-colors">{cleanProjectTitle(project.title)}</h2>
-                    <div className="flex items-center gap-2 text-sm text-zinc-400 mb-4">
-                      <UserCircle className="h-4 w-4" />
-                      <span>{project.creatorName || t("dashboard.defaultCreator")}</span>
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-zinc-400 mb-4">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <UserCircle className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{project.creatorName || t("dashboard.defaultCreator")}</span>
+                      </div>
+                      {formatRelativeDate(project.createdAt, language) && (
+                        <span className="inline-flex items-center gap-1 text-xs text-zinc-500 shrink-0">
+                          <Clock className="h-3 w-3" />
+                          {formatRelativeDate(project.createdAt, language)}
+                        </span>
+                      )}
                     </div>
                     <p className="text-zinc-400 text-sm mb-6 line-clamp-3">
                       {project.description}

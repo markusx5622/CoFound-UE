@@ -11,6 +11,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { reportClientError } from "@/lib/error-logger";
+import { formatMessageTime, formatRelativeDate } from "@/lib/date-utils";
 
 interface UserData {
   name: string;
@@ -58,7 +59,7 @@ function hasUnreadMessages(convo: Conversation, currentUserId: string): boolean 
 }
 
 export default function Mensajes() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeChat, setActiveChat] = useState<Conversation | null>(null);
@@ -259,9 +260,16 @@ export default function Mensajes() {
                       <div className="overflow-hidden flex-grow min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="text-white font-medium truncate">{convo.otherUser.name}</h3>
-                          {isUnread && (
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#E60000] shrink-0" title={t("messages.unreadTooltip")} />
-                          )}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {formatRelativeDate(convo.lastMessageAt || convo.createdAt, language) && (
+                              <span className="text-[10px] text-zinc-500">
+                                {formatRelativeDate(convo.lastMessageAt || convo.createdAt, language)}
+                              </span>
+                            )}
+                            {isUnread && (
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#E60000] shrink-0" title={t("messages.unreadTooltip")} />
+                            )}
+                          </div>
                         </div>
                         <p className="text-zinc-400 text-xs truncate">{t("messages.projectPrefix")}: {convo.projectTitle}</p>
                       </div>
@@ -302,10 +310,16 @@ export default function Mensajes() {
                   ) : (
                     messages.map(msg => {
                       const isMe = msg.senderId === user?.uid;
+                      const timeLabel = formatMessageTime(msg.createdAt, language);
                       return (
                         <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                           <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-2 shadow-sm ${isMe ? 'bg-[#E60000] text-white rounded-br-none' : 'bg-zinc-800 text-zinc-200 rounded-bl-none border border-zinc-700'}`}>
                             <p className="text-sm whitespace-pre-wrap break-words">{msg.text}</p>
+                            {timeLabel && (
+                              <div className={`text-[10px] mt-1 text-right ${isMe ? 'text-red-100/80' : 'text-zinc-400'}`}>
+                                {timeLabel}
+                              </div>
+                            )}
                           </div>
                         </div>
                       );

@@ -19,14 +19,16 @@ describe("CoFound-UE Firestore Rules", () => {
         port: 8080,
       },
     });
-  });
+  }, 30000);
 
   beforeEach(async () => {
     await testEnv.clearFirestore();
   });
 
   afterAll(async () => {
-    await testEnv.cleanup();
+    if (testEnv) {
+      await testEnv.cleanup();
+    }
   });
 
   const getAuthContext = (uid: string, email: string) => {
@@ -1196,6 +1198,59 @@ describe("CoFound-UE Firestore Rules", () => {
           createdAt: new Date(),
         })
       );
+    });
+
+    it("permite postularse con primer mensaje de presentación y retirar posteriormente una postulación pendiente", async () => {
+      const uidCreator = "founder_withdraw";
+      const uidApplicant = "applicant_withdraw";
+      const dbCreator = getAuthContext(uidCreator, "founder@live.uem.es").firestore();
+      const dbApplicant = getAuthContext(uidApplicant, "applicant@live.uem.es").firestore();
+      const projId = "proj_intro_withdraw";
+      const appId = `${projId}_${uidApplicant}`;
+
+      await assertSucceeds(
+        dbCreator.collection("projects").doc(projId).set({
+          title: "Proyecto real con presentación inicial",
+          description: "Buscamos perfil de diseño para lanzar un prototipo funcional este mes.",
+          category: "Startup Real",
+          profiles: ["Diseño UI/UX"],
+          creator_id: uidCreator,
+          creatorName: "Founder UEV",
+          createdAt: new Date(),
+        })
+      );
+
+      // 1. Crear postulación
+      const appRef = dbApplicant.collection("applications").doc(appId);
+      await assertSucceeds(
+        appRef.set({
+          projectId: projId,
+          projectTitle: "Proyecto real con presentación inicial",
+          applicantId: uidApplicant,
+          creatorId: uidCreator,
+          status: "pending",
+          createdAt: new Date(),
+        })
+      );
+
+      // 2. Enviar primer mensaje de presentación por writeBatch atómico
+      const batch = dbApplicant.batch();
+      const introRef = appRef.collection("messages").doc("intro_msg");
+      batch.set(introRef, {
+        text: "[Perfil de interés: Diseño UI/UX]\nHola, estudio 3.º de Diseño y manejo Figma.",
+        senderId: uidApplicant,
+        createdAt: new Date(),
+      });
+      batch.update(appRef, {
+        lastMessageAt: new Date(),
+        lastMessageSenderId: uidApplicant,
+        lastReadByApplicant: new Date(),
+      });
+      await assertSucceeds(batch.commit());
+
+      // 3. El candidato retira su postulación pendiente (borrado hijos -> padre)
+      await assertSucceeds(introRef.delete());
+      await assertSucceeds(appRef.delete());
     });
   });
 });

@@ -2,15 +2,16 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, Clock, CheckCircle, XCircle, MessageSquare } from "lucide-react";
+import { Briefcase, Clock, CheckCircle, XCircle, MessageSquare, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, toSafeDate } from "@/lib/firestore-guards";
+import ConfirmModal from "@/components/ConfirmModal";
 
 interface Application {
   id: string;
@@ -25,6 +26,8 @@ export default function MisPostulaciones() {
   const { t, language } = useLanguage();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const [appToWithdraw, setAppToWithdraw] = useState<Application | null>(null);
+  const [withdrawing, setWithdrawing] = useState(false);
   const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
@@ -67,6 +70,27 @@ export default function MisPostulaciones() {
 
     fetchApplications();
   }, [user, authLoading, t]);
+
+  const handleConfirmWithdraw = async () => {
+    if (!user || !appToWithdraw) return;
+    const targetId = appToWithdraw.id;
+    setWithdrawing(true);
+    try {
+      // Eliminar primero los mensajes de la conversación (hijos -> padre) y luego la postulación
+      const msgsSnap = await getDocs(collection(db, "applications", targetId, "messages"));
+      await Promise.all(msgsSnap.docs.map((m) => deleteDoc(m.ref)));
+      await deleteDoc(doc(db, "applications", targetId));
+
+      setApplications((prev) => prev.filter((item) => item.id !== targetId));
+      setAppToWithdraw(null);
+      toast.success(t("myApplications.withdrawSuccessToast"));
+    } catch (error) {
+      reportClientError("my_applications_withdraw", error);
+      toast.error(t("myApplications.withdrawErrorToast"));
+    } finally {
+      setWithdrawing(false);
+    }
+  };
 
   return (
     <ProtectedRoute>
@@ -117,10 +141,21 @@ export default function MisPostulaciones() {
                       <span>{t("myApplications.openChatBtn")}</span>
                     </Link>
                     {app.status === 'pending' && (
-                      <span className="inline-flex items-center gap-1.5 bg-yellow-500/10 text-yellow-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-yellow-500/20">
-                        <Clock className="h-4 w-4" />
-                        {t("myApplications.pending")}
-                      </span>
+                      <>
+                        <span className="inline-flex items-center gap-1.5 bg-yellow-500/10 text-yellow-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-yellow-500/20">
+                          <Clock className="h-4 w-4" />
+                          {t("myApplications.pending")}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setAppToWithdraw(app)}
+                          title={t("myApplications.withdrawBtn")}
+                          className="inline-flex items-center gap-1.5 bg-transparent hover:bg-red-950/40 text-zinc-400 hover:text-red-400 px-2.5 py-1.5 rounded-lg text-sm font-medium border border-zinc-800 hover:border-red-900/50 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">{t("myApplications.withdrawBtn")}</span>
+                        </button>
+                      </>
                     )}
                     {app.status === 'accepted' && (
                       <span className="inline-flex items-center gap-1.5 bg-green-500/10 text-green-500 px-3 py-1.5 rounded-lg text-sm font-medium border border-green-500/20">
@@ -141,6 +176,18 @@ export default function MisPostulaciones() {
           )}
         </div>
       </div>
+      <ConfirmModal
+        isOpen={Boolean(appToWithdraw)}
+        title={t("myApplications.withdrawModalTitle")}
+        description={t("myApplications.withdrawModalDesc", {
+          title: appToWithdraw?.projectTitle || "",
+        })}
+        confirmLabel={t("myApplications.withdrawModalConfirm")}
+        cancelLabel={t("myApplications.withdrawModalCancel")}
+        loading={withdrawing}
+        onConfirm={handleConfirmWithdraw}
+        onCancel={() => setAppToWithdraw(null)}
+      />
     </ProtectedRoute>
   );
 }

@@ -2,10 +2,10 @@
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { UserCircle, Tag, ArrowLeft, Send, Sparkles, ArrowRight } from "lucide-react";
+import { UserCircle, Tag, ArrowLeft, Send, Sparkles, ArrowRight, Share2, Clock } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -14,6 +14,8 @@ import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
 import { isDemoId, cleanProjectTitle } from "@/lib/demo";
+import { formatRelativeDate } from "@/lib/date-utils";
+import ApplyProjectModal from "@/components/ApplyProjectModal";
 
 interface Project {
   id: string;
@@ -23,6 +25,7 @@ interface Project {
   profiles: string[];
   creator_id: string;
   creatorName?: string;
+  createdAt?: unknown;
 }
 
 interface UserProfile {
@@ -34,7 +37,7 @@ interface UserProfile {
 export default function ProyectoDetalle() {
   const { id } = useParams();
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const [project, setProject] = useState<Project | null>(null);
   const [creator, setCreator] = useState<UserProfile | null>(null);
@@ -42,6 +45,8 @@ export default function ProyectoDetalle() {
   
   const [hasApplied, setHasApplied] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [checkingProfile, setCheckingProfile] = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
   const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
@@ -65,6 +70,7 @@ export default function ProyectoDetalle() {
             profiles: sanitizeStringArray(raw.profiles, 10),
             creator_id: sanitizeString(raw.creator_id),
             ...(creatorName ? { creatorName } : {}),
+            createdAt: raw.createdAt,
           };
           setProject(projectData);
           
@@ -106,43 +112,130 @@ export default function ProyectoDetalle() {
     fetchProjectAndCreator();
   }, [id, user, authLoading, t]);
 
-  const handleApply = async () => {
+  const handleOpenApplyModal = async () => {
+    if (!user) {
+      toast.error(t("projectDetail.mustLoginToast"));
+      return;
+    }
+    if (!project) return;
+    if (isDemoId(project.creator_id)) {
+      toast.error(t("projectDetail.cannotApplyDemoToast"));
+      return;
+    }
+    if (user.uid === project.creator_id) {
+      toast.error(t("projectDetail.cannotApplyOwnToast"));
+      return;
+    }
+
+    setCheckingProfile(true);
+    try {
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      const userName = userSnap.exists()
+        ? sanitizeString((userSnap.data() as Record<string, unknown>).name)
+        : "";
+      if (!userName) {
+        toast.error(t("projectDetail.completeProfileBeforeApply"));
+        router.push("/perfil");
+        return;
+      }
+      setShowApplyModal(true);
+    } catch (error) {
+      reportClientError("project_apply_profile_check", error);
+      setShowApplyModal(true);
+    } finally {
+      setCheckingProfile(false);
+    }
+  };
+
+  const handleConfirmApply = async ({
+    selectedProfile,
+    note,
+  }: {
+    selectedProfile: string;
+    note: string;
+  }) => {
     try {
       setApplying(true);
-      if (!user) {
-        toast.error(t("projectDetail.mustLoginToast"));
-        return;
-      }
-      
-      if (!project) return;
-      
-      if (isDemoId(project.creator_id)) {
-        toast.error(t("projectDetail.cannotApplyDemoToast"));
-        return;
-      }
-
-      if (user.uid === project.creator_id) {
-        toast.error(t("projectDetail.cannotApplyOwnToast"));
-        return;
-      }
+      if (!user || !project) return;
+      if (isDemoId(project.creator_id) || user.uid === project.creator_id) return;
 
       const deterministicAppId = `${project.id}_${user.uid}`;
-      await setDoc(doc(db, "applications", deterministicAppId), {
+      const appRef = doc(db, "applications", deterministicAppId);
+      await setDoc(appRef, {
         projectId: project.id,
         projectTitle: project.title,
         applicantId: user.uid,
         creatorId: project.creator_id,
         status: "pending",
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       });
 
+      // Enviar la nota/perfil seleccionado como primer mensaje de chat de forma atómica
+      const introParts: string[] = [];
+      if (selectedProfile && note) {
+        introParts.push(`[${t("projectDetail.applyRoleMessagePrefix")}: ${selectedProfile}]`);
+        introParts.push(note);
+      } else if (note) {
+        introParts.push(note);
+      } else if (selectedProfile) {
+        introParts.push(t("projectDetail.applyRoleDefaultMsg", { role: selectedProfile }));
+      }
+
+      const introText = introParts.join("\n").trim().slice(0, 1000);
+      if (introText) {
+        try {
+          const batch = writeBatch(db);
+          const firstMsgRef = doc(collection(db, "applications", deterministicAppId, "messages"));
+          batch.set(firstMsgRef, {
+            text: introText,
+            senderId: user.uid,
+            createdAt: serverTimestamp(),
+          });
+          batch.update(appRef, {
+            lastMessageAt: serverTimestamp(),
+            lastMessageSenderId: user.uid,
+            lastReadByApplicant: serverTimestamp(),
+          });
+          await batch.commit();
+        } catch (msgError) {
+          reportClientError("project_apply_intro_message", msgError);
+        }
+      }
+
       setHasApplied(true);
+      setShowApplyModal(false);
       toast.success(t("projectDetail.applySuccessToast"));
     } catch (error) {
       reportClientError("project_apply", error);
       toast.error(t("projectDetail.applyErrorToast"));
     } finally {
       setApplying(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!project || typeof window === "undefined") return;
+    const shareUrl = window.location.href;
+    const shareTitle = `${cleanProjectTitle(project.title)} · CoFound UE`;
+
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: shareTitle, url: shareUrl });
+        return;
+      } catch (err: unknown) {
+        const name =
+          typeof err === "object" && err !== null && "name" in err
+            ? String((err as { name?: unknown }).name)
+            : "";
+        if (name === "AbortError") return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success(t("projectDetail.shareCopiedToast"));
+    } catch {
+      toast.error(t("projectDetail.loadErrorToast"));
     }
   };
 
@@ -172,15 +265,27 @@ export default function ProyectoDetalle() {
   }
 
   const isDemo = isDemoId(project.creator_id);
+  const publishedLabel = formatRelativeDate(project.createdAt, language);
+  const displayTitle = cleanProjectTitle(project.title);
 
   return (
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-            {t("projectDetail.backToExplore")}
-          </Link>
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
+              <ArrowLeft className="h-5 w-5" />
+              {t("projectDetail.backToExplore")}
+            </Link>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 px-3.5 py-2 rounded-xl transition-all"
+            >
+              <Share2 className="h-4 w-4 text-[#E60000]" />
+              <span>{t("projectDetail.shareBtn")}</span>
+            </button>
+          </div>
 
           <div className="bg-zinc-900/60 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-sm border border-zinc-800 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#E60000] rounded-full blur-[150px] opacity-5 pointer-events-none"></div>
@@ -200,7 +305,7 @@ export default function ProyectoDetalle() {
                       </span>
                     )}
                   </div>
-                  <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">{cleanProjectTitle(project.title)}</h1>
+                  <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">{displayTitle}</h1>
                 </div>
                 
                 <div className="shrink-0">
@@ -214,8 +319,8 @@ export default function ProyectoDetalle() {
                     </Link>
                   ) : (
                     <button
-                      onClick={handleApply}
-                      disabled={hasApplied || applying || user?.uid === project.creator_id}
+                      onClick={handleOpenApplyModal}
+                      disabled={hasApplied || applying || checkingProfile || user?.uid === project.creator_id}
                       className={`px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 shadow-md ${
                         hasApplied 
                           ? "bg-green-600/20 text-green-500 border border-green-600/30 cursor-default" 
@@ -224,8 +329,8 @@ export default function ProyectoDetalle() {
                           : "bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
                       }`}
                     >
-                      {applying ? t("projectDetail.processing") : hasApplied ? t("projectDetail.alreadyApplied") : t("projectDetail.applyBtn")}
-                      {!hasApplied && !applying && user?.uid !== project.creator_id && <Send className="h-5 w-5" />}
+                      {applying || checkingProfile ? t("projectDetail.processing") : hasApplied ? t("projectDetail.alreadyApplied") : t("projectDetail.applyBtn")}
+                      {!hasApplied && !applying && !checkingProfile && user?.uid !== project.creator_id && <Send className="h-5 w-5" />}
                     </button>
                   )}
                 </div>
@@ -246,6 +351,15 @@ export default function ProyectoDetalle() {
                   <>
                     <span className="w-1.5 h-1.5 rounded-full bg-zinc-700"></span>
                     <span>{creator.campus.toLowerCase().includes("campus") ? creator.campus : `Campus ${creator.campus}`}</span>
+                  </>
+                )}
+                {publishedLabel && (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-700"></span>
+                    <span className="inline-flex items-center gap-1.5 text-zinc-400">
+                      <Clock className="h-3.5 w-3.5 text-zinc-500" />
+                      {t("projectDetail.publishedPrefix")} {publishedLabel.toLowerCase()}
+                    </span>
                   </>
                 )}
               </div>
@@ -284,6 +398,15 @@ export default function ProyectoDetalle() {
           </div>
         </div>
       </div>
+
+      <ApplyProjectModal
+        isOpen={showApplyModal}
+        projectTitle={displayTitle}
+        profiles={project.profiles}
+        submitting={applying}
+        onClose={() => setShowApplyModal(false)}
+        onConfirm={handleConfirmApply}
+      />
     </ProtectedRoute>
   );
 }

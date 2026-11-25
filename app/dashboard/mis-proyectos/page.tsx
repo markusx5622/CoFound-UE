@@ -13,6 +13,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
+import ConfirmModal from "@/components/ConfirmModal";
 
 interface Project {
   id: string;
@@ -45,6 +46,8 @@ export default function MisProyectos() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedApplicant, setSelectedApplicant] = useState<Application["applicantData"] | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [deletingProject, setDeletingProject] = useState(false);
   const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
@@ -112,10 +115,10 @@ export default function MisProyectos() {
     fetchData();
   }, [user, authLoading, t]);
 
-  const handleDelete = async (projectId: string) => {
-    if (!user) return;
-    if (!window.confirm(t("myProjects.deleteConfirm"))) return;
-    
+  const handleConfirmDelete = async () => {
+    if (!user || !projectToDelete) return;
+    const projectId = projectToDelete.id;
+    setDeletingProject(true);
     try {
       // 1. Eliminar primero postulaciones y sus mensajes (hijos -> padre) para evitar huérfanos ante fallos parciales
       const qApps = query(
@@ -137,10 +140,13 @@ export default function MisProyectos() {
 
       setProjects(projects.filter(p => p.id !== projectId));
       setApplications(applications.filter(a => a.projectId !== projectId));
+      setProjectToDelete(null);
       toast.success(t("myProjects.deleteSuccess"));
     } catch (error) {
       reportClientError("my_projects_delete", error);
       toast.error(t("myProjects.deleteError"));
+    } finally {
+      setDeletingProject(false);
     }
   };
 
@@ -196,7 +202,7 @@ export default function MisProyectos() {
                       <Edit className="h-4 w-4" />
                     </Link>
                     <button 
-                      onClick={() => handleDelete(project.id)}
+                      onClick={() => setProjectToDelete(project)}
                       className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
                       title={t("myProjects.deleteTooltip")}
                     >
@@ -371,6 +377,18 @@ export default function MisProyectos() {
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={Boolean(projectToDelete)}
+        title={t("myProjects.deleteModalTitle")}
+        description={t("myProjects.deleteModalDesc", {
+          title: projectToDelete?.title || "",
+        })}
+        confirmLabel={t("myProjects.deleteModalConfirm")}
+        cancelLabel={t("myProjects.deleteModalCancel")}
+        loading={deletingProject}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setProjectToDelete(null)}
+      />
     </ProtectedRoute>
   );
 }
