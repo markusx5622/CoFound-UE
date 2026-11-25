@@ -132,6 +132,7 @@ service cloud.firestore {
         && request.resource.data.creatorId is string
         && request.resource.data.creatorId.size() > 0
         && request.resource.data.creatorId != request.auth.uid
+        && !request.resource.data.creatorId.lower().matches('^demo-.*')
         && exists(/databases/$(database)/documents/projects/$(request.resource.data.projectId))
         && get(/databases/$(database)/documents/projects/$(request.resource.data.projectId)).data.creator_id == request.resource.data.creatorId
         && (!('projectTitle' in request.resource.data) || (request.resource.data.projectTitle is string && request.resource.data.projectTitle.size() <= 150))

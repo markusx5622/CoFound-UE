@@ -1,254 +1,241 @@
-# CoFound UE — Protocolo de Smoke Test Exhaustivo
+# CoFound UE — Protocolo Maestro de Smoke Test End-to-End (Edición Lanzamiento Día 11)
 
-**Versión:** 1.1 · **Fecha:** Noviembre 2026
-**Tester:** Marc Cubero Cantavella (individual)
-**Entorno bajo prueba:** Producción — https://www.cofoundue.es
-**Estado del código:** rama `main`, CI verde (lint + tests + build), 30/30 tests de reglas en emulador
-
----
-
-## 0. Preparación previa (OBLIGATORIA antes de empezar)
-
-### 0.1. Lo que necesitas
-
-| Recurso | Detalle |
-| --- | --- |
-| **Cuenta A** | Tu cuenta real (@live.uem.es) — será la "creadora de proyectos" |
-| **Cuenta B** | Una segunda cuenta institucional — será la "postulante". **Imprescindible para probar postulaciones y mensajería.** Opciones: un alias de tu correo si la UE admite sufijos `+` (ej. `tucorreo+test@live.uem.es`), o un compañero que te deje usar la suya 30 minutos |
-| **Navegador 1** | Chrome normal (Cuenta A) |
-| **Navegador 2** | Chrome incógnito o Firefox (Cuenta B) — así mantienes ambas sesiones abiertas a la vez |
-| **Móvil** | El tuyo, con la PWA DESINSTALADA antes de empezar (para probar la instalación limpia) |
-| **Papel/notas** | Esta checklist + la plantilla de reporte de bugs de la sección 14 |
-
-### 0.2. Notas de contexto técnico (para interpretar resultados)
-
-- La app NO permite subir avatar (funcionalidad eliminada deliberadamente). Si ves un icono genérico de usuario, es lo CORRECTO.
-- Las tarjetas de proyectos antiguos (creados antes del campo `creatorName`) mostrarán "Usuario UE" como creador. Es el fallback esperado, NO un bug.
-- La PWA solo registra el service worker en producción (no en localhost).
-- Firebase tiene propagación casi instantánea; si algo "no aparece", espera 2-3 segundos antes de declararlo bug.
-
-### 0.3. Cómo registrar resultados
-
-Marca cada test: ✅ Pasa · ❌ Falla · ⚠️ Pasa con observaciones.
-Todo ❌ o ⚠️ se documenta con la plantilla de la sección 14 y se clasifica con la severidad de la sección 15.
+**Versión:** 2.0 (Definitiva Post-Auditoría `CF` + `SEC-01..14` + Fase 3)  
+**Responsable QA:** Marc Cubero Cantavella (y apoyo opcional de Juan)  
+**Entorno bajo prueba:** Producción real — `https://www.cofoundue.es` (`cofound-ue`)  
+**Objetivo:** Certificar con garantías reales, pruebas empíricas y cobertura del **100% de rutas, estados, roles y reglas de seguridad** que CoFound UE está lista para recibir tráfico simultáneo real en el evento oficial de lanzamiento del **Día 11**.
 
 ---
 
-## 1. Pre-flight: despliegue y carga inicial
+## Parte I · Certificación Automatizada Previa (60/60 Pruebas Superadas ✅)
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+Antes de iniciar el recorrido manual autenticado con multicuentas, se han ejecutado **60 verificaciones técnicas automatizadas** contra producción (`https://www.cofoundue.es`), Google Cloud / Firebase (`cofound-ue`) y el emulador oficial de reglas:
+
+| Suite Automatizada | Alcance Verificado | Resultado | Evidencia Técnica Real |
+| --- | --- | --- | --- |
+| **1. Infraestructura, Dominios y Assets (`13/13`)** | Redirección `308` desde `cofound-ue.vercel.app` y `cofoundue.es` → `https://www.cofoundue.es/`; TTFB `< 300 ms`; `/sw.js` `v3` con `Cache-Control: no-cache`; `/manifest.webmanifest` válido; `/robots.txt`, `/sitemap.xml`, 3 páginas legales y los 9 iconos/imágenes `< 400 KB`. | ✅ **13 / 13 PASS** | `PRE-01..03`, `PWA-01..02`, `ASSET-01` |
+| **2. Cabeceras HTTP y Fase 3 API Key en Vivo** | Las 7 cabeceras activas (`CSP` sin `'unsafe-eval'`, `HSTS` preload, `COOP`, `nosniff`, `XFO: DENY`, `Referrer-Policy`, `Permissions-Policy`). Clave de API acepta `www.cofoundue.es`, mantiene activa la **Protección contra enumeración de correos** (`INVALID_LOGIN_CREDENTIALS`), y devuelve **`403 ACCESS_DENIED`** ante orígenes externos (`evil-attacker.example.com`), dominios *lookalike* (`evilcofoundue.es`) y APIs fuera de las 4 autorizadas; Firestore rechaza lectura anónima con **`403 PERMISSION_DENIED`**. | ✅ **Verificado en vivo** | `SEC-HDR-01..02`, `FASE3-01..05` |
+| **3. Navegador Real Chrome Headless CDP (`8/8`)** | Renderizado y ausencia total de scroll horizontal en **Escritorio (`1440×900`)** y **Móvil (`375×812`)**; Service Worker `/sw.js` activado; selector bilingüe `ES ↔ EN` en caliente; validaciones en cliente (`@gmail.com` bloqueado, `<8` chars bloqueado, casilla RGPD obligatoria); 7 rutas protegidas redirigiendo a `/` sin sesión; **`0` errores de consola, `0` excepciones JS y `0` violaciones CSP**. | ✅ **8 / 8 PASS** | `CDP-01..08` |
+| **4. Reglas Firestore + Ciclo E2E Multicuentas (`40/40`)** | Validación exhaustiva de esquemas, límites, privacidad RGPD (`users` sin listado ni email expuesto), postulaciones deterministas `projectId_uid`, bloqueo de postulaciones a proyectos demo (`demo-*`), chat atómico `writeBatch`, bloqueo de chat rechazado y simulación completa E2E con 4 cuentas (`+smokea`, `+smokeb`, `+smokec`, y cuenta no verificada). | ✅ **40 / 40 PASS** | `tests/rules.test.ts` (`vitest`) |
+
+> **Conclusión de la Parte I:** La capa de red, cabeceras, PWA estática, reglas de base de datos y restricciones de Google Cloud ya están certificadas. La **Parte II** valida en producción real la experiencia humana completa con **3 cuentas institucionales simultáneas** y un móvil físico.
+
+---
+
+## Parte II · Preparación de la Matriz Multicuentas (3 Cuentas Simultáneas)
+
+Para probar **todos** los estados posibles de la aplicación sin dejarnos ángulos muertos (candidato aceptado vs. candidato rechazado, usuario sin perfil completado, contadores múltiples y limpieza final con reautenticación), utilizaremos **3 cuentas institucionales** en **3 sesiones de navegador aisladas**.
+
+### 0.1. Cómo obtener 3 cuentas institucionales sin depender de nadie (Truco de Alias `+`)
+
+Tanto el validador de la web (`endsWith("@live.uem.es")`) como las reglas de producción de Firestore (`^[^@]+@(live\.uem\.es|universidadeuropea\.es)$`) admiten **subdirecciones RFC 5233 (`+alias`)** sobre tu propio correo de Microsoft 365 de la universidad:
+
+| Rol en el Smoke Test | Correo sugerido | Navegador / Dispositivo asignado | Propósito específico |
+| --- | --- | --- | --- |
+| **Cuenta A · Fundadora** | Tu cuenta principal (`tucorreo@live.uem.es`) | **PC · Chrome ventana normal** (`1440px+`) | Crea, edita y borra proyectos; recibe postulaciones; acepta a B y rechaza a C; chatea en tiempo real. |
+| **Cuenta B · Candidata Aceptada + PWA Móvil** | `tucorreo+smokeb@live.uem.es` *(Plan B si UEV filtra `+`: cuenta de Juan)* | **PC · Chrome ventana Incógnito** **+** **Tu Móvil físico (PWA)** | Se registra desde cero, verifica email, se postula, es **aceptada**, chatea en vivo desde PC y PWA móvil, y al final prueba el **borrado de cuenta**. |
+| **Cuenta C · Candidata Rechazada / Sin Perfil / Saboteadora** | `tucorreo+smokec@live.uem.es` *(o segunda cuenta de apoyo)* | **PC · Microsoft Edge** (o Firefox / 2.º perfil de Chrome) | Prueba el bloqueo de publicar sin perfil (`4.1`), se postula (subiendo el badge de A a `2`), es **rechazada**, verifica el **bloqueo de chat rechazado** y prueba intentos de acceso no autorizado (IDOR). |
+
+> **Nota sobre recepción de correos `@live.uem.es`:** Los emails enviados por Firebase Auth a `tucorreo+smokeb@live.uem.es` y `tucorreo+smokec@live.uem.es` llegan directamente a la bandeja de entrada (o carpeta *Correo no deseado / Otros*) de `tucorreo@live.uem.es`. Antes de empezar, desinstala cualquier versión previa de la PWA de CoFound UE en tu móvil.
+
+### 0.2. Leyenda de registro
+Marca cada punto al ejecutarlo: `✅ Pasa` · `❌ Falla` · `⚠️ Observación menor`.  
+El orden de los **13 Bloques** está diseñado de forma **estrictamente secuencial**: cada paso prepara los datos necesarios para el siguiente y el **Bloque 13** limpia automáticamente todos los datos de prueba en producción.
+
+---
+
+## Bloque 1 · Pre-Flight Visual y Compartición Social (WhatsApp / Redes)
+
+*(Tiempo estimado: 2 min — el resto del pre-flight técnico ya está certificado en la Parte I).*
+
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 1.1 | Web accesible | Abrir https://www.cofoundue.es (y comprobar redirección 308 desde https://cofound-ue.vercel.app) | Carga sin errores en dominio canónico, landing visible | ☐ |
-| 1.2 | Velocidad de carga | Recargar con Ctrl+Shift+R (sin caché) y cronometrar | Primera carga < 4s en WiFi normal (los assets se optimizaron a <500 KB) | ☐ |
-| 1.3 | Consola sin errores | F12 → Consola → recargar | Sin errores rojos (warnings amarillos menores son aceptables; anótalos) | ☐ |
-| 1.4 | Manifest servido | Visitar https://www.cofoundue.es/manifest.webmanifest | JSON del manifest visible con name "CoFound UE" | ☐ |
-| 1.5 | Service worker | F12 → Application → Service Workers | `/sw.js` registrado y activado (tras unos segundos) | ☐ |
-
+| **1.1** | Vista previa Open Graph real (WhatsApp / Instagram DM) | Pega `https://www.cofoundue.es` en un chat contigo mismo en WhatsApp (espera 2 s a que cargue la tarjeta antes de enviar). | Aparece miniatura limpia con `og-image.jpg` (Logo CoFound UE sobre fondo oscuro, sin cortes raros), título oficial y descripción en español. | ☐ |
+| **1.2** | Consola limpia en tu navegador habitual | En **Chrome normal (PC)** abre `https://www.cofoundue.es` con `F12 → Console` abierto y haz `Ctrl+Shift+R`. | `0` errores rojos en consola, Logo 2.0 nítido con resplandor rojo sutil, partículas de fondo fluidas y favicon visible en la pestaña. | ☐ |
 
 ---
 
-## 2. Landing page y metadatos
+## Bloque 2 · Landing Page, Conmutación Bilingüe (`ES ↔ EN`) y Textos Legales
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 2.1 | Renderizado completo | Scroll por toda la landing | Hero, features, cómo funciona, visión, footer — todo renderiza sin secciones rotas | ☐ |
-| 2.2 | Enlaces internos | Click en cada enlace del menú/footer de la landing | Navegan a su sección/página correcta | ☐ |
-| 2.3 | Footer legal | Leer el pie de página | "© 2026 Marc Cubero Cantavella · CoFound UE. Todos los derechos reservados." y "Diseñado y desarrollado por Marc Cubero Cantavella" | ☐ |
-| 2.4 | Email de contacto | Leer el email del footer | `cofoundue@gmail.com` (NO contacto@cofoundue.com) | ☐ |
-| 2.5 | Compartir (OG) | Pegar la URL en un chat de WhatsApp | Tarjeta con imagen og-image (icono rojo + CoFound UE), título y descripción. Sin recortes feos | ☐ |
-| 2.6 | Favicon | Mirar la pestaña del navegador | Icono de CoFound UE visible | ☐ |
+| **2.1** | Selector de idioma `ES ↔ EN` en Landing | Pulsa el botón superior derecho `🌐 ES` → elige `🇬🇧 English`. Recorre la landing de arriba abajo y vuelve a `🇪🇸 Español`. | Todos los textos (Hero, tarjeta de registro, Cómo funciona, Sinergias, FAQ y Footer) cambian al instante sin recargar ni dejar claves crudas (`landing.xxx`). | ☐ |
+| **2.2** | Interacción de tarjetas «Sinergias» | Baja a la sección *Sinergias reales entre Titulaciones* y pulsa **«Crear iniciativa similar»** en cualquiera de las 3 tarjetas. | Hace scroll suave hasta arriba del todo y pone el foco automáticamente en el campo de correo electrónico. | ☐ |
+| **2.3** | Acordeón de FAQ estudiantil | Abre y cierra las 4 preguntas frecuentes y pulsa el CTA inferior **«Crear mi perfil ahora»**. | Animación limpia, textos claros (100% gratuito, acceso exclusivo `@live.uem.es` / `@universidadeuropea.es`). | ☐ |
+| **2.4** | Páginas Legales y botón Volver | Desde el footer abre **Aviso Legal**, **Política de Privacidad** y **Política de Cookies** (prueba también cambiar a `EN` dentro de una de ellas). | Titular *Marc Cubero Cantavella*, contacto `cofoundue@gmail.com`, nota de independencia respecto a la UE, mención a *Vercel Web Analytics* (nunca GA4) y retención de `30 días` para errores técnicos. | ☐ |
 
 ---
 
-## 3. Autenticación y control de acceso
+## Bloque 3 · Autenticación, Verificación de Correo, Recuperación y Enumeración
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+*(Ejecutar con las ventanas de **Edge (Cuenta C)** y **Chrome Incógnito (Cuenta B)**).*
+
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 3.1 | Registro con email NO institucional | Intentar registrarse con @gmail.com | Rechazado con mensaje claro en español | ☐ |
-| 3.2 | Registro con email institucional | Registrar Cuenta B con @live.uem.es | Registro exitoso, redirige al interior | ☐ |
-| 3.3 | Contraseña débil | Intentar registrar con contraseña "123" | Error de Firebase traducido al español (no texto técnico en inglés) | ☐ |
-| 3.4 | Login incorrecto | Login con contraseña errónea | Mensaje de error amigable en español | ☐ |
-| 3.5 | Login correcto | Login con Cuenta A | Acceso al dashboard | ☐ |
-| 3.6 | Rutas protegidas sin sesión | En incógnito SIN login, abrir directamente: /dashboard, /perfil, /dashboard/nuevo, /dashboard/mensajes | Todas redirigen a la landing | ☐ |
-| 3.7 | Cierre de sesión | Click "Cerrar Sesión" | Vuelve a landing; al intentar volver a /dashboard, redirige | ☐ |
-| 3.8 | Persistencia de sesión | Login → cerrar pestaña → reabrir la URL | Sesión conservada (no pide login de nuevo) | ☐ |
+| **3.1** | Rechazo de correo externo | En pestaña **Crear Cuenta**, escribe `prueba@gmail.com`, contraseña ` SmokeTest2026!`, marca casilla legal y pulsa crear. | Bloqueado al instante: *«Acceso restringido. Por favor, utiliza tu correo institucional de la Universidad Europea.»* | ☐ |
+| **3.2** | Rechazo de contraseña `< 8` caracteres | Escribe `tucorreo+smokeb@live.uem.es` y contraseña de 7 caracteres (`1234567`). Intenta enviar. | Bloqueado por validación (`Mínimo 8 caracteres` / mensaje en español sin errores técnicos en inglés). | ☐ |
+| **3.3** | Casilla RGPD obligatoria en registro | Pon contraseña válida (`SmokeTest2026!`) pero **deja desmarcada** la casilla de Privacidad y Aviso Legal → pulsa crear. | Bloqueado con aviso: *«Debes aceptar la Política de Privacidad y el Aviso Legal para crear tu cuenta.»* | ☐ |
+| **3.4** | Alta real de **Cuenta B** y **Cuenta C** + Gate de verificación | Marca la casilla legal y registra **Cuenta B** en Incógnito (`tucorreo+smokeb@live.uem.es`) y **Cuenta C** en Edge (`tucorreo+smokec@live.uem.es`). | Toast de cuenta creada y aparición inmediata de la pantalla **«Verifica tu correo»**. Si escribes manualmente `/dashboard` en la barra de direcciones, `ProtectedRoute` **te bloquea** en la pantalla de verificación (no entra al tablón). | ☐ |
+| **3.5** | Botón «Ya lo he verificado» ANTES de verificar | Sin haber pulsado aún el enlace del email, haz clic en **«Ya lo he verificado»** en Cuenta B. | Muestra toast de aviso indicando que el correo aún no figura como verificado y **no deja pasar**. | ☐ |
+| **3.6** | Cooldown de 60s en reenvío de verificación | En `/dashboard` (pantalla de bloqueo de Cuenta C), pulsa **«Reenviar correo de verificación»**. | Envía el correo, muestra toast de éxito y el botón queda deshabilitado con cuenta atrás `60s, 59s...` | ☐ |
+| **3.7** | Verificación real y auto-entrada por foco | Abre tu correo `@live.uem.es` (revisa *Spam / Otros*), haz clic en los enlaces de verificación de **Cuenta B** y **Cuenta C**, y vuelve a sus pestañas de CoFound UE. | Al recuperar el foco la ventana (o al pulsar **«Ya lo he verificado»**), refresca el token JWT (`email_verified: true`) y entra automáticamente a `/dashboard`. | ☐ |
+| **3.8** | Protección contra enumeración de correos en Login | En una pestaña cerrada la sesión, intenta **Iniciar Sesión** con: 1) `noexiste.jamas.999@live.uem.es` + `ClaveFalsa123` y 2) tu correo real + `ClaveFalsa123`. | **Ambos casos muestran exactamente el mismo mensaje genérico** (*«Credenciales incorrectas o caducadas...»*), sin revelar jamás qué correos existen en la base de datos. | ☐ |
+| **3.9** | Flujo «¿Olvidaste tu contraseña?» | En **Iniciar Sesión**, pulsa *«¿Olvidaste tu contraseña?»*, prueba primero con `@gmail.com` (debe rechazarlo) y luego con `tucorreo+smokec@live.uem.es`. | Muestra confirmación en español y llega el email de restablecimiento al buzón institucional (no hace falta cambiarla si no quieres, o cámbiala a `SmokeTest2026B!` para validar el enlace completo). | ☐ |
+| **3.10** | Login y persistencia de **Cuenta A** | En **Chrome normal**, inicia sesión con **Cuenta A**, cierra la pestaña, abre una pestaña nueva en `https://www.cofoundue.es`. | Detecta sesión iniciada y verificada (*«¡Sesión Iniciada! → Entrar al Dashboard de Proyectos»*) sin volver a pedir credenciales. | ☐ |
 
 ---
 
-## 4. Perfil de usuario
+## Bloque 4 · Guardián de Perfil Inicial y Perfiles Públicos (`Cuenta A`, `B` y `C`)
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 4.1 | Avatar NO subible | Ir a /perfil | NO existe ningún control para subir foto (solo visualización estática). Sin texto "JPG, PNG, máx 2MB" | ☐ |
-| 4.2 | Completar perfil | Rellenar nombre, titulación, campus (Valencia), bio, 3-4 skills → Guardar | Toast de éxito; recargar la página y los datos persisten | ☐ |
-| 4.3 | Skills duplicadas | Intentar añadir la misma skill dos veces | No se duplica | ☐ |
-| 4.4 | Eliminar skill | Click en la X de una skill → guardar | Desaparece y persiste tras recargar | ☐ |
-| 4.5 | Perfil público | Abrir /perfil/[tu-uid] (enlace desde un proyecto o chat) | Vista pública del perfil con tus datos | ☐ |
-| 4.6 | Repetir con Cuenta B | Completar el perfil de B con nombre DISTINTO | B tiene su propio perfil independiente | ☐ |
+| **4.1** | Bloqueo de publicación sin perfil completado (`Cuenta C` virgen) | Con **Cuenta C** recién verificada (antes de tocar `/perfil`), ve directamente a **Nuevo Proyecto** (`/dashboard/nuevo`), rellena datos válidos y pulsa **Publicar Proyecto**. | **No publica**: muestra toast *«Completa tu perfil antes de publicar»* y te redirige automáticamente a `/perfil`. | ☐ |
+| **4.2** | Avatar de iniciales determinista (sin subida de archivos) | En `/perfil`, escribe distintos nombres y apellidos en el campo *Nombre Completo*. | El círculo superior actualiza sus iniciales en vivo (`InitialsAvatar`) y **no existe ningún input de subir foto**. | ☐ |
+| **4.3** | Guardado completo y persistencia en los 3 perfiles | Rellena y guarda los 3 perfiles con datos diferenciados:<br>• **Cuenta A:** tu perfil real (Campus `Turia / Valencia`).<br>• **Cuenta B:** *Lucía Prueba Smoke*, *Grado en Diseño Digital*, Campus `Alameda`, bio y 3 skills (`Figma`, `UI/UX`, `Branding`).<br>• **Cuenta C:** *Carlos Prueba Smoke*, *Grado en Marketing*, Campus `Turia / Valencia`, bio y 2 skills (`SEO`, `Growth`). | Toast *«Perfil guardado correctamente»* en los 3; al recargar con `F5` todos los campos y el selector de campus (`Valencia` vs `Alameda`) se mantienen intactos. | ☐ |
+| **4.4** | Habilidades duplicadas y borrado de tags | En **Cuenta B** (`/perfil`), intenta añadir `Figma` por segunda vez (con botón *Añadir* y con tecla `Enter`), luego borra una skill con la `X` y guarda. | Impide duplicar `Figma` y conserva exactamente la lista editada tras recargar. | ☐ |
+| **4.5** | Privacidad RGPD en Perfil Público (`/perfil/[uid]`) | Abre `F12 → Network` (o inspecciona la página) cuando visites el perfil público de otro usuario en el Bloque 5/7. | Se ven nombre, grado, campus, biografía, skills y proyectos, pero **en ningún lugar del DOM ni del documento `users/{uid}` aparece su email institucional**. | ☐ |
 
 ---
 
-## 5. Publicación de proyectos (Cuenta A)
+## Bloque 5 · Creación de Proyectos y Límites de Validación (`Cuenta A`)
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 5.1 | Publicación válida | /dashboard/nuevo → título, descripción (>20 chars), categoría, 2 perfiles → Publicar | Toast de éxito, redirige al dashboard, el proyecto aparece el primero | ☐ |
-| 5.2 | Nombre del creador | Ver la tarjeta del proyecto en el dashboard | Muestra tu NOMBRE real (no "Creador ID", no "Anónimo") | ☐ |
-| 5.3 | Detalle muestra creador | Abrir el detalle del proyecto | "Creado por [tu nombre]" con enlace a tu perfil público | ☐ |
-| 5.4 | Límite de título | Intentar escribir >100 chars en el título | El campo no lo permite; contador "X/100" visible | ☐ |
-| 5.5 | Límite de descripción | Intentar escribir >1500 chars | Bloqueado; contador "X/1500" visible | ☐ |
-| 5.6 | Mínimos | Título de 2 chars + descripción de 10 chars → Publicar | Toast de error explicativo, NO se publica | ☐ |
-| 5.7 | Sin perfiles | Rellenar todo pero no añadir perfiles → Publicar | Error: se exige al menos 1 perfil | ☐ |
-| 5.8 | Máximo de perfiles | Intentar añadir 11 perfiles | El 11.º se rechaza con toast "Máximo 10 perfiles" | ☐ |
-| 5.9 | Perfil duplicado | Añadir "Developer" dos veces | No se duplica | ☐ |
-| 5.10 | Proyecto sin nombre en perfil | (Opcional, con una cuenta C sin perfil completado) Intentar publicar | Redirige a /perfil con toast "Completa tu perfil antes de publicar" | ☐ |
+| **5.1** | Validaciones de mínimos y sin perfiles | En **Cuenta A** → `/dashboard/nuevo`:<br>1) Título `AB` (2 chars) → *Publicar*.<br>2) Título válido + Descripción de 10 chars → *Publicar*.<br>3) Título y Descripción válidos pero **0 perfiles añadidos** → *Publicar*. | Los 3 intentos se bloquean con su respectivo toast explicativo en español sin escribir nada en Firestore. | ☐ |
+| **5.2** | Límites superiores (`100` / `1500` / `10 perfiles` / `40 chars`) | Comprueba que el contador de título frena en `100/100`, descripción en `1500/1500`, tag de perfil en `40` caracteres, no duplica tags repetidos y al intentar meter un **11.º perfil** lanza toast *«Máximo 10 perfiles por proyecto»*. | Todos los topes de interfaz coinciden exactamente con las reglas de seguridad de `firestore.rules`. | ☐ |
+| **5.3** | Publicación real del Proyecto de Prueba | Publica con **Cuenta A**:<br>• **Título:** `[SMOKE TEST] Plataforma UEV Lanzamiento Día 11`<br>• **Categoría:** `Startup Real`<br>• **Perfiles:** `Diseño UI/UX`, `Marketing Digital`<br>• **Descripción:** texto realista de `> 60` caracteres. | Toast de éxito, redirección a `/dashboard` y la tarjeta aparece **en primera posición** mostrando tu nombre real como creador (nunca `Usuario UE` ni un UID). | ☐ |
+| **5.4** | Vista de detalle y enlace al perfil público del fundador | Haz clic en la tarjeta recién creada (`/dashboard/proyecto/[id]`) y pulsa sobre tu nombre en *«Creado por [Nombre]»*. | Muestra título, categoría, grado, campus, descripción con saltos de línea conservados, perfiles buscados, y el enlace abre `/perfil/[uid-de-A]` listando ese proyecto abajo. | ☐ |
 
 ---
 
-## 6. Dashboard y exploración
+## Bloque 6 · Exploración, Búsqueda Multicriterio e Internacionalización de Categorías
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 6.1 | Listado | Abrir /dashboard | Proyectos en grid, más recientes primero | ☐ |
-| 6.2 | Búsqueda | Buscar una palabra del título de tu proyecto | Filtra correctamente; búsqueda sin resultados muestra estado vacío adecuado | ☐ |
-| 6.3 | Filtro por categoría | Filtrar por "TFG" / "Startup Real" | Solo proyectos de esa categoría | ☐ |
-| 6.4 | Combinación | Búsqueda + categoría a la vez | Ambos filtros se aplican conjuntamente | ☐ |
-| 6.5 | Estado vacío | Buscar texto absurdo ("xyzqqq") | Mensaje de "no se encontraron proyectos" correcto, sin errores | ☐ |
-| 6.6 | Paginación | (Si hay >12 proyectos) "Cargar más" | Carga la siguiente página sin duplicados | ☐ |
-| 6.7 | Skeleton loaders | Recargar el dashboard | Skeletons visibles durante la carga, luego contenido | ☐ |
+| **6.1** | Búsqueda por título, descripción, perfil y nombre del creador | Con **Cuenta B** en `/dashboard`, escribe sucesivamente en el buscador: `SMOKE TEST`, `UI/UX` y el nombre de `Cuenta A`. | En los 3 casos filtra en tiempo real y encuentra el proyecto de `Cuenta A`. | ☐ |
+| **6.2** | Filtro de categoría + combinación con texto + cambio a Inglés | Filtra por categoría `Startup Real` (aparece), luego cambia a `TFG` manteniendo `SMOKE TEST` en el buscador (no aparece → estado vacío limpio). Cambia el idioma del Navbar a `EN`. | En `EN` las etiquetas de categorías pasan a *Real Startup / Final Thesis (TFG) / Academic Challenge*, pero el filtrado sigue funcionando porque internamente usa la clave canónica. | ☐ |
+| **6.3** | Skeletons de carga | Recarga `/dashboard` con `F5`. | Se muestran brevemente las tarjetas `ProjectSkeleton` grises pulsantes sin saltos bruscos de maquetación (*CLS*). | ☐ |
 
 ---
 
-## 7. Postulaciones (interacción A ↔ B)
+## Bloque 7 · Flujo Cruzado de Postulaciones a 3 Bandas (`A ↔ B ↔ C`)
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+*(Mantén visibles a la vez las ventanas de **Cuenta A**, **Cuenta B** y **Cuenta C**).*
+
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 7.1 | Postularse (B) | Con Cuenta B, abrir el proyecto de A → "Postularme" | Toast de éxito; botón cambia a "Ya postulado" (verde) | ☐ |
-| 7.2 | Anti-duplicado | B recarga la página e intenta postularse de nuevo | Botón deshabilitado "Ya postulado"; imposible duplicar | ☐ |
-| 7.3 | Anti-autopostulación | Con Cuenta A, abrir su PROPIO proyecto | Botón deshabilitado; no puede postularse a sí misma | ☐ |
-| 7.4 | Badge en Navbar (A) | A mira su Navbar | Badge rojo con "1" sobre "Mis Proyectos" | ☐ |
-| 7.5 | Mis Postulaciones (B) | B abre /dashboard/mis-postulaciones | Su postulación aparece con estado "pending" y título del proyecto | ☐ |
-| 7.6 | Candidatos (A) | A abre Mis Proyectos → modal/página de candidatos del proyecto | Ve a B con su nombre (no ID crudo) | ☐ |
-| 7.7 | Cambio de estado (A) | A acepta/rechaza a B (si la UI lo permite) | El estado se actualiza y B lo ve reflejado en Mis Postulaciones | ☐ |
+| **7.1** | Anti-autopostulación (`Cuenta A`) | Con **Cuenta A**, entra al detalle de tu propio proyecto `[SMOKE TEST]`. | El botón de postularse aparece **deshabilitado** en gris; el creador no puede postularse a su propio proyecto. | ☐ |
+| **7.2** | Primera postulación (`Cuenta B`) + Badge `1` en vivo en `Cuenta A` | Con **Cuenta B**, abre el proyecto `[SMOKE TEST]` y pulsa **«Postularme»**. Mira el Navbar de **Cuenta A** (sin recargar A). | En **B**: toast *«Te has postulado correctamente»* y botón pasa a verde **«Ya postulado»**. En **A**: aparece instantáneamente el **badge rojo `1`** sobre *Mis Proyectos*. | ☐ |
+| **7.3** | Anti-duplicado tras recarga (`Cuenta B`) | Con **Cuenta B**, recarga con `F5` la página del proyecto. | Sigue apareciendo **«Ya postulado»** deshabilitado (además, en Firestore el ID determinista `projectId_uidB` impide duplicados). | ☐ |
+| **7.4** | Segunda postulación (`Cuenta C`) + Subida de Badge a `2` en `Cuenta A` | Con **Cuenta C** (Edge), abre el proyecto `[SMOKE TEST]` y pulsa **«Postularme»**. Mira el Navbar de **Cuenta A**. | El badge rojo sobre *Mis Proyectos* en **Cuenta A** sube en tiempo real de **`1` a `2`**. | ☐ |
+| **7.5** | Vista del candidato en *Mis Postulaciones* (`Cuenta B` y `C`) | En **Cuenta B** y **Cuenta C**, entra a `/dashboard/mis-postulaciones`. | Ambas ven el proyecto con fecha formateada, botón directo **«Chat»** y etiqueta amarilla **«Pendiente»**. | ☐ |
+| **7.6** | Panel de *Postulaciones Recibidas* y Modal de Perfil (`Cuenta A`) | En **Cuenta A**, entra a `/dashboard/mis-proyectos` → tabla inferior *Postulaciones Recibidas* → pulsa el icono de usuario (`Ver Perfil Detallado`) de *Lucía Prueba Smoke (B)*. | Se abre el modal con avatar de iniciales, grado, campus `Alameda`, biografía y sus tags (`Figma`, `UI/UX`, `Branding`). Cierra el modal. | ☐ |
+| **7.7** | Aceptar a `B` y Rechazar a `C` *(¡espera primero al paso 8.2 antes de rechazar a C!)* | **Nota táctica:** antes de pulsar Rechazar sobre `C`, intercambia 1 mensaje en el Bloque 8.2 para probar también el historial en chats rechazados; después vuelve aquí, **Acepta (`✓`) a `Cuenta B`** y **Rechaza (`✕`) a `Cuenta C`**. | Al aceptar a B y rechazar a C:<br>• El badge rojo de *Mis Proyectos* en **Cuenta A** desaparece (`0` pendientes).<br>• En **Cuenta B** (*Mis Postulaciones*) cambia a verde **«Aceptada»**.<br>• En **Cuenta C** (*Mis Postulaciones*) cambia a rojo **«Rechazada»**. | ☐ |
 
 ---
 
-## 8. Mensajería en tiempo real (A ↔ B, ambas sesiones abiertas)
+## Bloque 8 · Mensajería en Tiempo Real, Deep-Links, No Leídos y Bloqueo por Rechazo
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 8.1 | Acceso al chat | B abre /dashboard/mensajes | Ve la conversación con A (nombre de A + título del proyecto) | ☐ |
-| 8.2 | Envío B→A | B escribe "Hola, me interesa el proyecto" → enviar | Mensaje aparece al instante en su chat (burbuja derecha, roja) | ☐ |
-| 8.3 | Recepción en tiempo real | SIN recargar, A mira su Navbar | Badge rojo en "Mensajes" con contador | ☐ |
-| 8.4 | Punto rojo en conversación | A abre /dashboard/mensajes | Punto rojo junto a la conversación de B | ☐ |
-| 8.5 | Lectura limpia indicadores | A abre la conversación | Badge del Navbar y punto rojo DESAPARECEN | ☐ |
-| 8.6 | Respuesta A→B | A responde → B recibe badge/punto sin recargar | Funciona en sentido contrario | ☐ |
-| 8.7 | Sin auto-notificación | A envía mensaje y mira su propio Navbar | A NO ve badge por sus propios mensajes | ☐ |
-| 8.8 | Límite de mensaje | Intentar enviar >1000 caracteres | El campo no lo permite | ☐ |
-| 8.9 | Mensaje vacío | Intentar enviar vacío o solo espacios | Botón deshabilitado / no se envía | ☐ |
-| 8.10 | Orden y scroll | Intercambiar 10+ mensajes | Orden cronológico correcto, scroll automático al último | ☐ |
-| 8.11 | Enlace "Ver Perfil" | Desde el chat, click en "Ver Perfil" | Abre el perfil público del otro usuario | ☐ |
-| 8.12 | Persistencia | Cerrar y reabrir el navegador | El historial de mensajes sigue ahí | ☐ |
+| **8.1** | Apertura directa con Deep-Link (`?chat=...`) | En **Cuenta B**, ve a *Mis Postulaciones* y pulsa el botón **«Chat»**. | Navega a `/dashboard/mensajes?chat=<projectId>_<uidB>` y **selecciona automáticamente** la conversación con `Cuenta A` sin tener que buscarla en la lista lateral. | ☐ |
+| **8.2** | Mensaje inicial de `Cuenta C → A` (antes de ser rechazada) | En **Cuenta C**, abre *Mensajes*, selecciona el chat con `A` y envía: *«Hola, soy Carlos de Marketing, ¿seguís buscando perfil de Growth?»*. | Se envía con éxito; en **Cuenta A** aparece el **badge `1`** sobre *Mensajes* en el Navbar. | ☐ |
+| **8.3** | Mensaje de `Cuenta B → A` y contador acumulado `2` | Sin que `A` haya abierto aún *Mensajes*, envía desde **Cuenta B**: *«¡Hola! Soy Lucía de Diseño en Alameda, me encantaría unirme.»* | El badge rojo de *Mensajes* en el Navbar de **Cuenta A** sube en tiempo real a **`2`** conversaciones con mensajes sin leer. | ☐ |
+| **8.4** | Punto rojo por conversación y limpieza automática al leer | En **Cuenta A**, entra a `/dashboard/mensajes`. Observa los puntos rojos junto a *Lucía* y *Carlos*. Haz clic primero en *Lucía* y luego en *Carlos*. | Al abrir el chat de *Lucía*, su punto rojo desaparece y el badge del Navbar baja de **`2` a `1`**. Al abrir el de *Carlos*, baja de **`1` a `0`** (desaparece). | ☐ |
+| **8.5** | Respuesta `A → B` y ausencia de auto-notificación | Con **Cuenta A**, responde a *Lucía (`B`)*: *«¡Bienvenida al equipo Lucía! Te acepto ahora mismo.»* | **Cuenta A NO ve badge** por su propio mensaje. **Cuenta B SÍ recibe al instante** el mensaje y el badge si estaba en otra pestaña. | ☐ |
+| **8.6** | **Prueba Crítica:** Cierre de chat al rechazar a `Cuenta C` | En **Cuenta A** → *Mis Proyectos*: **Acepta (`✓`) a `B`** y **Rechaza (`✕`) a `C`** (completando el punto `7.7`). Ahora abre el chat de `A ↔ C` tanto en **Cuenta C** como en **Cuenta A**. | En **ambas cuentas** el historial previo sigue siendo legible, pero la barra de escritura ha sido sustituida por el aviso: *«Esta candidatura fue rechazada. El chat permanece en modo de solo lectura.»* (y Firestore bloquea cualquier escritura por debajo). Mientras tanto, el chat `A ↔ B` sigue 100% activo. | ☐ |
+| **8.7** | Validación de mensaje vacío, límite `1000` chars, scroll y *Ver Perfil* | En el chat activo `A ↔ B`:<br>1) Intenta enviar solo espacios en blanco.<br>2) Verifica `maxLength=1000`.<br>3) Envía 6-8 mensajes cortos seguidos.<br>4) Pulsa **«Ver Perfil»** arriba a la derecha del chat. | Botón enviar deshabilitado con espacios; scroll baja suave al último mensaje; *Ver Perfil* lleva a `/perfil/[uid]` del interlocutor. | ☐ |
 
 ---
 
-## 9. Gestión de proyectos propios (Cuenta A)
+## Bloque 9 · Edición de Proyectos Propios y Defensa Anti-Sabotaje (`IDOR`)
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 9.1 | Editar proyecto | Mis Proyectos → editar → cambiar título → guardar | Cambio reflejado en dashboard y detalle | ☐ |
-| 9.2 | Edición respeta límites | Intentar guardar título de 2 chars | Validación lo impide | ☐ |
-| 9.3 | Borrado en cascada | Borrar el proyecto que tiene la postulación y mensajes de B | Proyecto eliminado del dashboard; las postulaciones asociadas también desaparecen (B ya no la ve en Mis Postulaciones); la conversación deja de ser accesible | ☐ |
-| 9.4 | Confirmación de borrado | Al borrar | Pide confirmación (no borra con un solo click accidental) | ☐ |
+| **9.1** | Intento de edición ajena por URL directa (`IDOR`) | Copia la URL de edición del proyecto de `A` (`/dashboard/proyecto/[id]/editar`), pégala en el navegador de **Cuenta B** o **Cuenta C** y pulsa `Enter`. | Muestra toast *«No tienes permiso para editar este proyecto»* y expulsa inmediatamente a `/dashboard`. | ☐ |
+| **9.2** | Edición legítima por `Cuenta A` | En **Cuenta A** → *Mis Proyectos* → icono lápiz (`Editar proyecto`): añade un 3.er perfil (`Full Stack`) y añade `(Editado OK)` al final del título → **Guardar Cambios**. | Toast *«Proyecto actualizado correctamente»*, redirige al detalle del proyecto con los cambios aplicados y mantiene su posición original en `/dashboard` (`createdAt` intacto). | ☐ |
 
 ---
 
-## 10. PWA en móvil
+## Bloque 10 · Experiencia PWA Real en Móvil + Modo Offline (`sw.js v3`)
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+*(Ejecutar en tu **teléfono móvil real** — iPhone con Safari o Android con Chrome).*
+
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 10.1 | Instalación | Chrome móvil → menú ⋮ → "Añadir a pantalla de inicio" | Se instala como "CoFound UE" | ☐ |
-| 10.2 | Icono SIN reborde | Mirar el icono instalado | Icono rojo limpio, SIN reborde/marco negro alrededor | ☐ |
-| 10.3 | Modo standalone | Abrir desde el icono | Se abre a pantalla completa, SIN barra del navegador | ☐ |
-| 10.4 | Start URL | Al abrir la PWA | Arranca en /dashboard (si hay sesión) o landing | ☐ |
-| 10.5 | Sesión en PWA | Login dentro de la PWA | Funciona y persiste al cerrar/abrir | ☐ |
-| 10.6 | Navegación completa en PWA | Recorrer: dashboard, detalle, mensajes, perfil, nuevo | Todo usable en formato app | ☐ |
-| 10.7 | Comportamiento offline | Activar modo avión → abrir la PWA | Degrada con elegancia (logo/estáticos en caché; datos no, es esperado — pero no pantalla en blanco rota) | ☐ |
+| **10.1** | Popup inteligente de instalación a los `3.5s` | Abre `https://www.cofoundue.es` en el móvil, inicia sesión con **Cuenta B** y entra en `/dashboard`. Espera `4` segundos sin tocar nada. | Se despliega automáticamente la tarjeta compacta **«Instala CoFound UE en tu móvil»** con la pestaña de tu sistema operativo (`iPhone Safari` o `Android Chrome`) preseleccionada. | ☐ |
+| **10.2** | Apertura manual desde el Navbar móvil | Cierra el popup con *«Ahora no»*, abre el menú hamburguesa (`☰`) y pulsa **«Instalar App en tu móvil»**. | El modal vuelve a abrirse bajo demanda aunque se hubiera pospuesto el aviso automático. | ☐ |
+| **10.3** | Instalación en pantalla de inicio e Icono Logo 2.0 | Sigue los pasos del modal para instalar la app en la pantalla de inicio de tu móvil. Mira el icono junto al resto de tus apps. | Se llama **«CoFound UE»** y el icono rojo/oscuro luce nítido, centrado y **sin marcos blancos ni bordes cortados**. | ☐ |
+| **10.4** | Ejecución Standalone y ocultación del botón Instalar | Abre **CoFound UE** desde el icono de tu pantalla de inicio. Abre el menú `☰`. | Se ejecuta a **pantalla completa** (sin barra de URL del navegador), arranca directamente en `/dashboard` con tu sesión iniciada, y el botón *«Instalar App»* ya **no aparece** porque detecta modo standalone. | ☐ |
+| **10.5** | Navegación móvil completa + Chat móvil | Dentro de la PWA instalada, entra en *Mensajes*, abre el chat con `Cuenta A`, escribe con el teclado del móvil abierto y pulsa `← Volver`. | En móvil la vista alterna limpiamente entre lista de chats y conversación activa; el teclado virtual no rompe ni tapa la caja de texto, y no hay scroll horizontal en ninguna vista. | ☐ |
+| **10.6** | Degradación elegante sin conexión (**Modo Avión**) | Activa el **Modo Avión** en tu móvil, cierra del todo la PWA y vuelve a abrirla (o recarga). Después desactiva Modo Avión y pulsa **«Reintentar conexión»**. | En vez del dinosaurio/error crudo del navegador, muestra la tarjeta oscura de marca **«Sin conexión a Internet · CoFound UE»** con el logo en caché y el botón rojo **«Reintentar conexión»**, que recupera la app en cuanto vuelve la red. | ☐ |
 
 ---
 
-## 11. Responsive (móvil + desktop)
+## Bloque 11 · Telemetría Interna y Limpieza de Consola en Sesión Autenticada
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 11.1 | Landing móvil | Recorrer toda la landing en el móvil | Ninguna caja desbordada, texto legible, sin scroll horizontal | ☐ |
-| 11.2 | Dashboard móvil | Ver tarjetas de proyectos | 1 columna, tarjetas completas, botones accesibles | ☐ |
-| 11.3 | Navbar móvil | Abrir menú hamburguesa | Todos los enlaces + badges visibles; cierra al navegar | ☐ |
-| 11.4 | Chat móvil | Usar mensajes en el móvil | Vista lista ↔ chat con botón "← Volver"; teclado no rompe el layout | ☐ |
-| 11.5 | Formularios móvil | /dashboard/nuevo y /perfil en móvil | Campos apilados, contadores visibles, botón de envío accesible | ☐ |
-| 11.6 | Detalle proyecto móvil | Abrir un proyecto | Título, descripción y botón "Postularme" sin solapamientos | ☐ |
-| 11.7 | Desktop ancho | En pantalla grande (>1440px) recorrer las mismas vistas | Contenido centrado con max-width, sin estiramientos raros | ☐ |
+| **11.1** | Consola limpia tras todo el flujo autenticado | Revisa la pestaña `F12 → Console` en **Cuenta A** tras haber creado, editado, aceptado/rechazado y chateado. | `0` errores rojos no controlados ni advertencias de índices faltantes de Firestore (`The query requires an index`). | ☐ |
+| **11.2** | Colección `client_errors` a cero en Firebase Console | Abre [Firebase Console → Firestore Database](https://console.firebase.google.com/project/cofound-ue/firestore) y revisa si se ha creado algún documento en `client_errors`. | **No debe haberse registrado ningún error inesperado** durante el uso normal de la plataforma. | ☐ |
 
 ---
 
-## 12. Páginas legales
+## Bloque 12 · Borrado con Reautenticación (`SEC-02`) y Limpieza Total Pre-Evento
 
-| # | Test | Pasos | Resultado esperado | ☐ |
+> **Doble función de este último bloque:** verifica la protección crítica `SEC-02` (reautenticación obligatoria antes de destruir datos y borrado completo en cascada RGPD) **y deja la base de datos de producción 100% limpia** de cuentas y proyectos de prueba.
+
+| ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| 12.1 | Aviso Legal | /legal/aviso-legal | Titular: Marc Cubero Cantavella; email cofoundue@gmail.com; nota de independencia de la UE; fecha actualizada | ☐ |
-| 12.2 | Privacidad | /legal/privacidad | Responsable identificado; menciona mensajería privada, Firebase/Vercel, derechos ARCO con email real | ☐ |
-| 12.3 | Cookies | /legal/cookies | Menciona Firebase Auth y Vercel Analytics (NO Google Analytics 4) | ☐ |
-| 12.4 | Navegación legal | Enlaces del footer a las 3 páginas y botón "Volver" | Todos funcionan | ☐ |
-| 12.5 | Email funcional | Enviar un email de prueba a cofoundue@gmail.com desde tu correo | Llega al buzón (que controlas tú) | ☐ |
+| **12.1** | Intento de borrar cuenta con contraseña **INCORRECTA** (`Cuenta C`) | En **Cuenta C** → `/perfil` → baja del todo → pulsa **«Eliminar mi cuenta»** → escribe una contraseña **errónea** (`ClaveIncorrecta999`) → **«Sí, eliminar cuenta»**. | Muestra toast *«La contraseña introducida no es correcta. No se ha eliminado ningún dato.»* Cancela el modal y recarga: **el perfil y la postulación de `C` siguen intactos** (no borra Firestore antes de validar Auth). | ☐ |
+| **12.2** | Borrado real en cascada de **Cuenta C** | Vuelve a abrir **«Eliminar mi cuenta»** en **Cuenta C**, introduce su contraseña **correcta** y confirma. | Toast *«Tu cuenta ha sido eliminada correctamente»*, redirige a la landing y elimina en cascada sus postulaciones, mensajes, documento `users/{uidC}` y usuario en Firebase Auth. | ☐ |
+| **12.3** | Borrado real en cascada de **Cuenta B** | En **Cuenta B** (en el PC; luego cierra la PWA del móvil), ve a `/perfil` → **«Eliminar mi cuenta»** → introduce su contraseña **correcta** y confirma. | Elimina en cascada sus mensajes con `A`, su postulación aceptada, su documento `users/{uidB}` y su cuenta en Firebase Auth. En **Cuenta A** la conversación y postulación de `B` desaparecen limpiamente. | ☐ |
+| **12.4** | Confirmación y borrado del Proyecto `[SMOKE TEST]` (`Cuenta A`) | En **Cuenta A** → `/dashboard/mis-proyectos` → pulsa la papelera (`🗑️`) sobre `[SMOKE TEST] Plataforma UEV Lanzamiento Día 11`: primero pulsa **Cancelar** en el diálogo de confirmación (comprueba que NO se borra), vuelve a pulsar `🗑️` y pulsa **Aceptar**. | Toast *«Proyecto y postulaciones eliminadas correctamente»*. El proyecto desaparece de *Mis Proyectos* y de `/dashboard`. | ☐ |
+| **12.5** | Verificación final de limpieza en Firebase Console | Entra en [Firebase Authentication → Users](https://console.firebase.google.com/project/cofound-ue/authentication/users) y en [Firestore → Datos](https://console.firebase.google.com/project/cofound-ue/firestore). | Las cuentas `+smokeb` y `+smokec` **ya no existen** en Authentication ni en `users`, `applications` no tiene documentos basura de prueba y el proyecto `[SMOKE TEST]` ha desaparecido. | ☐ |
 
 ---
 
-## 13. Seguridad práctica (intentos de "tramposo")
+## Parte III · Verificación del Escaparate Oficial (`demo-cofound-ue`)
 
-| # | Test | Pasos | Resultado esperado | ☐ |
-| --- | --- | --- | --- | --- |
-| 13.1 | ID de proyecto ajeno en URL | Con Cuenta B, pegar la URL de edición del proyecto de A (/dashboard/proyecto/[id]/editar) | No puede editar (reglas lo rechazan o la UI lo impide) | ☐ |
-| 13.2 | Postulación ajena | B intenta acceder a datos de postulaciones de otros (si conoces alguna URL/ID) | Permission denied, sin datos expuestos | ☐ |
-| 13.3 | Consola limpia de datos sensibles | F12 → Consola en varias páginas | No se imprimen emails/tokens/datos de otros usuarios en logs | ☐ |
-| 13.4 | Spam de creación | Crear 3 proyectos seguidos rápidamente | Funciona con normalidad (no hay límite — es deuda conocida y aceptada, anótalo como observación) | ☐ |
+Antes del Día 11, los 6 proyectos demostrativos y la cuenta oficial `Equipo CoFound UE` (`users/demo-cofound-ue`) han sido blindados y profesionalizados:
+- **Insignia visual `Ejemplo`:** Las 6 tarjetas muestran el badge `Ejemplo` y el botón *«Ver Proyecto de Ejemplo»* sin ensuciar el título con `[Proyecto de ejemplo]`.
+- **Sin postulaciones fantasma:** Al abrir cualquiera de los 6 proyectos de ejemplo, el botón *«Postularme»* ha sido sustituido por el CTA **«Publicar mi propia idea →»** (`/dashboard/nuevo`) junto al aviso informativo, y `firestore.rules` bloquea además cualquier escritura en `applications` con `creatorId` tipo `demo-*`.
+- **Perfil oficial `/perfil/demo-cofound-ue`:** Muestra el **logo oficial de CoFound UE**, la insignia **«Cuenta Oficial · Ejemplos»**, bio curada, habilidades limpias y el encabezado *«Proyectos de ejemplo publicados»*.
+
+| ID | Prueba rápida del Escaparate Oficial | Resultado esperado | Estado |
+| --- | --- | --- | --- |
+| **D.1** | Abrir cualquier proyecto de ejemplo desde `/dashboard` | Muestra badge `Ejemplo`, descripción estructurada en 4 bloques, aviso informativo y botón **«Publicar mi propia idea →»** (sin botón *Postularme*). | ☐ |
+| **D.2** | Pulsar en *Equipo CoFound UE* (`/perfil/demo-cofound-ue`) | Muestra el **logo oficial de CoFound UE** (nunca `E(`), badge **«Cuenta Oficial · Ejemplos»**, bio y habilidades limpias, y los 6 proyectos abajo. | ☐ |
 
 ---
 
-## 14. Plantilla de reporte de bug
+## Parte IV · Plantilla de Registro de Bugs y Acta de Salida
 
-Copia esta plantilla por cada ❌ o ⚠️:
+### Clasificación de Severidad
+| Nivel | Definición | Criterio para el Día 11 |
+| --- | --- | --- |
+| **P0 · Bloqueante** | Impide registrarse, verificar correo, publicar, postularse, chatear o expone datos privados. | **BLOQUEA lanzamiento.** Corrección inmediata obligatoria. |
+| **P1 · Mayor** | Funcionalidad secundaria rota, fallo visual grave en móvil o mensaje de error confuso. | Corregir antes del Día 11. |
+| **P2 · Menor** | Detalle funcional menor con alternativa clara. | Corregir si lleva `< 30 min` o pasar a V1.1 post-evento. |
+| **P3 · Cosmético** | Micro-ajuste estético sin impacto en uso. | Backlog general. |
 
-```javascript
-BUG-XX
-Severidad: [P0 bloqueante / P1 importante / P2 menor / P3 cosmético]
-Test ID: [ej. 8.3]
-Dispositivo/Navegador: [ej. Pixel 7, Chrome 129 / Windows, Chrome]
-Pasos para reproducir:
-  1. ...
-  2. ...
-Resultado esperado: ...
-Resultado obtenido: ...
-Captura: [sí/no]
-Mensaje de consola (si lo hay): [pegar error rojo de F12]
+### Plantilla rápida por incidencia (si aparece algún `❌` o `⚠️`)
+```text
+ID Bug: BUG-01
+Bloque / Test ID: [ej. 10.5]
+Severidad: [P0 / P1 / P2 / P3]
+Dispositivo y Navegador: [ej. iPhone 15 · Safari PWA / Windows 11 · Chrome]
+Cuenta utilizada: [Cuenta A / Cuenta B / Cuenta C]
+Qué hice: ...
+Qué esperaba: ...
+Qué ocurrió (y texto de consola si aplica): ...
 ```
 
-## 15. Clasificación de severidad y criterio de salida
-
-| Severidad | Definición | Acción |
-| --- | --- | --- |
-| **P0** | Impide una función core (registro, publicar, postularse, mensajes) o expone datos | BLOQUEA el lanzamiento. Prompt correctivo inmediato |
-| **P1** | Función secundaria rota o error visible para el usuario | Corregir antes del lanzamiento si es posible |
-| **P2** | Comportamiento incorrecto con workaround razonable | Backlog pre-lanzamiento, corregir en la semana siguiente |
-| **P3** | Cosmético | Backlog general |
-
-**Criterio de salida del smoke test:** 0 bugs P0 y 0 bugs P1 abiertos → la app está APTA para el lanzamiento en campus.
-
----
-
-## 16. Resumen de ejecución (rellenar al terminar)
-
-- Fecha de ejecución: ____
-- Tests ejecutados: ____ / 78
-- ✅ Pasan: ____ · ❌ Fallan: ____ · ⚠️ Observaciones: ____
-- Bugs P0: ____ · P1: ____ · P2: ____ · P3: ____
-- **Veredicto: [ ] APTA para lanzamiento · [ ] NO APTA (corregir y repetir)**
+### Acta Final de Certificación Pre-Lanzamiento (Día 11)
+- **Fecha de ejecución:** `____ / ____ / 2026`
+- **Pruebas automáticas (Parte I):** `60 / 60 PASS` ✅
+- **Pruebas manuales E2E multicuentas + PWA móvil (Parte II):** `____ / 46`
+- **Incidencias abiertas:** `P0: ___` · `P1: ___` · `P2: ___` · `P3: ___`
+- **Limpieza post-test verificada en Firebase Console (`12.5`):** `[ ] SÍ`
+- **Decisión sobre proyectos `[Proyecto de ejemplo]` tomada:** `[ ] Opción A` · `[ ] Opción B`
+- **VEREDICTO OFICIAL DÍA 11:** `[ ] APTA PARA LANZAMIENTO EN CAMPUS` · `[ ] PENDIENTE DE AJUSTES`

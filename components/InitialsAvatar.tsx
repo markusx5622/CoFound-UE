@@ -10,7 +10,11 @@ export function getInitials(name?: string): string {
   if (!name || typeof name !== "string" || !name.trim()) {
     return "?";
   }
-  const tokens = name.trim().split(/\s+/).filter(Boolean);
+  const tokens = name
+    .trim()
+    .split(/\s+/)
+    .map((token) => token.replace(/^[^A-Za-zÀ-ÖØ-öø-ÿ0-9]+/, ""))
+    .filter(Boolean);
   if (tokens.length === 0) return "?";
   if (tokens.length === 1) {
     return tokens[0].charAt(0).toUpperCase();

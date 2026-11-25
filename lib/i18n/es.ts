@@ -221,6 +221,8 @@ export const es = {
     defaultCreator: "Usuario UE",
     profilesWanted: "Perfiles Buscados",
     viewDetailsBtn: "Ver Detalles y Postularse",
+    viewDemoDetailsBtn: "Ver Proyecto de Ejemplo",
+    demoBadge: "Ejemplo",
     loadingMore: "Cargando...",
     loadMoreBtn: "Cargar más proyectos"
   },
@@ -259,7 +261,12 @@ export const es = {
     createdBy: "Creado por",
     defaultCreator: "Usuario UE",
     aboutProject: "Acerca del Proyecto",
-    profilesWanted: "Perfiles que buscamos"
+    profilesWanted: "Perfiles que buscamos",
+    demoBadge: "Proyecto de ejemplo",
+    demoNoticeTitle: "Proyecto demostrativo de referencia",
+    demoNoticeDesc: "Esta ficha es un ejemplo oficial para mostrar cómo estructurar un proyecto en CoFound UE. Las postulaciones no están activas en los ejemplos.",
+    demoPublishCta: "Publicar mi propia idea",
+    cannotApplyDemoToast: "Este es un proyecto de ejemplo y no admite postulaciones."
   },
   projectEdit: {
     noPermissionError: "No tienes permiso para editar este proyecto",
@@ -393,7 +400,10 @@ export const es = {
     noSkills: "Ninguna habilidad listada",
     userProjects: "Proyectos de {name}",
     defaultUser: "este usuario",
-    noProjects: "No tiene proyectos publicados actualmente."
+    noProjects: "No tiene proyectos publicados actualmente.",
+    officialDemoBadge: "Cuenta Oficial · Ejemplos",
+    demoProjectsTitle: "Proyectos de ejemplo publicados",
+    demoNotice: "Cuenta oficial del equipo de CoFound UE. Estos proyectos sirven como referencia práctica de cómo plantear iniciativas multidisciplinares en el campus."
   },
   legal: {
     backToHome: "Volver a inicio",

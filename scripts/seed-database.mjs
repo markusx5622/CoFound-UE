@@ -4,6 +4,8 @@
  * Bloquea estrictamente cualquier ejecución contra entornos de producción.
  */
 
+import { OFFICIAL_DEMO_USER, OFFICIAL_DEMO_PROJECTS } from "./demo-showcase-data.mjs";
+
 const ALLOWED_EMULATOR_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
 const RECOMMENDED_CMD =
   'npx firebase emulators:exec --only firestore --project demo-cofound-ue "node scripts/seed-database.mjs"';
@@ -181,230 +183,32 @@ function buildSeedData() {
 
   const users = [
     {
-      id: "demo-user-ioi",
+      id: OFFICIAL_DEMO_USER.id,
       fields: {
-        name: toFirestoreString("Perfil Ejemplo · Organización Industrial"),
-        degree: toFirestoreString("Grado en Ingeniería en Organización Industrial"),
-        campus: toFirestoreString("Valencia"),
-        bio: toFirestoreString(
-          "Perfil demostrativo de ejemplo para ilustrar la colaboración entre grados en CoFound UE."
-        ),
-        skills: toFirestoreStringArray([
-          "Organización Industrial",
-          "Gestión de Proyectos",
-          "Operaciones",
-        ]),
-        updatedAt: toFirestoreTimestamp(new Date(now)),
-      },
-    },
-    {
-      id: "demo-user-biotech",
-      fields: {
-        name: toFirestoreString("Perfil Ejemplo · Biotecnología"),
-        degree: toFirestoreString("Grado en Biotecnología"),
-        campus: toFirestoreString("Valencia"),
-        bio: toFirestoreString(
-          "Perfil demostrativo de ejemplo para ilustrar proyectos interdisciplinares entre salud y tecnología."
-        ),
-        skills: toFirestoreStringArray([
-          "Biotecnología",
-          "Bioinformática",
-          "Análisis de Datos",
-        ]),
-        updatedAt: toFirestoreTimestamp(new Date(now)),
-      },
-    },
-    {
-      id: "demo-user-tech",
-      fields: {
-        name: toFirestoreString("Perfil Ejemplo · Ingeniería Informática"),
-        degree: toFirestoreString("Grado en Ingeniería Informática"),
-        campus: toFirestoreString("Alameda"),
-        bio: toFirestoreString(
-          "Perfil demostrativo de ejemplo enfocado en desarrollo de software y prototipado rápido."
-        ),
-        skills: toFirestoreStringArray([
-          "Desarrollo Web",
-          "TypeScript",
-          "Bases de Datos",
-        ]),
-        updatedAt: toFirestoreTimestamp(new Date(now)),
-      },
-    },
-    {
-      id: "demo-user-marketing",
-      fields: {
-        name: toFirestoreString("Perfil Ejemplo · Marketing"),
-        degree: toFirestoreString("Grado en Marketing"),
-        campus: toFirestoreString("Alameda"),
-        bio: toFirestoreString(
-          "Perfil demostrativo de ejemplo centrado en comunicación, marca y estrategia de lanzamiento."
-        ),
-        skills: toFirestoreStringArray([
-          "Marketing Digital",
-          "Estrategia de Marca",
-          "Comunicación",
-        ]),
-        updatedAt: toFirestoreTimestamp(new Date(now)),
-      },
-    },
-    {
-      id: "demo-user-ade",
-      fields: {
-        name: toFirestoreString("Perfil Ejemplo · ADE"),
-        degree: toFirestoreString("Grado en ADE"),
-        campus: toFirestoreString("Valencia"),
-        bio: toFirestoreString(
-          "Perfil demostrativo de ejemplo centrado en modelos de negocio y análisis de viabilidad."
-        ),
-        skills: toFirestoreStringArray([
-          "Finanzas",
-          "Modelos de Negocio",
-          "Estrategia",
-        ]),
+        name: toFirestoreString(OFFICIAL_DEMO_USER.name),
+        degree: toFirestoreString(OFFICIAL_DEMO_USER.degree),
+        campus: toFirestoreString(OFFICIAL_DEMO_USER.campus),
+        bio: toFirestoreString(OFFICIAL_DEMO_USER.bio),
+        skills: toFirestoreStringArray(OFFICIAL_DEMO_USER.skills),
         updatedAt: toFirestoreTimestamp(new Date(now)),
       },
     },
   ];
 
-  const projects = [
-    {
-      id: "campusbite-uev",
-      fields: {
-        title: toFirestoreString(
-          "[Proyecto de ejemplo] CampusBite — Gestión de menús y excedentes en cafeterías"
-        ),
-        description: toFirestoreString(
-          "Proyecto de ejemplo para ilustrar cómo conectar perfiles de distintos grados. La idea plantea una plataforma para organizar reservas de menú y aprovechar excedentes diarios en cafeterías universitarias. Se buscan perfiles de desarrollo web/móvil, diseño de interfaz y marketing para explorar el concepto y definir un primer prototipo."
-        ),
-        category: toFirestoreString("Startup Real"),
-        creator_id: toFirestoreString("demo-user-ioi"),
-        creatorName: toFirestoreString("Perfil Ejemplo · Organización Industrial"),
-        profiles: toFirestoreStringArray([
-          "Ingeniería Informática",
-          "Diseño UI/UX",
-          "Marketing Digital",
-        ]),
-        createdAt: toFirestoreTimestamp(new Date(now - 1 * dayMs)),
-      },
+  const projects = OFFICIAL_DEMO_PROJECTS.map((proj) => ({
+    id: proj.id,
+    fields: {
+      title: toFirestoreString(proj.title),
+      description: toFirestoreString(proj.description),
+      category: toFirestoreString(proj.category),
+      creator_id: toFirestoreString(proj.creator_id),
+      creatorName: toFirestoreString(proj.creatorName),
+      profiles: toFirestoreStringArray(proj.profiles),
+      createdAt: toFirestoreTimestamp(new Date(now - proj.daysAgo * dayMs)),
     },
-    {
-      id: "biotrack-sensor-deporte",
-      fields: {
-        title: toFirestoreString(
-          "[Proyecto de ejemplo] BioTrack — Monitorización de fatiga muscular en deporte"
-        ),
-        description: toFirestoreString(
-          "Proyecto de ejemplo orientado a combinar ciencias de la salud, tecnología y negocio. Propone diseñar un prototipo wearable para medir indicadores de fatiga muscular en deportistas. Se buscan perfiles técnicos para hardware y app, junto con un perfil de ADE para plantear un modelo de negocio viable."
-        ),
-        category: toFirestoreString("Startup Real"),
-        creator_id: toFirestoreString("demo-user-biotech"),
-        creatorName: toFirestoreString("Perfil Ejemplo · Biotecnología"),
-        profiles: toFirestoreStringArray([
-          "Ingeniería Biomédica / Electrónica",
-          "Desarrollo Móvil",
-          "ADE / Plan de Negocio",
-        ]),
-        createdAt: toFirestoreTimestamp(new Date(now - 2 * dayMs)),
-      },
-    },
-    {
-      id: "tfg-gemelo-digital-industria",
-      fields: {
-        title: toFirestoreString(
-          "[Proyecto de ejemplo] TFG: Gemelo digital y eficiencia energética industrial"
-        ),
-        description: toFirestoreString(
-          "Proyecto de ejemplo de TFG interdisciplinar. Propone modelar el consumo energético de una línea de producción mediante IoT y un gemelo digital, combinando el enfoque técnico con un estudio de costes y viabilidad económica. Se buscan perfiles interesados en análisis de datos, dashboards y finanzas."
-        ),
-        category: toFirestoreString("TFG"),
-        creator_id: toFirestoreString("demo-user-ioi"),
-        creatorName: toFirestoreString("Perfil Ejemplo · Organización Industrial"),
-        profiles: toFirestoreStringArray([
-          "Ingeniería en Organización Industrial",
-          "Ingeniería Informática / Datos",
-          "Finanzas",
-        ]),
-        createdAt: toFirestoreTimestamp(new Date(now - 3 * dayMs)),
-      },
-    },
-    {
-      id: "skillswap-uev-mentorias",
-      fields: {
-        title: toFirestoreString(
-          "[Proyecto de ejemplo] SkillSwap — Micro-mentorías entre estudiantes de distintos grados"
-        ),
-        description: toFirestoreString(
-          "Proyecto de ejemplo para mostrar una iniciativa de comunidad universitaria. Plantea una plataforma de intercambio de sesiones de apoyo entre grados (por ejemplo, programación o matemáticas a cambio de oratoria o marketing). Se buscan perfiles técnicos para construir un MVP sencillo y perfiles de ADE o comunicación para definir su lanzamiento."
-        ),
-        category: toFirestoreString("Startup Real"),
-        creator_id: toFirestoreString("demo-user-tech"),
-        creatorName: toFirestoreString("Perfil Ejemplo · Ingeniería Informática"),
-        profiles: toFirestoreStringArray([
-          "Ingeniería Informática",
-          "ADE / Estrategia",
-          "Creación de Contenido",
-        ]),
-        createdAt: toFirestoreTimestamp(new Date(now - 4 * dayMs)),
-      },
-    },
-    {
-      id: "rebranding-comercio-valencia",
-      fields: {
-        title: toFirestoreString(
-          "[Proyecto de ejemplo] Digitalización y marca para comercios locales de Valencia"
-        ),
-        description: toFirestoreString(
-          "Proyecto de ejemplo de reto académico con impacto local en Valencia. Plantea colaborar con pequeños comercios de barrio para renovar su identidad visual, digitalizar su catálogo y trabajar su presencia en redes sociales. Se buscan perfiles de diseño visual, marketing y desarrollo web."
-        ),
-        category: toFirestoreString("Reto Académico"),
-        creator_id: toFirestoreString("demo-user-marketing"),
-        creatorName: toFirestoreString("Perfil Ejemplo · Marketing"),
-        profiles: toFirestoreStringArray([
-          "Diseño Gráfico / Multimedia",
-          "Marketing Digital",
-          "Desarrollo Web",
-        ]),
-        createdAt: toFirestoreTimestamp(new Date(now - 5 * dayMs)),
-      },
-    },
-    {
-      id: "hackathon-sostenibilidad-2026",
-      fields: {
-        title: toFirestoreString(
-          "[Proyecto de ejemplo] Equipo multidisciplinar para Hackathon de Sostenibilidad"
-        ),
-        description: toFirestoreString(
-          "Proyecto de ejemplo para formar equipo de cara a un hackathon universitario sobre ciudades inteligentes y sostenibilidad. Se buscan perfiles complementarios que cubran desarrollo de un prototipo rápido, diseño de interfaz y preparación del pitch."
-        ),
-        category: toFirestoreString("Reto Académico"),
-        creator_id: toFirestoreString("demo-user-ade"),
-        creatorName: toFirestoreString("Perfil Ejemplo · ADE"),
-        profiles: toFirestoreStringArray([
-          "Full Stack Developer",
-          "UX/UI Designer",
-          "Pitch & Business Model",
-        ]),
-        createdAt: toFirestoreTimestamp(new Date(now - 6 * dayMs)),
-      },
-    },
-  ];
+  }));
 
-  const applications = [
-    {
-      id: "campusbite-uev_demo-user-tech",
-      fields: {
-        projectId: toFirestoreString("campusbite-uev"),
-        projectTitle: toFirestoreString(
-          "[Proyecto de ejemplo] CampusBite — Gestión de menús y excedentes en cafeterías"
-        ),
-        applicantId: toFirestoreString("demo-user-tech"),
-        creatorId: toFirestoreString("demo-user-ioi"),
-        status: toFirestoreString("pending"),
-        createdAt: toFirestoreTimestamp(new Date(now - 12 * 60 * 60 * 1000)),
-      },
-    },
-  ];
+  const applications = [];
 
   return { users, projects, applications };
 }

@@ -223,6 +223,8 @@ export const en: Dictionary = {
     defaultCreator: "UE User",
     profilesWanted: "Profiles Needed",
     viewDetailsBtn: "View Details & Apply",
+    viewDemoDetailsBtn: "View Example Project",
+    demoBadge: "Example",
     loadingMore: "Loading...",
     loadMoreBtn: "Load more projects"
   },
@@ -261,7 +263,12 @@ export const en: Dictionary = {
     createdBy: "Created by",
     defaultCreator: "UE User",
     aboutProject: "About the Project",
-    profilesWanted: "Profiles we are looking for"
+    profilesWanted: "Profiles we are looking for",
+    demoBadge: "Example project",
+    demoNoticeTitle: "Reference example project",
+    demoNoticeDesc: "This listing is an official example showing how to structure a project on CoFound UE. Applications are disabled on example projects.",
+    demoPublishCta: "Publish my own idea",
+    cannotApplyDemoToast: "This is an example project and does not accept applications."
   },
   projectEdit: {
     noPermissionError: "You do not have permission to edit this project",
@@ -395,7 +402,10 @@ export const en: Dictionary = {
     noSkills: "No skills listed",
     userProjects: "Projects by {name}",
     defaultUser: "this user",
-    noProjects: "Does not have any published projects at this time."
+    noProjects: "Does not have any published projects at this time.",
+    officialDemoBadge: "Official Account · Examples",
+    demoProjectsTitle: "Published example projects",
+    demoNotice: "Official CoFound UE team account. These projects serve as practical references on how to structure multidisciplinary campus initiatives."
   },
   legal: {
     backToHome: "Back to home",

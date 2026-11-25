@@ -4,13 +4,14 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, limit, startAfter, QueryDocumentSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Briefcase, UserCircle, Tag, Search, Filter } from "lucide-react";
+import { Briefcase, UserCircle, Tag, Search, Filter, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { ProjectSkeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel, CANONICAL_CATEGORIES } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
+import { isDemoId, cleanProjectTitle } from "@/lib/demo";
 
 interface Project {
   id: string;
@@ -202,16 +203,24 @@ export default function Dashboard() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-                {filteredProjects.map((project) => (
+                {filteredProjects.map((project) => {
+                  const isDemo = isDemoId(project.creator_id);
+                  return (
                 <Link href={`/dashboard/proyecto/${project.id}`} key={project.id} className="bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 shadow-sm hover:shadow-[0_0_20px_rgba(230,0,0,0.15)] transition-all duration-300 border border-zinc-800 hover:border-zinc-700 flex flex-col h-full group">
                   <div className="flex-grow">
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
                       <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-2.5 py-1 rounded-md">
                         <Tag className="h-3 w-3" />
                         {getCategoryLabel(project.category, t)}
                       </span>
+                      {isDemo && (
+                        <span className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-400 border border-amber-500/25 text-[11px] font-semibold px-2.5 py-1 rounded-md">
+                          <Sparkles className="h-3 w-3" />
+                          {t("dashboard.demoBadge")}
+                        </span>
+                      )}
                     </div>
-                    <h2 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#E60000] transition-colors">{project.title}</h2>
+                    <h2 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#E60000] transition-colors">{cleanProjectTitle(project.title)}</h2>
                     <div className="flex items-center gap-2 text-sm text-zinc-400 mb-4">
                       <UserCircle className="h-4 w-4" />
                       <span>{project.creatorName || t("dashboard.defaultCreator")}</span>
@@ -233,12 +242,13 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="mt-auto pt-4 border-t border-zinc-800/50">
-                    <button className="w-full py-2.5 bg-zinc-800/50 border border-zinc-700 text-zinc-300 rounded-xl font-semibold hover:bg-[#E60000] hover:border-[#E60000] hover:text-white transition-all duration-200">
-                      {t("dashboard.viewDetailsBtn")}
-                    </button>
+                    <span className="block text-center w-full py-2.5 bg-zinc-800/50 border border-zinc-700 text-zinc-300 rounded-xl font-semibold group-hover:bg-[#E60000] group-hover:border-[#E60000] group-hover:text-white transition-all duration-200">
+                      {isDemo ? t("dashboard.viewDemoDetailsBtn") : t("dashboard.viewDetailsBtn")}
+                    </span>
                   </div>
                 </Link>
-              ))}
+                  );
+                })}
             </div>
             {hasMore && (
               <div className="flex justify-center mt-8">

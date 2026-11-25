@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { UserCircle, Tag, ArrowLeft, Send } from "lucide-react";
+import { UserCircle, Tag, ArrowLeft, Send, Sparkles, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryLabel } from "@/lib/categories";
 import { reportClientError } from "@/lib/error-logger";
 import { sanitizeString, sanitizeStringArray } from "@/lib/firestore-guards";
+import { isDemoId, cleanProjectTitle } from "@/lib/demo";
 
 interface Project {
   id: string;
@@ -115,6 +116,11 @@ export default function ProyectoDetalle() {
       
       if (!project) return;
       
+      if (isDemoId(project.creator_id)) {
+        toast.error(t("projectDetail.cannotApplyDemoToast"));
+        return;
+      }
+
       if (user.uid === project.creator_id) {
         toast.error(t("projectDetail.cannotApplyOwnToast"));
         return;
@@ -165,6 +171,8 @@ export default function ProyectoDetalle() {
     );
   }
 
+  const isDemo = isDemoId(project.creator_id);
+
   return (
     <ProtectedRoute>
       <div className="bg-transparent flex-grow py-12 px-6 relative z-10">
@@ -180,32 +188,50 @@ export default function ProyectoDetalle() {
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
                 <div>
-                  <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-3 py-1.5 rounded-md mb-4">
-                    <Tag className="h-3.5 w-3.5" />
-                    {getCategoryLabel(project.category, t)}
-                  </span>
-                  <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">{project.title}</h1>
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="inline-flex items-center gap-1 bg-zinc-800/80 text-zinc-300 border border-zinc-700/50 text-xs font-medium px-3 py-1.5 rounded-md">
+                      <Tag className="h-3.5 w-3.5" />
+                      {getCategoryLabel(project.category, t)}
+                    </span>
+                    {isDemo && (
+                      <span className="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-400 border border-amber-500/25 text-xs font-semibold px-3 py-1.5 rounded-md">
+                        <Sparkles className="h-3.5 w-3.5" />
+                        {t("projectDetail.demoBadge")}
+                      </span>
+                    )}
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">{cleanProjectTitle(project.title)}</h1>
                 </div>
                 
                 <div className="shrink-0">
-                  <button
-                    onClick={handleApply}
-                    disabled={hasApplied || applying || user?.uid === project.creator_id}
-                    className={`px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 shadow-md ${
-                      hasApplied 
-                        ? "bg-green-600/20 text-green-500 border border-green-600/30 cursor-default" 
-                        : user?.uid === project.creator_id
-                        ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                        : "bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
-                    }`}
-                  >
-                    {applying ? t("projectDetail.processing") : hasApplied ? t("projectDetail.alreadyApplied") : t("projectDetail.applyBtn")}
-                    {!hasApplied && !applying && user?.uid !== project.creator_id && <Send className="h-5 w-5" />}
-                  </button>
+                  {isDemo ? (
+                    <Link
+                      href="/dashboard/nuevo"
+                      className="px-7 py-4 rounded-xl font-bold inline-flex items-center gap-2 transition-all duration-200 shadow-md bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
+                    >
+                      <span>{t("projectDetail.demoPublishCta")}</span>
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={handleApply}
+                      disabled={hasApplied || applying || user?.uid === project.creator_id}
+                      className={`px-8 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-200 shadow-md ${
+                        hasApplied 
+                          ? "bg-green-600/20 text-green-500 border border-green-600/30 cursor-default" 
+                          : user?.uid === project.creator_id
+                          ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                          : "bg-[#E60000] hover:bg-red-700 text-white hover:shadow-[0_0_20px_rgba(230,0,0,0.3)]"
+                      }`}
+                    >
+                      {applying ? t("projectDetail.processing") : hasApplied ? t("projectDetail.alreadyApplied") : t("projectDetail.applyBtn")}
+                      {!hasApplied && !applying && user?.uid !== project.creator_id && <Send className="h-5 w-5" />}
+                    </button>
+                  )}
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-10 pb-8 border-b border-zinc-800/50">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-8 pb-8 border-b border-zinc-800/50">
                 <div className="flex items-center gap-2">
                   <UserCircle className="h-5 w-5 text-zinc-500" />
                   <span>{t("projectDetail.createdBy")} <Link href={`/perfil/${project.creator_id}`} className="text-zinc-200 font-bold hover:text-[#E60000] hover:underline transition-colors">{project.creatorName || creator?.name || t("projectDetail.defaultCreator")}</Link></span>
@@ -219,10 +245,22 @@ export default function ProyectoDetalle() {
                 {creator?.campus && (
                   <>
                     <span className="w-1.5 h-1.5 rounded-full bg-zinc-700"></span>
-                    <span>Campus {creator.campus}</span>
+                    <span>{creator.campus.toLowerCase().includes("campus") ? creator.campus : `Campus ${creator.campus}`}</span>
                   </>
                 )}
               </div>
+
+              {isDemo && (
+                <div className="mb-10 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold text-amber-300 mb-1">{t("projectDetail.demoNoticeTitle")}</h2>
+                    <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">{t("projectDetail.demoNoticeDesc")}</p>
+                  </div>
+                </div>
+              )}
 
               <div className="mb-10">
                 <h3 className="text-xl font-bold text-white mb-4">{t("projectDetail.aboutProject")}</h3>

@@ -925,4 +925,277 @@ describe("CoFound-UE Firestore Rules", () => {
       }));
     });
   });
+
+  describe("Smoke Test E2E Multicuentas (Flujo Completo Lanzamiento Día 11)", () => {
+    it("ejecuta de extremo a extremo el ciclo de vida real con 4 cuentas (Creadora + Aceptada + Rechazada + No Verificada)", async () => {
+      // Cuentas con alias '+' institucionales (@live.uem.es y @universidadeuropea.es) + 1 cuenta sin verificar
+      const uidA = "smoke_creator_a";
+      const uidB = "smoke_applicant_b";
+      const uidC = "smoke_applicant_c";
+      const uidD = "smoke_unverified_d";
+
+      const dbA = getAuthContext(uidA, "marc.cubero+smokea@live.uem.es").firestore();
+      const dbB = getAuthContext(uidB, "marc.cubero+smokeb@live.uem.es").firestore();
+      const dbC = getAuthContext(uidC, "juan.socio+smokec@universidadeuropea.es").firestore();
+      const dbD = getUnverifiedAuthContext(uidD, "marc.cubero+smoked@live.uem.es").firestore();
+
+      // 1. Cuenta D (correo institucional pero email_verified == false) bloqueada en lectura y escritura
+      await assertFails(dbD.collection("projects").get());
+      await assertFails(
+        dbD.collection("users").doc(uidD).set({
+          name: "Usuario Sin Verificar",
+          degree: "Grado en ADE",
+          campus: "Valencia",
+          updatedAt: new Date(),
+        })
+      );
+
+      // 2. Creación de perfiles públicos sin exponer email (RGPD) y bloqueo de listado masivo
+      await assertSucceeds(
+        dbA.collection("users").doc(uidA).set({
+          name: "Marc Smoke A",
+          degree: "Grado en Ingeniería en Organización Industrial",
+          campus: "Valencia",
+          bio: "Fundador de prueba para el smoke test oficial del Día 11.",
+          skills: ["Next.js", "Operaciones", "Producto"],
+          updatedAt: new Date(),
+        })
+      );
+      await assertSucceeds(
+        dbB.collection("users").doc(uidB).set({
+          name: "Lucía Smoke B",
+          degree: "Grado en Diseño Digital",
+          campus: "Alameda",
+          bio: "Diseñadora UX/UI buscando equipo para startup universitaria.",
+          skills: ["Figma", "UI/UX", "Branding"],
+          updatedAt: new Date(),
+        })
+      );
+      await assertSucceeds(
+        dbC.collection("users").doc(uidC).set({
+          name: "Carlos Smoke C",
+          degree: "Grado en Marketing",
+          campus: "Valencia",
+          bio: "Especialista en crecimiento y captación en campus.",
+          skills: ["Growth", "Social Media"],
+          updatedAt: new Date(),
+        })
+      );
+      await assertFails(dbB.collection("users").get()); // Prohibido listar colección completa
+      await assertSucceeds(dbB.collection("users").doc(uidA).get()); // Permitido ver perfil público individual
+
+      // 3. Cuenta A publica proyecto y lo edita; Cuenta B no puede editar ni borrar proyecto ajeno
+      const projectId = "proj_lanzamiento_dia11";
+      const createdAt = new Date();
+      await assertSucceeds(
+        dbA.collection("projects").doc(projectId).set({
+          title: "Plataforma IA para apuntes colaborativos UEV",
+          description: "Buscamos co-founders de diseño y negocio para lanzar el MVP antes de exámenes.",
+          category: "Startup Real",
+          profiles: ["Diseño UI/UX", "Marketing Digital"],
+          creator_id: uidA,
+          creatorName: "Marc Smoke A",
+          createdAt,
+        })
+      );
+
+      await assertFails(
+        dbB.collection("projects").doc(projectId).update({
+          title: "Intento de sabotaje por Cuenta B",
+        })
+      );
+      await assertFails(dbB.collection("projects").doc(projectId).delete());
+
+      await assertSucceeds(
+        dbA.collection("projects").doc(projectId).update({
+          title: "Plataforma IA para apuntes colaborativos UEV (V2)",
+          description: "Buscamos co-founders de diseño y negocio para lanzar el MVP antes de exámenes en Valencia.",
+          category: "Startup Real",
+          profiles: ["Diseño UI/UX", "Marketing Digital", "Full Stack"],
+        })
+      );
+
+      // 4. Postulaciones deterministas: A no puede autopostularse; B y C se postulan; B no puede duplicar
+      const appIdA = `${projectId}_${uidA}`;
+      const appIdB = `${projectId}_${uidB}`;
+      const appIdC = `${projectId}_${uidC}`;
+
+      await assertFails(
+        dbA.collection("applications").doc(appIdA).set({
+          projectId,
+          projectTitle: "Plataforma IA para apuntes colaborativos UEV (V2)",
+          applicantId: uidA,
+          creatorId: uidA,
+          status: "pending",
+          createdAt: new Date(),
+        })
+      );
+
+      await assertSucceeds(
+        dbB.collection("applications").doc(appIdB).set({
+          projectId,
+          projectTitle: "Plataforma IA para apuntes colaborativos UEV (V2)",
+          applicantId: uidB,
+          creatorId: uidA,
+          status: "pending",
+          createdAt: new Date(),
+        })
+      );
+
+      // Doble postulación bloqueada (update carece de permisos para sobreescribir status/createdAt)
+      await assertFails(
+        dbB.collection("applications").doc(appIdB).set({
+          projectId,
+          projectTitle: "Plataforma IA para apuntes colaborativos UEV (V2)",
+          applicantId: uidB,
+          creatorId: uidA,
+          status: "pending",
+          createdAt: new Date(),
+        })
+      );
+
+      await assertSucceeds(
+        dbC.collection("applications").doc(appIdC).set({
+          projectId,
+          projectTitle: "Plataforma IA para apuntes colaborativos UEV (V2)",
+          applicantId: uidC,
+          creatorId: uidA,
+          status: "pending",
+          createdAt: new Date(),
+        })
+      );
+
+      // Privacidad cruzada: Cuenta C no puede leer la postulación ni mensajes de Cuenta B
+      await assertFails(dbC.collection("applications").doc(appIdB).get());
+
+      // 5. Chat atómico por writeBatch (B -> A) + acuse de lectura de A + respuesta (A -> B)
+      const batchB1 = dbB.batch();
+      const msgB1Ref = dbB.collection("applications").doc(appIdB).collection("messages").doc("msg_b1");
+      batchB1.set(msgB1Ref, {
+        text: "¡Hola Marc! Tengo el prototipo en Figma listo para enseñarte.",
+        senderId: uidB,
+        createdAt: new Date(),
+      });
+      batchB1.update(dbB.collection("applications").doc(appIdB), {
+        lastMessageAt: new Date(),
+        lastMessageSenderId: uidB,
+        lastReadByApplicant: new Date(),
+      });
+      await assertSucceeds(batchB1.commit());
+
+      // Cuenta C envía primer mensaje antes de ser evaluada
+      const batchC1 = dbC.batch();
+      batchC1.set(dbC.collection("applications").doc(appIdC).collection("messages").doc("msg_c1"), {
+        text: "Hola, me gustaría unirme a la parte comercial.",
+        senderId: uidC,
+        createdAt: new Date(),
+      });
+      batchC1.update(dbC.collection("applications").doc(appIdC), {
+        lastMessageAt: new Date(),
+        lastMessageSenderId: uidC,
+        lastReadByApplicant: new Date(),
+      });
+      await assertSucceeds(batchC1.commit());
+
+      // Cuenta A abre el chat de B (marca leído) y responde
+      await assertSucceeds(
+        dbA.collection("applications").doc(appIdB).update({
+          lastReadByCreator: new Date(),
+        })
+      );
+      const batchA1 = dbA.batch();
+      batchA1.set(dbA.collection("applications").doc(appIdB).collection("messages").doc("msg_a1"), {
+        text: "¡Genial Lucía! Te acepto en el equipo ahora mismo.",
+        senderId: uidA,
+        createdAt: new Date(),
+      });
+      batchA1.update(dbA.collection("applications").doc(appIdB), {
+        lastMessageAt: new Date(),
+        lastMessageSenderId: uidA,
+        lastReadByCreator: new Date(),
+      });
+      await assertSucceeds(batchA1.commit());
+
+      // 6. Cuenta A acepta a B y rechaza a C
+      await assertSucceeds(dbA.collection("applications").doc(appIdB).update({ status: "accepted" }));
+      await assertSucceeds(dbA.collection("applications").doc(appIdC).update({ status: "rejected" }));
+
+      // 7. Bloqueo de chat rechazado: ni C ni A pueden enviar nuevos mensajes en appIdC, pero A y B siguen chateando
+      await assertFails(
+        dbC.collection("applications").doc(appIdC).collection("messages").doc("msg_c2").set({
+          text: "Insisto después de rechazado",
+          senderId: uidC,
+          createdAt: new Date(),
+        })
+      );
+      await assertFails(
+        dbC.collection("applications").doc(appIdC).update({
+          lastMessageAt: new Date(),
+          lastMessageSenderId: uidC,
+        })
+      );
+      await assertFails(
+        dbA.collection("applications").doc(appIdC).collection("messages").doc("msg_a_rejected").set({
+          text: "Mensaje en hilo rechazado",
+          senderId: uidA,
+          createdAt: new Date(),
+        })
+      );
+
+      // En cambio, el chat aceptado A <-> B sigue operativo
+      const batchB2 = dbB.batch();
+      batchB2.set(dbB.collection("applications").doc(appIdB).collection("messages").doc("msg_b2"), {
+        text: "¡Perfecto! Nos vemos mañana en el campus Turia.",
+        senderId: uidB,
+        createdAt: new Date(),
+      });
+      batchB2.update(dbB.collection("applications").doc(appIdB), {
+        lastMessageAt: new Date(),
+        lastMessageSenderId: uidB,
+        lastReadByApplicant: new Date(),
+      });
+      await assertSucceeds(batchB2.commit());
+
+      // 8. Limpieza en cascada (borrado de cuenta candidata B + borrado de proyecto y cuenta A/C)
+      await assertSucceeds(dbB.collection("applications").doc(appIdB).collection("messages").doc("msg_b1").delete());
+      await assertSucceeds(dbB.collection("applications").doc(appIdB).collection("messages").doc("msg_a1").delete());
+      await assertSucceeds(dbB.collection("applications").doc(appIdB).collection("messages").doc("msg_b2").delete());
+      await assertSucceeds(dbB.collection("applications").doc(appIdB).delete());
+      await assertSucceeds(dbB.collection("users").doc(uidB).delete());
+
+      // Cuenta A borra su proyecto limpiando antes postulaciones/mensajes restantes (hijos -> padre)
+      await assertSucceeds(dbA.collection("applications").doc(appIdC).collection("messages").doc("msg_c1").delete());
+      await assertSucceeds(dbA.collection("applications").doc(appIdC).delete());
+      await assertSucceeds(dbA.collection("projects").doc(projectId).delete());
+      await assertSucceeds(dbA.collection("users").doc(uidA).delete());
+      await assertSucceeds(dbC.collection("users").doc(uidC).delete());
+    });
+
+    it("bloquea crear postulaciones hacia proyectos demostrativos (creatorId demo-*)", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection("projects").doc("demo_proj_1").set({
+          title: "CampusBite — Pedidos sin colas en cafeterías UEV",
+          description: "Proyecto demostrativo de referencia para ilustrar el formato esperado.",
+          category: "Startup Real",
+          profiles: ["Ingeniería Informática", "Diseño UI/UX"],
+          creator_id: "demo-cofound-ue",
+          creatorName: "Equipo CoFound UE",
+          createdAt: new Date(),
+        });
+      });
+
+      const dbStudent = getAuthContext("student1", "student1@live.uem.es").firestore();
+      await assertSucceeds(dbStudent.collection("projects").doc("demo_proj_1").get());
+      await assertFails(
+        dbStudent.collection("applications").doc("demo_proj_1_student1").set({
+          projectId: "demo_proj_1",
+          projectTitle: "CampusBite — Pedidos sin colas en cafeterías UEV",
+          applicantId: "student1",
+          creatorId: "demo-cofound-ue",
+          status: "pending",
+          createdAt: new Date(),
+        })
+      );
+    });
+  });
 });
