@@ -1,15 +1,15 @@
 # CoFound UE — Protocolo Maestro de Smoke Test End-to-End (Edición Lanzamiento Día 11)
 
-**Versión:** 2.0 (Definitiva Post-Auditoría `CF` + `SEC-01..14` + Fase 3)  
+**Versión:** 2.1 (Definitiva Pre-Lanzamiento Día 11 — Post `CF` + `SEC-01..14` + Fase 3 + QoL + i18n)  
 **Responsable QA:** Marc Cubero Cantavella (y apoyo opcional de Juan)  
 **Entorno bajo prueba:** Producción real — `https://www.cofoundue.es` (`cofound-ue`)  
 **Objetivo:** Certificar con garantías reales, pruebas empíricas y cobertura del **100% de rutas, estados, roles y reglas de seguridad** que CoFound UE está lista para recibir tráfico simultáneo real en el evento oficial de lanzamiento del **Día 11**.
 
 ---
 
-## Parte I · Certificación Automatizada Previa (60/60 Pruebas Superadas ✅)
+## Parte I · Certificación Automatizada Previa (62/62 Pruebas Superadas ✅)
 
-Antes de iniciar el recorrido manual autenticado con multicuentas, se han ejecutado **60 verificaciones técnicas automatizadas** contra producción (`https://www.cofoundue.es`), Google Cloud / Firebase (`cofound-ue`) y el emulador oficial de reglas:
+Antes de iniciar el recorrido manual autenticado con multicuentas, se han ejecutado **62 verificaciones técnicas automatizadas** contra producción (`https://www.cofoundue.es`), Google Cloud / Firebase (`cofound-ue`) y el emulador oficial de reglas:
 
 | Suite Automatizada | Alcance Verificado | Resultado | Evidencia Técnica Real |
 | --- | --- | --- | --- |
@@ -59,9 +59,9 @@ El orden de los **13 Bloques** está diseñado de forma **estrictamente secuenci
 
 | ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| **2.1** | Selector de idioma `ES ↔ EN` en Landing | Pulsa el botón superior derecho `🌐 ES` → elige `🇬🇧 English`. Recorre la landing de arriba abajo y vuelve a `🇪🇸 Español`. | Todos los textos (Hero, tarjeta de registro, Cómo funciona, Sinergias, FAQ y Footer) cambian al instante sin recargar ni dejar claves crudas (`landing.xxx`). | ☐ |
-| **2.2** | Interacción de tarjetas «Sinergias» | Baja a la sección *Sinergias reales entre Titulaciones* y pulsa **«Crear iniciativa similar»** en cualquiera de las 3 tarjetas. | Hace scroll suave hasta arriba del todo y pone el foco automáticamente en el campo de correo electrónico. | ☐ |
-| **2.3** | Acordeón de FAQ estudiantil | Abre y cierra las 4 preguntas frecuentes y pulsa el CTA inferior **«Crear mi perfil ahora»**. | Animación limpia, textos claros (100% gratuito, acceso exclusivo `@live.uem.es` / `@universidadeuropea.es`). | ☐ |
+| **2.1** | Selector de idioma `ES ↔ EN` en Landing | Pulsa el botón superior derecho `🌐 ES` → elige `🇬🇧 English`. Recorre la landing de arriba abajo y vuelve a `🇪🇸 Español`. | Todos los textos (Hero con *Salud, Deporte, Ingeniería, Diseño y ADE*, tarjeta de registro, Cómo funciona, Ecuaciones `2×2`, FAQ y Footer) cambian al instante sin recargar ni dejar claves crudas (`landing.xxx`). | ☐ |
+| **2.2** | Interacción de tarjetas `2×2` (Turia × Alameda) y CTAs hacia «Crear Cuenta» | Baja a *Cruza facultades, crea proyectos reales*, verifica representación de Alameda (Fisioterapia/CAFD, Biotecnología/Salud) y Turia, y pulsa **«Publicar algo así»**. Repite en móvil comprobando que tanto el subtítulo del Hero como las 4 tarjetas y partículas ligeras se ven sin líneas divisorias grises. | Hace scroll suave arriba, **cambia automáticamente la pestaña a «Crear Cuenta»** y enfoca el campo de correo electrónico. | ☐ |
+| **2.3** | Acordeón de FAQ estudiantil y botón mostrar/ocultar contraseña | Abre y cierra las 4 preguntas frecuentes, pulsa **«Crear mi perfil ahora»** (debe abrir *Crear Cuenta*) y prueba el botón del ojito (`👁️`) en el campo de contraseña. | Animación limpia, textos claros, la contraseña se muestra/oculta correctamente y se oculta al cambiar de pestaña. | ☐ |
 | **2.4** | Páginas Legales y botón Volver | Desde el footer abre **Aviso Legal**, **Política de Privacidad** y **Política de Cookies** (prueba también cambiar a `EN` dentro de una de ellas). | Titular *Marc Cubero Cantavella*, contacto `cofoundue@gmail.com`, nota de independencia respecto a la UE, mención a *Vercel Web Analytics* (nunca GA4) y retención de `30 días` para errores técnicos. | ☐ |
 
 ---
@@ -89,8 +89,8 @@ El orden de los **13 Bloques** está diseñado de forma **estrictamente secuenci
 
 | ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| **4.1** | Bloqueo de publicación sin perfil completado (`Cuenta C` virgen) | Con **Cuenta C** recién verificada (antes de tocar `/perfil`), ve directamente a **Nuevo Proyecto** (`/dashboard/nuevo`), rellena datos válidos y pulsa **Publicar Proyecto**. | **No publica**: muestra toast *«Completa tu perfil antes de publicar»* y te redirige automáticamente a `/perfil`. | ☐ |
-| **4.2** | Avatar de iniciales determinista (sin subida de archivos) | En `/perfil`, escribe distintos nombres y apellidos en el campo *Nombre Completo*. | El círculo superior actualiza sus iniciales en vivo (`InitialsAvatar`) y **no existe ningún input de subir foto**. | ☐ |
+| **4.1** | Banner de onboarding y bloqueo sin perfil completado (`Cuenta C` virgen) | Con **Cuenta C** recién verificada (antes de tocar `/perfil`): 1) Comprueba el banner superior en `/dashboard` (*«Completa tu perfil en 20 segundos»*); 2) Intenta publicar en `/dashboard/nuevo`; 3) Intenta pulsar **«Postularme»** en el proyecto de `Cuenta A`. | En `/dashboard` se muestra el banner de onboarding; tanto al publicar como al postularse sin nombre **bloquea con toast claro y redirige a `/perfil`**. | ☐ |
+| **4.2** | Avatar de iniciales determinista, chips rápidos y enlace público | En `/perfil`, escribe nombres con y sin paréntesis, añade habilidades usando los **chips de sugerencias rápidas** y pulsa **«Ver mi perfil público»** arriba a la derecha. | `InitialsAvatar` ignora signos de puntuación (nunca `E(`), los chips rápidos añaden skills en 1 toque y el enlace abre `/perfil/[tu-uid]`. | ☐ |
 | **4.3** | Guardado completo y persistencia en los 3 perfiles | Rellena y guarda los 3 perfiles con datos diferenciados:<br>• **Cuenta A:** tu perfil real (Campus `Turia / Valencia`).<br>• **Cuenta B:** *Lucía Prueba Smoke*, *Grado en Diseño Digital*, Campus `Alameda`, bio y 3 skills (`Figma`, `UI/UX`, `Branding`).<br>• **Cuenta C:** *Carlos Prueba Smoke*, *Grado en Marketing*, Campus `Turia / Valencia`, bio y 2 skills (`SEO`, `Growth`). | Toast *«Perfil guardado correctamente»* en los 3; al recargar con `F5` todos los campos y el selector de campus (`Valencia` vs `Alameda`) se mantienen intactos. | ☐ |
 | **4.4** | Habilidades duplicadas y borrado de tags | En **Cuenta B** (`/perfil`), intenta añadir `Figma` por segunda vez (con botón *Añadir* y con tecla `Enter`), luego borra una skill con la `X` y guarda. | Impide duplicar `Figma` y conserva exactamente la lista editada tras recargar. | ☐ |
 | **4.5** | Privacidad RGPD en Perfil Público (`/perfil/[uid]`) | Abre `F12 → Network` (o inspecciona la página) cuando visites el perfil público de otro usuario en el Bloque 5/7. | Se ven nombre, grado, campus, biografía, skills y proyectos, pero **en ningún lugar del DOM ni del documento `users/{uid}` aparece su email institucional**. | ☐ |
@@ -103,18 +103,19 @@ El orden de los **13 Bloques** está diseñado de forma **estrictamente secuenci
 | --- | --- | --- | --- | --- |
 | **5.1** | Validaciones de mínimos y sin perfiles | En **Cuenta A** → `/dashboard/nuevo`:<br>1) Título `AB` (2 chars) → *Publicar*.<br>2) Título válido + Descripción de 10 chars → *Publicar*.<br>3) Título y Descripción válidos pero **0 perfiles añadidos** → *Publicar*. | Los 3 intentos se bloquean con su respectivo toast explicativo en español sin escribir nada en Firestore. | ☐ |
 | **5.2** | Límites superiores (`100` / `1500` / `10 perfiles` / `40 chars`) | Comprueba que el contador de título frena en `100/100`, descripción en `1500/1500`, tag de perfil en `40` caracteres, no duplica tags repetidos y al intentar meter un **11.º perfil** lanza toast *«Máximo 10 perfiles por proyecto»*. | Todos los topes de interfaz coinciden exactamente con las reglas de seguridad de `firestore.rules`. | ☐ |
-| **5.3** | Publicación real del Proyecto de Prueba | Publica con **Cuenta A**:<br>• **Título:** `[SMOKE TEST] Plataforma UEV Lanzamiento Día 11`<br>• **Categoría:** `Startup Real`<br>• **Perfiles:** `Diseño UI/UX`, `Marketing Digital`<br>• **Descripción:** texto realista de `> 60` caracteres. | Toast de éxito, redirección a `/dashboard` y la tarjeta aparece **en primera posición** mostrando tu nombre real como creador (nunca `Usuario UE` ni un UID). | ☐ |
-| **5.4** | Vista de detalle y enlace al perfil público del fundador | Haz clic en la tarjeta recién creada (`/dashboard/proyecto/[id]`) y pulsa sobre tu nombre en *«Creado por [Nombre]»*. | Muestra título, categoría, grado, campus, descripción con saltos de línea conservados, perfiles buscados, y el enlace abre `/perfil/[uid-de-A]` listando ese proyecto abajo. | ☐ |
+| **5.3** | Plantilla guiada, chips rápidos y publicación real del Proyecto | En **Cuenta A** → `/dashboard/nuevo`, prueba **«Usar estructura recomendada»** y añade perfiles con los chips sugeridos. Publica:<br>• **Título:** `[SMOKE TEST] Plataforma UEV Lanzamiento Día 11`<br>• **Categoría:** `Startup Real`<br>• **Perfiles:** `Diseño UI/UX`, `Marketing Digital`<br>• **Descripción:** texto realista de `> 60` caracteres. | La plantilla inserta los 4 bloques limpios (sin sobrescribir texto si ya había algo escrito). Tras publicar, aparece el primero en `/dashboard` con fecha relativa (*Ahora mismo*) y tu nombre real. | ☐ |
+| **5.4** | Vista de detalle, botón Compartir y enlace al perfil del fundador | Abre el detalle (`/dashboard/proyecto/[id]`), pulsa **«Compartir»** y pulsa sobre tu nombre en *«Creado por [Nombre]»*. | Muestra fecha de publicación relativa, copia enlace (o abre menú nativo móvil) con toast de confirmación y el enlace abre `/perfil/[uid-de-A]`. | ☐ |
 
 ---
 
-## Bloque 6 · Exploración, Búsqueda Multicriterio e Internacionalización de Categorías
+## Bloque 6 · Exploración, Filtros Rápidos, Bilingüismo y Traducción de Proyectos
 
 | ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| **6.1** | Búsqueda por título, descripción, perfil y nombre del creador | Con **Cuenta B** en `/dashboard`, escribe sucesivamente en el buscador: `SMOKE TEST`, `UI/UX` y el nombre de `Cuenta A`. | En los 3 casos filtra en tiempo real y encuentra el proyecto de `Cuenta A`. | ☐ |
-| **6.2** | Filtro de categoría + combinación con texto + cambio a Inglés | Filtra por categoría `Startup Real` (aparece), luego cambia a `TFG` manteniendo `SMOKE TEST` en el buscador (no aparece → estado vacío limpio). Cambia el idioma del Navbar a `EN`. | En `EN` las etiquetas de categorías pasan a *Real Startup / Final Thesis (TFG) / Academic Challenge*, pero el filtrado sigue funcionando porque internamente usa la clave canónica. | ☐ |
-| **6.3** | Skeletons de carga | Recarga `/dashboard` con `F5`. | Se muestran brevemente las tarjetas `ProjectSkeleton` grises pulsantes sin saltos bruscos de maquetación (*CLS*). | ☐ |
+| **6.1** | Búsqueda, botón limpiar (`✕`), contador y toggle «Ocultar ejemplos» | Con **Cuenta B** en `/dashboard`: 1) Busca `SMOKE TEST`, `UI/UX` y el nombre de `Cuenta A`; 2) Pulsa la **`✕`** del buscador; 3) Activa **«Ocultar ejemplos»** y comprueba el contador dinámico de proyectos mostrados. | Filtra en tiempo real, la `✕` limpia en 1 clic, **«Ocultar ejemplos»** deja visibles solo los proyectos reales (ocultando los 6 `demo-*`) y el contador se actualiza al instante. | ☐ |
+| **6.2** | Filtro combinado, «Limpiar filtros» y cambio a Inglés (`Capa 1`) | Combina `TFG` + `SMOKE TEST` (0 resultados → pulsa **«Limpiar filtros»**). Cambia el idioma del Navbar a **`EN`** y busca `fatigue` o `Flutter`. | **«Limpiar filtros»** resetea todo; en `EN` las categorías y los **6 proyectos de ejemplo** pasan a inglés natural al instante y el buscador encuentra términos en inglés. | ☐ |
+| **6.3** | Traducción bajo demanda en proyectos reales (`Capa 2`) | Con **Cuenta B** en modo **`EN`** (o **`ES`**), abre el proyecto real `[SMOKE TEST]` de `Cuenta A` y pulsa el botón **«Translate / Traducir»** junto a *About the Project / Acerca del Proyecto*. | Abre Google Translate en una pestaña nueva (`sl=auto`, destino `en` o `es` según idioma activo) con el título y descripción precargados. Verifica que los proyectos de ejemplo **NO** muestran este botón (se traducen nativamente). | ☐ |
+| **6.4** | Skeletons de carga | Recarga `/dashboard` con `F5`. | Se muestran brevemente las tarjetas `ProjectSkeleton` grises pulsantes sin saltos bruscos de maquetación (*CLS*). | ☐ |
 
 ---
 
@@ -124,11 +125,11 @@ El orden de los **13 Bloques** está diseñado de forma **estrictamente secuenci
 
 | ID | Prueba | Pasos exactos | Resultado esperado | Estado |
 | --- | --- | --- | --- | --- |
-| **7.1** | Anti-autopostulación (`Cuenta A`) | Con **Cuenta A**, entra al detalle de tu propio proyecto `[SMOKE TEST]`. | El botón de postularse aparece **deshabilitado** en gris; el creador no puede postularse a su propio proyecto. | ☐ |
-| **7.2** | Primera postulación (`Cuenta B`) + Badge `1` en vivo en `Cuenta A` | Con **Cuenta B**, abre el proyecto `[SMOKE TEST]` y pulsa **«Postularme»**. Mira el Navbar de **Cuenta A** (sin recargar A). | En **B**: toast *«Te has postulado correctamente»* y botón pasa a verde **«Ya postulado»**. En **A**: aparece instantáneamente el **badge rojo `1`** sobre *Mis Proyectos*. | ☐ |
-| **7.3** | Anti-duplicado tras recarga (`Cuenta B`) | Con **Cuenta B**, recarga con `F5` la página del proyecto. | Sigue apareciendo **«Ya postulado»** deshabilitado (además, en Firestore el ID determinista `projectId_uidB` impide duplicados). | ☐ |
-| **7.4** | Segunda postulación (`Cuenta C`) + Subida de Badge a `2` en `Cuenta A` | Con **Cuenta C** (Edge), abre el proyecto `[SMOKE TEST]` y pulsa **«Postularme»**. Mira el Navbar de **Cuenta A**. | El badge rojo sobre *Mis Proyectos* en **Cuenta A** sube en tiempo real de **`1` a `2`**. | ☐ |
-| **7.5** | Vista del candidato en *Mis Postulaciones* (`Cuenta B` y `C`) | En **Cuenta B** y **Cuenta C**, entra a `/dashboard/mis-postulaciones`. | Ambas ven el proyecto con fecha formateada, botón directo **«Chat»** y etiqueta amarilla **«Pendiente»**. | ☐ |
+| **7.1** | Vista del propio creador (`Cuenta A` — sin botones muertos) | Con **Cuenta A**, entra al detalle de tu propio proyecto `[SMOKE TEST]`. | En lugar de un botón bloqueado, muestra el botón directo **«Editar proyecto»** hacia `/dashboard/proyecto/[id]/editar`. | ☐ |
+| **7.2** | Postulación con modal de presentación (`Cuenta B`) + Badge `1` en `Cuenta A` | Con **Cuenta B**, abre `[SMOKE TEST]` → pulsa **«Postularme»** → en el modal elige el perfil `Diseño UI/UX`, escribe una nota breve de presentación y envía. Mira el Navbar de **Cuenta A** (sin recargar A). | En **B**: toast de éxito, aparece insignia verde **«Ya postulado»** junto al botón directo **«Abrir chat»** y la nota se envía automáticamente como primer mensaje del chat. En **A**: aparecen badges en tiempo real en *Mis Proyectos* (`1`) y *Mensajes* (`1`). | ☐ |
+| **7.3** | Anti-duplicado tras recarga (`Cuenta B`) | Con **Cuenta B**, recarga con `F5` la página del proyecto. | Sigue apareciendo **«Ya postulado»** + **«Abrir chat»** (imposible duplicar por ID determinista `projectId_uidB`). | ☐ |
+| **7.4** | Segunda postulación (`Cuenta C`) + Subida de Badge a `2` en `Cuenta A` | Con **Cuenta C** (Edge), abre `[SMOKE TEST]` y postúlate sin nota (o con nota breve). Mira el Navbar de **Cuenta A**. | El badge rojo sobre *Mis Proyectos* en **Cuenta A** sube en tiempo real de **`1` a `2`**. | ☐ |
+| **7.5** | Vista del candidato en *Mis Postulaciones* y botón **«Retirar»** (`Cuenta B` y `C`) | En **Cuenta B** y **Cuenta C**, entra a `/dashboard/mis-postulaciones`. Pulsa **«Retirar»** en una candidatura pendiente para comprobar el modal oscuro de confirmación y pulsa **Cancelar** (o retira y vuelve a postularte si quieres validar el borrado completo). | Ambas ven fecha formateada, botón **«Chat»**, etiqueta amarilla **«Pendiente»** y botón **«Retirar»** con modal propio de confirmación (sin `window.confirm`). | ☐ |
 | **7.6** | Panel de *Postulaciones Recibidas* y Modal de Perfil (`Cuenta A`) | En **Cuenta A**, entra a `/dashboard/mis-proyectos` → tabla inferior *Postulaciones Recibidas* → pulsa el icono de usuario (`Ver Perfil Detallado`) de *Lucía Prueba Smoke (B)*. | Se abre el modal con avatar de iniciales, grado, campus `Alameda`, biografía y sus tags (`Figma`, `UI/UX`, `Branding`). Cierra el modal. | ☐ |
 | **7.7** | Aceptar a `B` y Rechazar a `C` *(¡espera primero al paso 8.2 antes de rechazar a C!)* | **Nota táctica:** antes de pulsar Rechazar sobre `C`, intercambia 1 mensaje en el Bloque 8.2 para probar también el historial en chats rechazados; después vuelve aquí, **Acepta (`✓`) a `Cuenta B`** y **Rechaza (`✕`) a `Cuenta C`**. | Al aceptar a B y rechazar a C:<br>• El badge rojo de *Mis Proyectos* en **Cuenta A** desaparece (`0` pendientes).<br>• En **Cuenta B** (*Mis Postulaciones*) cambia a verde **«Aceptada»**.<br>• En **Cuenta C** (*Mis Postulaciones*) cambia a rojo **«Rechazada»**. | ☐ |
 
@@ -144,7 +145,7 @@ El orden de los **13 Bloques** está diseñado de forma **estrictamente secuenci
 | **8.4** | Punto rojo por conversación y limpieza automática al leer | En **Cuenta A**, entra a `/dashboard/mensajes`. Observa los puntos rojos junto a *Lucía* y *Carlos*. Haz clic primero en *Lucía* y luego en *Carlos*. | Al abrir el chat de *Lucía*, su punto rojo desaparece y el badge del Navbar baja de **`2` a `1`**. Al abrir el de *Carlos*, baja de **`1` a `0`** (desaparece). | ☐ |
 | **8.5** | Respuesta `A → B` y ausencia de auto-notificación | Con **Cuenta A**, responde a *Lucía (`B`)*: *«¡Bienvenida al equipo Lucía! Te acepto ahora mismo.»* | **Cuenta A NO ve badge** por su propio mensaje. **Cuenta B SÍ recibe al instante** el mensaje y el badge si estaba en otra pestaña. | ☐ |
 | **8.6** | **Prueba Crítica:** Cierre de chat al rechazar a `Cuenta C` | En **Cuenta A** → *Mis Proyectos*: **Acepta (`✓`) a `B`** y **Rechaza (`✕`) a `C`** (completando el punto `7.7`). Ahora abre el chat de `A ↔ C` tanto en **Cuenta C** como en **Cuenta A**. | En **ambas cuentas** el historial previo sigue siendo legible, pero la barra de escritura ha sido sustituida por el aviso: *«Esta candidatura fue rechazada. El chat permanece en modo de solo lectura.»* (y Firestore bloquea cualquier escritura por debajo). Mientras tanto, el chat `A ↔ B` sigue 100% activo. | ☐ |
-| **8.7** | Validación de mensaje vacío, límite `1000` chars, scroll y *Ver Perfil* | En el chat activo `A ↔ B`:<br>1) Intenta enviar solo espacios en blanco.<br>2) Verifica `maxLength=1000`.<br>3) Envía 6-8 mensajes cortos seguidos.<br>4) Pulsa **«Ver Perfil»** arriba a la derecha del chat. | Botón enviar deshabilitado con espacios; scroll baja suave al último mensaje; *Ver Perfil* lleva a `/perfil/[uid]` del interlocutor. | ☐ |
+| **8.7** | Marcas de hora, estado en cabecera, enlace al proyecto y *Ver Perfil* | En el chat activo `A ↔ B`:<br>1) Comprueba la hora (`HH:mm`) en cada burbuja y la píldora de estado (`Aceptada`) en cabecera y lista lateral.<br>2) Haz clic sobre el **título del proyecto** en la cabecera del chat.<br>3) Intenta enviar solo espacios en blanco y verifica `maxLength=1000`.<br>4) Pulsa **«Ver Perfil»** arriba a la derecha. | Horas visibles en burbujas, píldora de estado sincronizada en vivo, el título abre `/dashboard/proyecto/[id]`, botón enviar deshabilitado con espacios y *Ver Perfil* abre `/perfil/[uid]`. | ☐ |
 
 ---
 
@@ -190,7 +191,7 @@ El orden de los **13 Bloques** está diseñado de forma **estrictamente secuenci
 | **12.1** | Intento de borrar cuenta con contraseña **INCORRECTA** (`Cuenta C`) | En **Cuenta C** → `/perfil` → baja del todo → pulsa **«Eliminar mi cuenta»** → escribe una contraseña **errónea** (`ClaveIncorrecta999`) → **«Sí, eliminar cuenta»**. | Muestra toast *«La contraseña introducida no es correcta. No se ha eliminado ningún dato.»* Cancela el modal y recarga: **el perfil y la postulación de `C` siguen intactos** (no borra Firestore antes de validar Auth). | ☐ |
 | **12.2** | Borrado real en cascada de **Cuenta C** | Vuelve a abrir **«Eliminar mi cuenta»** en **Cuenta C**, introduce su contraseña **correcta** y confirma. | Toast *«Tu cuenta ha sido eliminada correctamente»*, redirige a la landing y elimina en cascada sus postulaciones, mensajes, documento `users/{uidC}` y usuario en Firebase Auth. | ☐ |
 | **12.3** | Borrado real en cascada de **Cuenta B** | En **Cuenta B** (en el PC; luego cierra la PWA del móvil), ve a `/perfil` → **«Eliminar mi cuenta»** → introduce su contraseña **correcta** y confirma. | Elimina en cascada sus mensajes con `A`, su postulación aceptada, su documento `users/{uidB}` y su cuenta en Firebase Auth. En **Cuenta A** la conversación y postulación de `B` desaparecen limpiamente. | ☐ |
-| **12.4** | Confirmación y borrado del Proyecto `[SMOKE TEST]` (`Cuenta A`) | En **Cuenta A** → `/dashboard/mis-proyectos` → pulsa la papelera (`🗑️`) sobre `[SMOKE TEST] Plataforma UEV Lanzamiento Día 11`: primero pulsa **Cancelar** en el diálogo de confirmación (comprueba que NO se borra), vuelve a pulsar `🗑️` y pulsa **Aceptar**. | Toast *«Proyecto y postulaciones eliminadas correctamente»*. El proyecto desaparece de *Mis Proyectos* y de `/dashboard`. | ☐ |
+| **12.4** | Modal oscuro propio y borrado del Proyecto `[SMOKE TEST]` (`Cuenta A`) | En **Cuenta A** → `/dashboard/mis-proyectos` → pulsa la papelera (`🗑️`) sobre `[SMOKE TEST] Plataforma UEV Lanzamiento Día 11`: verifica que se abre el **modal oscuro propio** (no `window.confirm`), pulsa **Cancelar** primero (NO se borra), vuelve a pulsar `🗑️` y confirma **«Sí, eliminar proyecto»**. | Toast *«Proyecto y postulaciones eliminadas correctamente»*. El proyecto desaparece de *Mis Proyectos* y de `/dashboard`. | ☐ |
 | **12.5** | Verificación final de limpieza en Firebase Console | Entra en [Firebase Authentication → Users](https://console.firebase.google.com/project/cofound-ue/authentication/users) y en [Firestore → Datos](https://console.firebase.google.com/project/cofound-ue/firestore). | Las cuentas `+smokeb` y `+smokec` **ya no existen** en Authentication ni en `users`, `applications` no tiene documentos basura de prueba y el proyecto `[SMOKE TEST]` ha desaparecido. | ☐ |
 
 ---
@@ -204,8 +205,9 @@ Antes del Día 11, los 6 proyectos demostrativos y la cuenta oficial `Equipo CoF
 
 | ID | Prueba rápida del Escaparate Oficial | Resultado esperado | Estado |
 | --- | --- | --- | --- |
-| **D.1** | Abrir cualquier proyecto de ejemplo desde `/dashboard` | Muestra badge `Ejemplo`, descripción estructurada en 4 bloques, aviso informativo y botón **«Publicar mi propia idea →»** (sin botón *Postularme*). | ☐ |
+| **D.1** | Abrir cualquier proyecto de ejemplo desde `/dashboard` | Muestra badge `Ejemplo`, descripción estructurada en 4 bloques, aviso informativo y botón **«Publicar mi propia idea →»** (sin botón *Postularme* ni botón *Traducir* externo). | ☐ |
 | **D.2** | Pulsar en *Equipo CoFound UE* (`/perfil/demo-cofound-ue`) | Muestra el **logo oficial de CoFound UE** (nunca `E(`), badge **«Cuenta Oficial · Ejemplos»**, bio y habilidades limpias, y los 6 proyectos abajo. | ☐ |
+| **D.3** | Cambiar idioma a `EN` sobre el Escaparate Oficial (`Capa 1`) | En modo **`EN`**, tanto `/perfil/demo-cofound-ue` (`CoFound UE Team`, bio y skills) como los **6 proyectos de ejemplo** en `/dashboard` y su detalle se muestran en inglés natural al instante. | ☐ |
 
 ---
 
@@ -233,9 +235,9 @@ Qué ocurrió (y texto de consola si aplica): ...
 
 ### Acta Final de Certificación Pre-Lanzamiento (Día 11)
 - **Fecha de ejecución:** `____ / ____ / 2026`
-- **Pruebas automáticas (Parte I):** `60 / 60 PASS` ✅
-- **Pruebas manuales E2E multicuentas + PWA móvil (Parte II):** `____ / 46`
+- **Pruebas automáticas (Parte I):** `62 / 62 PASS` ✅
+- **Pruebas manuales E2E multicuentas + PWA móvil + Escaparate (Partes II y III):** `____ / 50`
 - **Incidencias abiertas:** `P0: ___` · `P1: ___` · `P2: ___` · `P3: ___`
 - **Limpieza post-test verificada en Firebase Console (`12.5`):** `[ ] SÍ`
-- **Decisión sobre proyectos `[Proyecto de ejemplo]` tomada:** `[ ] Opción A` · `[ ] Opción B`
+- **7 documentos oficiales del escaparate sincronizados en producción (`D.1–D.3`):** `[ ] SÍ`
 - **VEREDICTO OFICIAL DÍA 11:** `[ ] APTA PARA LANZAMIENTO EN CAMPUS` · `[ ] PENDIENTE DE AJUSTES`
