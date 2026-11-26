@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoFound UE — Diapositivas de Aula 16:9 (1920x1080)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: #030305;
+        color: #ffffff;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 56px;
+        padding: 48px;
+      }
+
+      .slide {
+        width: 1920px;
+        height: 1080px;
+        position: relative;
+        overflow: hidden;
+        background: #09090b;
+        color: #ffffff;
+        padding: 76px 96px 64px 96px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .bg-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.92) 25%, transparent 82%);
+        pointer-events: none;
+      }
+
+      .top-accent {
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 6px;
+        background: linear-gradient(90deg, transparent 0%, #e60000 50%, transparent 100%);
+      }
+
+      .glow-right {
+        position: absolute;
+        top: 50%; right: 60px;
+        transform: translateY(-50%);
+        width: 920px; height: 920px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(230, 0, 0, 0.24) 0%, rgba(230, 0, 0, 0.05) 48%, transparent 72%);
+        pointer-events: none;
+      }
+
+      .glow-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1000px; height: 1000px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(230, 0, 0, 0.22) 0%, rgba(230, 0, 0, 0.05) 48%, transparent 72%);
+        pointer-events: none;
+      }
+
+      .constellation-canvas {
+        position: absolute;
+        inset: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 1;
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .brand img {
+        width: 72px; height: 72px; border-radius: 17px; object-fit: cover;
+        box-shadow: 0 12px 32px rgba(230, 0, 0, 0.35);
+      }
+
+      .brand-name {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 36px; font-weight: 700; letter-spacing: -0.025em;
+      }
+
+      .red { color: #e60000; }
+
+      .live-pill {
+        display: inline-flex; align-items: center; gap: 12px;
+        padding: 12px 24px; border-radius: 9999px;
+        background: rgba(16, 185, 129, 0.14);
+        border: 1.5px solid rgba(16, 185, 129, 0.42);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 19px; font-weight: 700; letter-spacing: 0.08em;
+        text-transform: uppercase; color: #6ee7b7;
+      }
+
+      .dot-green {
+        width: 11px; height: 11px; border-radius: 9999px;
+        background: #10b981; box-shadow: 0 0 12px rgba(16, 185, 129, 0.95);
+      }
+
+      /* SLIDE 1 MAIN SPLIT */
+      .split {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 64px;
+        align-items: center;
+      }
+
+      .left-col {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 76px;
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+      }
+
+      .sub {
+        font-size: 30px;
+        line-height: 1.38;
+        color: #d4d4d8;
+        max-width: 920px;
+      }
+
+      .sub strong { color: #ffffff; }
+
+      .pillars {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 8px;
+      }
+
+      .pillar {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px 26px;
+        border-radius: 20px;
+        background: rgba(19, 19, 24, 0.9);
+        border: 1.5px solid rgba(63, 63, 70, 0.78);
+        font-size: 24px;
+        font-weight: 500;
+        color: #e4e4e7;
+      }
+
+      .pillar-num {
+        width: 44px; height: 44px; border-radius: 12px;
+        background: rgba(230, 0, 0, 0.16);
+        border: 1.5px solid rgba(230, 0, 0, 0.45);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px; font-weight: 700; color: #e60000;
+        flex-shrink: 0;
+      }
+
+      .pillar strong { color: #ffffff; }
+
+      .qr-panel {
+        background: rgba(22, 11, 13, 0.94);
+        border: 2px solid rgba(230, 0, 0, 0.55);
+        border-radius: 40px;
+        padding: 44px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 24px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 60px rgba(230, 0, 0, 0.18);
+      }
+
+      .qr-kicker {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px; font-weight: 700;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: #fca5a5;
+      }
+
+      .qr-white {
+        width: 470px; height: 470px;
+        background: #ffffff;
+        border-radius: 30px;
+        padding: 34px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.65);
+      }
+
+      .qr-white img { width: 100%; height: 100%; object-fit: contain; }
+
+      .qr-url {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 52px; font-weight: 700; color: #ffffff;
+        letter-spacing: -0.02em;
+      }
+
+      .qr-hint {
+        font-size: 22px; color: #d4d4d8;
+      }
+
+      /* SLIDE 2 CENTERED AUDITORIUM QR */
+      .auditorium {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 28px;
+        margin: auto 0;
+      }
+
+      .qr-giant {
+        width: 520px; height: 520px;
+        background: #ffffff;
+        border-radius: 38px;
+        padding: 38px;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.78), 0 0 80px rgba(230, 0, 0, 0.25);
+      }
+
+      .qr-giant img { width: 100%; height: 100%; object-fit: contain; }
+
+      .giant-url {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 74px; font-weight: 700; letter-spacing: -0.03em; color: #ffffff;
+      }
+
+      .giant-sub {
+        font-size: 30px; color: #d4d4d8;
+      }
+
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 20px;
+        border-top: 1.5px solid rgba(63, 63, 70, 0.5);
+        font-size: 20px;
+        color: #a1a1aa;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- DIAPOSITIVA 1: PRESENTACIÓN + QR EN AULA -->
+    <section
+      class="slide"
+      data-name="slide-01-presentacion-qr-16x9"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="bg-grid"></div>
+      <div class="glow-right"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="145" data-maxdist="135" data-seed="801"></canvas>
+
+      <div class="content">
+        <header class="topbar">
+          <div class="brand">
+            <img src="/public/CoFoundUE_logo.png" alt="CoFound UE" />
+            <span class="brand-name">CoFound <span class="red">UE</span> · Universidad Europea</span>
+          </div>
+          <span class="live-pill"><span class="dot-green"></span> Piloto Turia y Alameda · 100 % Gratis</span>
+        </header>
+
+        <div class="split">
+          <div class="left-col">
+            <h1>Encuentra a tu <span class="red" style="white-space:nowrap;">Co-Founder</span><br />en el Campus.</h1>
+            <p class="sub">
+              Conecta con estudiantes de <strong>Salud, Deporte, Ingeniería, Diseño y ADE</strong> para formar equipo en tus proyectos.
+            </p>
+            <div class="pillars">
+              <div class="pillar">
+                <span class="pillar-num">01</span>
+                <span><strong>Retos de clase, TFGs y Startups:</strong> publica tu idea o súmate a una existente.</span>
+              </div>
+              <div class="pillar">
+                <span class="pillar-num">02</span>
+                <span><strong>Chat privado 1 a 1 en tiempo real:</strong> postúlate con tu rol y coordina equipo.</span>
+              </div>
+              <div class="pillar">
+                <span class="pillar-num">03</span>
+                <span><strong>Solo comunidad UE verificada:</strong> entra con <strong>@live.uem.es</strong> o <strong>@universidadeuropea.es</strong>.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="qr-panel">
+            <span class="qr-kicker">Escanea desde tu asiento</span>
+            <div class="qr-white">
+              <img src="/marketing/assets/qr-cofoundue.svg" alt="QR CoFound UE" />
+            </div>
+            <div class="qr-url">www.cofoundue.es</div>
+            <p class="qr-hint">Crea tu perfil en 60 segundos · Sin descargar nada (PWA)</p>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <span>Iniciativa estudiantil independiente, sin afiliación oficial con la Universidad Europea.</span>
+          <span style="color:#ffffff; font-weight:600;">IG: @cofoundue · LinkedIn: CoFound UE · cofoundue@gmail.com</span>
+        </footer>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 2: MODO QR GIGANTE PARA AUDITORIO / AULA GRANDE -->
+    <section
+      class="slide"
+      data-name="slide-02-qr-auditorio-16x9"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="bg-grid"></div>
+      <div class="glow-center"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="150" data-maxdist="135" data-seed="802"></canvas>
+
+      <div class="content">
+        <header class="topbar">
+          <div class="brand">
+            <img src="/public/CoFoundUE_logo.png" alt="CoFound UE" />
+            <span class="brand-name">CoFound <span class="red">UE</span></span>
+          </div>
+          <span class="live-pill"><span class="dot-green"></span> Campus Turia &amp; Campus Alameda</span>
+        </header>
+
+        <div class="auditorium">
+          <div class="qr-giant">
+            <img src="/marketing/assets/qr-cofoundue.svg" alt="QR CoFound UE" />
+          </div>
+          <div class="giant-url">www.<span class="red">cofoundue</span>.es</div>
+          <p class="giant-sub">
+            Escanea y entra gratis con tu correo <strong style="color:#fff;">@live.uem.es</strong> o <strong style="color:#fff;">@universidadeuropea.es</strong> · Bilingüe ES / EN
+          </p>
+        </div>
+
+        <footer class="footer">
+          <span>Iniciativa estudiantil independiente, sin afiliación oficial con la Universidad Europea.</span>
+          <span style="color:#ffffff; font-weight:600;">@cofoundue · cofoundue@gmail.com</span>
+        </footer>
+      </div>
+    </section>
+
+    <script>
+      function createRng(seed) {
+        let s = seed >>> 0;
+        return () => {
+          s = (s + 0x6d2b79f5) | 0;
+          let t = Math.imul(s ^ (s >>> 15), 1 | s);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      document.querySelectorAll(".slide").forEach((slide) => {
+        const canvas = slide.querySelector(".constellation-canvas");
+        if (!canvas) return;
+        const w = 1920, h = 1080, dpr = 2;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const rand = createRng(Number(canvas.dataset.seed || 801));
+        const density = Number(canvas.dataset.density || 145);
+        const maxDist = Number(canvas.dataset.maxdist || 135);
+        const pts = [];
+        for (let i = 0; i < density; i++) {
+          const isRed = rand() > 0.24;
+          pts.push({
+            x: rand() * w, y: rand() * h, r: rand() * 1.1 + 0.65,
+            color: isRed
+              ? `rgba(230, 0, 0, ${(0.24 + rand() * 0.26).toFixed(2)})`
+              : `rgba(255, 255, 255, ${(0.14 + rand() * 0.18).toFixed(2)})`,
+          });
+        }
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+            if (d < maxDist) {
+              ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${((1 - d / maxDist) * 0.085).toFixed(3)})`;
+              ctx.lineWidth = 0.65; ctx.stroke();
+            }
+          }
+        }
+        for (const p of pts) {
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color; ctx.fill();
+        }
+      });
+    </script>
+  </body>
+</html>

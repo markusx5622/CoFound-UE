@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoFound UE — Carteles A4 300 DPI (Turia y Alameda)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        background: #030305;
+        color: #ffffff;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 80px;
+        padding: 60px;
+      }
+
+      /* A4 exacto a 300 DPI: 2480 x 3508 px */
+      .slide {
+        width: 2480px;
+        height: 3508px;
+        position: relative;
+        overflow: hidden;
+        background: #09090b;
+        color: #ffffff;
+        padding: 150px 156px 128px 156px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .bg-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.03) 2px, transparent 2px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 2px, transparent 2px);
+        background-size: 96px 96px;
+        mask-image: radial-gradient(ellipse at 50% 44%, rgba(0, 0, 0, 0.92) 25%, transparent 82%);
+        pointer-events: none;
+      }
+
+      .top-accent {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 14px;
+        background: linear-gradient(90deg, transparent 0%, #e60000 50%, transparent 100%);
+      }
+
+      .glow-top {
+        position: absolute;
+        top: -360px; right: -260px;
+        width: 1500px; height: 1500px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(230, 0, 0, 0.24) 0%, rgba(230, 0, 0, 0.06) 46%, transparent 72%);
+        pointer-events: none;
+      }
+
+      .glow-qr {
+        position: absolute;
+        bottom: 340px; left: 50%;
+        transform: translateX(-50%);
+        width: 1550px; height: 1100px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(230, 0, 0, 0.22) 0%, rgba(230, 0, 0, 0.04) 50%, transparent 72%);
+        pointer-events: none;
+      }
+
+      .constellation-canvas {
+        position: absolute;
+        inset: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* Cabecera */
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+      }
+
+      .brand-lockup {
+        display: flex;
+        align-items: center;
+        gap: 34px;
+      }
+
+      .brand-logo {
+        width: 142px;
+        height: 142px;
+        border-radius: 32px;
+        object-fit: cover;
+        box-shadow: 0 22px 60px rgba(230, 0, 0, 0.35);
+      }
+
+      .brand-text-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .brand-name {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 62px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: #ffffff;
+      }
+
+      .brand-sub {
+        font-size: 28px;
+        font-weight: 600;
+        color: #a1a1aa;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .campus-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 20px;
+        padding: 22px 40px;
+        border-radius: 9999px;
+        background: rgba(24, 24, 27, 0.92);
+        border: 2px solid rgba(230, 0, 0, 0.55);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #ffffff;
+      }
+
+      .dot-red {
+        width: 20px; height: 20px; border-radius: 9999px;
+        background: #e60000;
+        box-shadow: 0 0 24px rgba(230, 0, 0, 0.95);
+      }
+
+      /* Bloque Titular Gigante (legible a 4 metros) */
+      .hero-block {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        margin-top: 20px;
+      }
+
+      h1 {
+        font-family: "Space Grotesk", "Inter", sans-serif;
+        font-size: 164px;
+        font-weight: 700;
+        line-height: 0.98;
+        letter-spacing: -0.035em;
+        color: #ffffff;
+      }
+
+      .red { color: #e60000; }
+
+      .hero-sub {
+        font-size: 54px;
+        line-height: 1.36;
+        color: #d4d4d8;
+        max-width: 2080px;
+      }
+
+      .hero-sub strong {
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      .degree-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .pill {
+        padding: 18px 34px;
+        border-radius: 22px;
+        background: rgba(24, 24, 27, 0.92);
+        border: 2px solid rgba(63, 63, 70, 0.85);
+        font-size: 36px;
+        font-weight: 600;
+        color: #f4f4f5;
+      }
+
+      .pill-red {
+        background: rgba(230, 0, 0, 0.16);
+        border-color: rgba(230, 0, 0, 0.52);
+        color: #ffffff;
+      }
+
+      /* 3 Pasos en fila limpia */
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 36px;
+      }
+
+      .step-card {
+        background: rgba(19, 19, 24, 0.92);
+        border: 2px solid rgba(63, 63, 70, 0.8);
+        border-radius: 44px;
+        padding: 48px 44px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+      }
+
+      .step-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .step-icon {
+        width: 96px;
+        height: 96px;
+        border-radius: 26px;
+        background: rgba(230, 0, 0, 0.14);
+        border: 2px solid rgba(230, 0, 0, 0.42);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e60000;
+      }
+
+      .step-num {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 46px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      .step-title {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 46px;
+        font-weight: 700;
+        line-height: 1.12;
+        color: #ffffff;
+      }
+
+      .step-desc {
+        font-size: 34px;
+        line-height: 1.38;
+        color: #a1a1aa;
+      }
+
+      /* Tarjeta Central QR Gigante (alto contraste real para cámara a distancia) */
+      .qr-banner {
+        background: rgba(22, 11, 13, 0.94);
+        border: 3px solid rgba(230, 0, 0, 0.58);
+        border-radius: 58px;
+        padding: 66px 76px;
+        display: flex;
+        align-items: center;
+        gap: 76px;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.72), 0 0 80px rgba(230, 0, 0, 0.18);
+      }
+
+      .qr-frame {
+        width: 610px;
+        height: 610px;
+        background: #ffffff;
+        border-radius: 44px;
+        padding: 46px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+      }
+
+      .qr-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .qr-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .qr-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        width: fit-content;
+        padding: 14px 30px;
+        border-radius: 9999px;
+        background: rgba(16, 185, 129, 0.14);
+        border: 2px solid rgba(16, 185, 129, 0.45);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6ee7b7;
+      }
+
+      .dot-green {
+        width: 16px; height: 16px; border-radius: 9999px;
+        background: #10b981;
+      }
+
+      .qr-title {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 74px;
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        color: #ffffff;
+      }
+
+      .qr-url {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 92px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: #e60000;
+        line-height: 1.05;
+      }
+
+      .qr-bullets {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        font-size: 36px;
+        font-weight: 500;
+        color: #e4e4e7;
+      }
+
+      .qr-bullets strong { color: #ffffff; }
+
+      /* Pie legal y redes */
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 36px;
+        border-top: 2px solid rgba(63, 63, 70, 0.55);
+      }
+
+      .footer-legal {
+        font-size: 28px;
+        color: #71717a;
+      }
+
+      .footer-social {
+        display: flex;
+        align-items: center;
+        gap: 44px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 34px;
+        font-weight: 700;
+        color: #e4e4e7;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- =========================================================
+         CARTEL 1 — CAMPUS TURIA (Guillem de Castro 175)
+         ========================================================= -->
+    <section
+      class="slide"
+      data-name="cartel-a4-campus-turia"
+      data-width="2480"
+      data-height="3508"
+    >
+      <div class="bg-grid"></div>
+      <div class="glow-top"></div>
+      <div class="glow-qr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="180" data-maxdist="210" data-seed="701"></canvas>
+
+      <div class="content">
+        <header class="topbar">
+          <div class="brand-lockup">
+            <img src="/public/CoFoundUE_logo.png" alt="CoFound UE" class="brand-logo" />
+            <div class="brand-text-wrap">
+              <span class="brand-name">CoFound <span class="red">UE</span></span>
+              <span class="brand-sub">Universidad Europea · Valencia</span>
+            </div>
+          </div>
+          <span class="campus-badge"><span class="dot-red"></span> Campus Turia × Alameda</span>
+        </header>
+
+        <div class="hero-block">
+          <h1>
+            ¿TIENES LA IDEA PERO TE FALTA <span class="red">EL EQUIPO</span>?
+          </h1>
+          <p class="hero-sub">
+            Conecta con estudiantes de otras facultades para montar tu <strong>TFG, reto académico o startup real</strong> — cruzando Campus Turia y Campus Alameda en un mismo tablero.
+          </p>
+          <div class="degree-pills">
+            <span class="pill pill-red">Ingeniería &amp; Tech</span>
+            <span class="pill pill-red">Diseño UI/UX</span>
+            <span class="pill pill-red">ADE &amp; Marketing</span>
+            <span class="pill">+ Salud y Deporte (Alameda)</span>
+          </div>
+        </div>
+
+        <div class="steps-grid">
+          <article class="step-card">
+            <div class="step-top">
+              <div class="step-icon">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+              </div>
+              <span class="step-num">01</span>
+            </div>
+            <h2 class="step-title">Publica tu proyecto</h2>
+            <p class="step-desc">Define tu TFG, reto o startup con plantilla guiada y elige los perfiles que buscas.</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-top">
+              <div class="step-icon">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="step-num">02</span>
+            </div>
+            <h2 class="step-title">Encuentra talento</h2>
+            <p class="step-desc">Alumnos de otras carreras ven tu reto y se postulan indicando qué rol pueden cubrir.</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-top">
+              <div class="step-icon">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <span class="step-num">03</span>
+            </div>
+            <h2 class="step-title">Coordina por chat</h2>
+            <p class="step-desc">Chat privado 1 a 1 en tiempo real para cerrar equipo y empezar a construir.</p>
+          </article>
+        </div>
+
+        <div class="qr-banner">
+          <div class="qr-frame">
+            <img src="/marketing/assets/qr-cofoundue.svg" alt="QR CoFound UE" />
+          </div>
+          <div class="qr-copy">
+            <span class="qr-kicker"><span class="dot-green"></span> 100 % Gratis · Sin descargar nada</span>
+            <div class="qr-title">Escanea y crea tu perfil en 60 s</div>
+            <div class="qr-url">www.cofoundue.es</div>
+            <div class="qr-bullets">
+              <span>• Acceso exclusivo verificado: <strong>@live.uem.es</strong> y <strong>@universidadeuropea.es</strong></span>
+              <span>• Funciona en el navegador e instalable como app en iOS y Android (ES / EN)</span>
+            </div>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <span class="footer-legal">Iniciativa estudiantil independiente, sin afiliación oficial con la Universidad Europea.</span>
+          <div class="footer-social">
+            <span>IG: @cofoundue</span>
+            <span>LinkedIn: CoFound UE</span>
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         CARTEL 2 — CAMPUS ALAMEDA (Paseo de la Alameda 7)
+         ========================================================= -->
+    <section
+      class="slide"
+      data-name="cartel-a4-campus-alameda"
+      data-width="2480"
+      data-height="3508"
+    >
+      <div class="bg-grid"></div>
+      <div class="glow-top"></div>
+      <div class="glow-qr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="180" data-maxdist="210" data-seed="702"></canvas>
+
+      <div class="content">
+        <header class="topbar">
+          <div class="brand-lockup">
+            <img src="/public/CoFoundUE_logo.png" alt="CoFound UE" class="brand-logo" />
+            <div class="brand-text-wrap">
+              <span class="brand-name">CoFound <span class="red">UE</span></span>
+              <span class="brand-sub">Universidad Europea · Valencia</span>
+            </div>
+          </div>
+          <span class="campus-badge"><span class="dot-red"></span> Campus Alameda × Turia</span>
+        </header>
+
+        <div class="hero-block">
+          <h1>
+            ¿IDEA DE <span class="red">SALUD O DEPORTE</span>? AQUÍ ESTÁ TU EQUIPO TECH.
+          </h1>
+          <p class="hero-sub">
+            Tú tienes el conocimiento clínico, científico o deportivo. Conecta en 2 minutos con estudiantes de <strong>Ingeniería, Diseño y ADE de Campus Turia</strong> para lanzar tu TFG o proyecto real.
+          </p>
+          <div class="degree-pills">
+            <span class="pill pill-red">Fisioterapia</span>
+            <span class="pill pill-red">CAFYD</span>
+            <span class="pill pill-red">Biotecnología</span>
+            <span class="pill pill-red">Odontología &amp; Nutrición</span>
+            <span class="pill">+ Tech, Diseño y ADE (Turia)</span>
+          </div>
+        </div>
+
+        <div class="steps-grid">
+          <article class="step-card">
+            <div class="step-top">
+              <div class="step-icon">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <span class="step-num">01</span>
+            </div>
+            <h2 class="step-title">Aporta tu criterio</h2>
+            <p class="step-desc">Publica tu idea clínica, deportiva o científica — o súmate a proyectos que buscan tu perfil.</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-top">
+              <div class="step-icon">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <span class="step-num">02</span>
+            </div>
+            <h2 class="step-title">Suma Tech y Negocio</h2>
+            <p class="step-desc">Encuentra programadores, diseñadores UI/UX y perfiles de ADE/Marketing en Campus Turia.</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-top">
+              <div class="step-icon">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <span class="step-num">03</span>
+            </div>
+            <h2 class="step-title">Chat directo 1 a 1</h2>
+            <p class="step-desc">Presenta tu propuesta, coordina en tiempo real y pasa del papel a un prototipo real.</p>
+          </article>
+        </div>
+
+        <div class="qr-banner">
+          <div class="qr-frame">
+            <img src="/marketing/assets/qr-cofoundue.svg" alt="QR CoFound UE" />
+          </div>
+          <div class="qr-copy">
+            <span class="qr-kicker"><span class="dot-green"></span> 100 % Gratis · Sin descargar nada</span>
+            <div class="qr-title">Escanea y crea tu perfil en 60 s</div>
+            <div class="qr-url">www.cofoundue.es</div>
+            <div class="qr-bullets">
+              <span>• Acceso exclusivo verificado: <strong>@live.uem.es</strong> y <strong>@universidadeuropea.es</strong></span>
+              <span>• Web móvil e instalable como app (PWA) · Interfaz bilingüe ES / EN</span>
+            </div>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <span class="footer-legal">Iniciativa estudiantil independiente, sin afiliación oficial con la Universidad Europea.</span>
+          <div class="footer-social">
+            <span>IG: @cofoundue</span>
+            <span>LinkedIn: CoFound UE</span>
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <script>
+      function createRng(seed) {
+        let s = seed >>> 0;
+        return () => {
+          s = (s + 0x6d2b79f5) | 0;
+          let t = Math.imul(s ^ (s >>> 15), 1 | s);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      document.querySelectorAll(".slide").forEach((slide) => {
+        const canvas = slide.querySelector(".constellation-canvas");
+        if (!canvas) return;
+        const w = 2480, h = 3508;
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        const rand = createRng(Number(canvas.dataset.seed || 701));
+        const density = Number(canvas.dataset.density || 180);
+        const maxDist = Number(canvas.dataset.maxdist || 210);
+        const pts = [];
+        for (let i = 0; i < density; i++) {
+          const isRed = rand() > 0.24;
+          pts.push({
+            x: rand() * w,
+            y: rand() * h,
+            r: rand() * 2.1 + 1.2,
+            color: isRed
+              ? `rgba(230, 0, 0, ${(0.24 + rand() * 0.28).toFixed(2)})`
+              : `rgba(255, 255, 255, ${(0.14 + rand() * 0.18).toFixed(2)})`,
+          });
+        }
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+            if (d < maxDist) {
+              ctx.beginPath();
+              ctx.moveTo(pts[i].x, pts[i].y);
+              ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${((1 - d / maxDist) * 0.085).toFixed(3)})`;
+              ctx.lineWidth = 1.2;
+              ctx.stroke();
+            }
+          }
+        }
+        for (const p of pts) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        }
+      });
+    </script>
+  </body>
+</html>
