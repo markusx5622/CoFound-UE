@@ -9,6 +9,7 @@ Material oficial de preparación y defensa de **CoFound UE** para la sesión de 
 | Archivo | Descripción | Formato |
 |---|---|---|
 | [`pitch-deck-shark-tank-11d.pdf`](./pitch-deck-shark-tank-11d.pdf) | Deck de proyección oficial (6 diapositivas) | PDF 16:9 (4K, sin márgenes) |
+| [`pitch-deck-shark-tank-11d.pptx`](./pitch-deck-shark-tank-11d.pptx) | Presentación PowerPoint 16:9 con notas del orador cronometradas integradas | PPTX 16:9 (Presentador) |
 | [`guion-y-qa-jurado.md`](./guion-y-qa-jurado.md) | Guión cronometrado a 3:00 min, defensa ante jurado (8 preguntas) y checklist del evento | Markdown |
 | [`email-respuesta-mauro.md`](./email-respuesta-mauro.md) | Respuesta de confirmación y propuesta de roles al presidente del Club UEmprende | Markdown |
 | [`design.html`](./design.html) | Maqueta de diseño responsive 16:9 con fondos de partículas deterministas y estilos oficiales | HTML / CSS |
