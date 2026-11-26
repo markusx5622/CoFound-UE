@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoFound UE — LinkedIn Post 03: Arquitectura & Build-in-Public</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: #030305;
+        color: #ffffff;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 48px;
+        padding: 48px 24px;
+      }
+      .slide {
+        width: 1080px;
+        height: 1350px;
+        position: relative;
+        overflow: hidden;
+        background: #09090b;
+        padding: 78px 82px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .bg-grid {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0.92) 25%, transparent 82%);
+        pointer-events: none;
+      }
+      .top-accent {
+        position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        background: linear-gradient(90deg, transparent 0%, #e60000 50%, transparent 100%);
+      }
+      .glow-tr {
+        position: absolute; top: -220px; right: -160px; width: 680px; height: 680px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(230, 0, 0, 0.22) 0%, rgba(230, 0, 0, 0.05) 45%, transparent 72%);
+        pointer-events: none;
+      }
+      .constellation-canvas {
+        position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
+      }
+      .content {
+        position: relative; z-index: 2; height: 100%;
+        display: flex; flex-direction: column; justify-content: space-between;
+      }
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      }
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 9px 18px; border-radius: 9999px;
+        background: rgba(24, 24, 27, 0.88);
+        border: 1px solid rgba(63, 63, 70, 0.78);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 15px; font-weight: 600; color: #f4f4f5;
+      }
+      .dot-red {
+        width: 9px; height: 9px; border-radius: 9999px;
+        background: #e60000; box-shadow: 0 0 12px rgba(230, 0, 0, 0.9);
+      }
+      .ci-pill {
+        display: inline-flex; align-items: center; gap: 9px;
+        padding: 9px 16px; border-radius: 9999px;
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.36);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px; font-weight: 700; color: #6ee7b7;
+      }
+      .dot-green {
+        width: 8px; height: 8px; border-radius: 9999px;
+        background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.9);
+      }
+      .page-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 17px; font-weight: 700; color: #71717a;
+      }
+      h1, h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700; letter-spacing: -0.03em; line-height: 1.06; color: #ffffff;
+      }
+      .h1-cover { font-size: 72px; }
+      .h2-sec { font-size: 58px; }
+      .red { color: #e60000; }
+      .lead { font-size: 27px; line-height: 1.42; color: #a1a1aa; }
+      .stack { display: flex; flex-direction: column; gap: 22px; }
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      .card {
+        background: rgba(18, 18, 22, 0.9);
+        border: 1px solid rgba(63, 63, 70, 0.78);
+        border-radius: 24px;
+        padding: 28px 30px;
+        box-shadow: 0 18px 44px rgba(0, 0, 0, 0.52);
+      }
+      .card-red {
+        background: rgba(230, 0, 0, 0.08);
+        border-color: rgba(230, 0, 0, 0.38);
+      }
+      .code-tag {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fca5a5;
+        background: rgba(230, 0, 0, 0.14);
+        border: 1px solid rgba(230, 0, 0, 0.32);
+        padding: 5px 12px;
+        border-radius: 10px;
+        margin-bottom: 14px;
+      }
+      .card-title {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 27px; font-weight: 700; color: #ffffff; margin-bottom: 10px;
+      }
+      .card-body { font-size: 20.5px; line-height: 1.48; color: #a1a1aa; }
+      .card-body code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.86em;
+        color: #f4f4f5;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2px 7px;
+        border-radius: 7px;
+      }
+      .terminal {
+        background: rgba(13, 13, 17, 0.95);
+        border: 1px solid rgba(63, 63, 70, 0.8);
+        border-radius: 22px;
+        overflow: hidden;
+      }
+      .terminal-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px;
+        background: rgba(24, 24, 27, 0.92);
+        border-bottom: 1px solid rgba(63, 63, 70, 0.6);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px; color: #a1a1aa;
+      }
+      .dots { display: flex; gap: 8px; }
+      .dots span { width: 11px; height: 11px; border-radius: 9999px; }
+      .terminal-body {
+        padding: 24px 26px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 18px;
+        line-height: 1.75;
+        color: #d4d4d8;
+      }
+      .ok { color: #4ade80; font-weight: 700; }
+      .dim { color: #71717a; }
+      .footer {
+        display: flex; align-items: center; justify-content: space-between;
+        padding-top: 22px; border-top: 1px solid rgba(63, 63, 70, 0.45);
+        font-size: 19px; font-weight: 600; color: #a1a1aa;
+      }
+      .footer-brand {
+        display: inline-flex; align-items: center; gap: 14px;
+        font-family: "Space Grotesk", sans-serif; font-weight: 700; color: #ffffff;
+      }
+      .logo-sm { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; }
+      .qr-box {
+        background: #ffffff; padding: 18px; border-radius: 22px;
+        width: 210px; height: 210px; flex-shrink: 0;
+      }
+      .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+    </style>
+  </head>
+  <body>
+    <!-- SLIDE 1: PORTADA TÉCNICA -->
+    <section class="slide" data-name="slide-01-portada" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="115" data-maxdist="110" data-seed="301"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> build-in-public / arquitectura</span>
+          <span class="ci-pill"><span class="dot-green"></span> 41/41 CI Passing</span>
+        </div>
+
+        <div class="stack" style="gap: 30px; margin: auto 0;">
+          <h1 class="h1-cover">
+            Cómo construí <span class="red">CoFound UE</span> con seguridad de producción.
+          </h1>
+          <p class="lead">
+            De proyecto universitario a plataforma real: decisiones de stack, reglas de Firestore, RGPD y móvil en 5 láminas.
+          </p>
+
+          <div class="terminal">
+            <div class="terminal-bar">
+              <div class="dots">
+                <span style="background:#ef4444;"></span>
+                <span style="background:#f59e0b;"></span>
+                <span style="background:#10b981;"></span>
+              </div>
+              <span>github.com/markusx5622/CoFound-UE</span>
+            </div>
+            <div class="terminal-body">
+              <div><span class="dim">$</span> npm run build &amp;&amp; npm test</div>
+              <div><span class="ok">✓</span> Next.js 14 App Router · TypeScript estricto</div>
+              <div><span class="ok">✓</span> 41/41 Firestore Security Rules tests (Vitest)</div>
+              <div><span class="ok">✓</span> CSP estricta + 7 HTTP headers + GCP API Lock</div>
+              <div><span class="ok">✓</span> PWA mobile-first · Bilingüe ES/EN · RGPD</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE · Ingeniería
+          </span>
+          <span style="color:#ffffff;">Desliza · 01 / 05 →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: STACK FULL-STACK -->
+    <section class="slide" data-name="slide-02-stack" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="110" data-maxdist="110" data-seed="302"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> 01 / stack full-stack</span>
+          <span class="page-num">02 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 26px; margin: auto 0;">
+          <h2 class="h2-sec">Rápida en móvil.<br /><span class="red">Simple</span> de escalar.</h2>
+          <p class="lead">El 95 % del uso en campus será desde el móvil: priorizamos latencia baja, cero bloat y tiempo real nativo.</p>
+
+          <div class="grid-2">
+            <div class="card">
+              <span class="code-tag">Next.js 14 + TS</span>
+              <div class="card-title">App Router &amp; Tipado</div>
+              <p class="card-body">SEO técnico completo (sitemap, robots, JSON-LD, dominio canónico) y contratos estrictos en cliente.</p>
+            </div>
+            <div class="card">
+              <span class="code-tag">Tailwind + Motion</span>
+              <div class="card-title">UX Mobile-First</div>
+              <p class="card-body">Modales tipo bottom-sheet en 375px, scrollbars dark, feedback táctil y soporte global <code>reducedMotion</code>.</p>
+            </div>
+            <div class="card">
+              <span class="code-tag">Firebase + Firestore</span>
+              <div class="card-title">Tiempo Real Atómico</div>
+              <p class="card-body">Postulaciones deterministas (<code>projectId_uid</code>) y chat directo con <code>writeBatch</code> y <code>onSnapshot</code>.</p>
+            </div>
+            <div class="card">
+              <span class="code-tag">Service Worker</span>
+              <div class="card-title">PWA Instalable</div>
+              <p class="card-body">Instalación directa en iOS y Android con iconos maskable y prompt inteligente no invasivo (30d).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span style="color:#ffffff;">Siguiente →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: SEGURIDAD MULTICAPA -->
+    <section class="slide" data-name="slide-03-seguridad" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="110" data-maxdist="110" data-seed="303"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> 02 / seguridad en capas</span>
+          <span class="page-num">03 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 24px; margin: auto 0;">
+          <h2 class="h2-sec">La seguridad <span class="red">no</span> se deja solo al frontend.</h2>
+
+          <div class="stack" style="gap: 18px;">
+            <div class="card card-red">
+              <span class="code-tag">firestore.rules</span>
+              <div class="card-title">Blindaje real en base de datos</div>
+              <p class="card-body" style="color:#e4e4e7;">Dominio UE y <code>email_verified == true</code> exigidos en backend, <code>allow list: if false</code> en <code>/users</code> contra scraping, esquemas cerrados <code>hasOnly</code> y cierre de chat en solicitudes rechazadas.</p>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <span class="code-tag">GCP + Auth</span>
+                <div class="card-title" style="font-size: 24px;">Consola endurecida</div>
+                <p class="card-body" style="font-size: 19px;">API Key restringida a 4 orígenes y 4 APIs exactas + protección contra enumeración de correos.</p>
+              </div>
+              <div class="card">
+                <span class="code-tag">next.config.mjs</span>
+                <div class="card-title" style="font-size: 24px;">CSP + 7 Headers</div>
+                <p class="card-body" style="font-size: 19px;">Content-Security-Policy estricta, HSTS, X-Frame-Options y redirección canónica 308.</p>
+              </div>
+            </div>
+
+            <div class="card" style="padding: 22px 28px; display:flex; align-items:center; justify-content:space-between;">
+              <div>
+                <div class="card-title" style="font-size: 24px; margin-bottom: 4px;">41 tests automatizados en GitHub Actions</div>
+                <p class="card-body" style="font-size: 18.5px;">Vitest + Firestore Emulator validan cada <code>push</code> a <code>main</code> antes del deploy.</p>
+              </div>
+              <span class="ci-pill"><span class="dot-green"></span> 41/41 PASS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span style="color:#ffffff;">Siguiente →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: RGPD + BILINGÜISMO -->
+    <section class="slide" data-name="slide-04-rgpd-i18n" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="110" data-maxdist="110" data-seed="304"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> 03 / rgpd + i18n</span>
+          <span class="page-num">04 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 26px; margin: auto 0;">
+          <h2 class="h2-sec">Privacidad real.<br />Campus <span class="red">internacional</span>.</h2>
+
+          <div class="card">
+            <span class="code-tag">RGPD &amp; LOPDGDD</span>
+            <div class="card-title">Privacidad por diseño (no solo un footer)</div>
+            <p class="card-body">
+              • <strong style="color:#fff;">Cero emails públicos:</strong> las reglas impiden guardar <code>email</code> en documentos de perfil.<br />
+              • <strong style="color:#fff;">Derecho al olvido real:</strong> reautenticación con contraseña + borrado en cascada (mensajes → postulaciones → proyectos → perfil → Auth).<br />
+              • <strong style="color:#fff;">Telemetría sin PII:</strong> logs de errores con TTL automático de 30 días.
+            </p>
+          </div>
+
+          <div class="card card-red">
+            <span class="code-tag">lib/demo-i18n.ts</span>
+            <div class="card-title">Bilingüe ES / EN en 2 capas (coste 0 €)</div>
+            <p class="card-body" style="color:#e4e4e7;">
+              • <strong style="color:#fff;">Capa 1 (nativa):</strong> interfaz completa y escaparate oficial localizados en español e inglés con búsqueda bilingüe.<br />
+              • <strong style="color:#fff;">Capa 2 (bajo demanda):</strong> botón de traducción instantánea en proyectos de alumnos sin APIs de pago ni dependencias externas.
+            </p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span style="color:#ffffff;">Última lámina →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: CIERRE REPO + WEB -->
+    <section class="slide" data-name="slide-05-cierre" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="120" data-maxdist="110" data-seed="305"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> código abierto de portafolio</span>
+          <span class="page-num">05 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 30px; margin: auto 0;">
+          <h2 class="h1-cover" style="font-size: 68px;">
+            Revisa la arquitectura.<br />
+            Sigue el <span class="red">piloto real</span>.
+          </h2>
+          <p class="lead">
+            Todo el código fuente, las reglas de Firestore y el protocolo de pruebas están abiertos en GitHub para quien quiera auditarlos.
+          </p>
+
+          <div class="card" style="display:flex; align-items:center; justify-content:space-between; gap:28px;">
+            <div class="stack" style="gap: 14px;">
+              <span class="code-tag" style="margin-bottom:0; width:fit-content;">github.com/markusx5622/CoFound-UE</span>
+              <div style="font-family:'Space Grotesk',sans-serif; font-size: 36px; font-weight: 700; color:#ffffff;">www.cofoundue.es</div>
+              <p class="card-body" style="font-size: 19px;">Lanzamiento oficial el <strong style="color:#fff;">día 11</strong> en Campus Turia y Alameda. Sigue la página de <strong style="color:#fff;">CoFound UE</strong> en LinkedIn.</p>
+            </div>
+            <div class="qr-box">
+              <img src="/marketing/assets/qr-cofoundue.svg" alt="QR CoFound UE" />
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span>Iniciativa estudiantil independiente</span>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      function createRng(seed) {
+        let s = seed >>> 0;
+        return () => {
+          s = (s + 0x6d2b79f5) | 0;
+          let t = Math.imul(s ^ (s >>> 15), 1 | s);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      document.querySelectorAll(".slide").forEach((slide) => {
+        const canvas = slide.querySelector(".constellation-canvas");
+        if (!canvas) return;
+        const w = 1080, h = 1350, dpr = 2;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const rand = createRng(Number(canvas.dataset.seed || 301));
+        const pts = [];
+        for (let i = 0; i < 110; i++) {
+          const isRed = rand() > 0.24;
+          pts.push({
+            x: rand() * w, y: rand() * h, r: rand() * 0.9 + 0.55,
+            color: isRed
+              ? `rgba(230, 0, 0, ${(0.24 + rand() * 0.26).toFixed(2)})`
+              : `rgba(255, 255, 255, ${(0.14 + rand() * 0.18).toFixed(2)})`,
+          });
+        }
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+            if (d < 110) {
+              ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${((1 - d / 110) * 0.085).toFixed(3)})`;
+              ctx.lineWidth = 0.55; ctx.stroke();
+            }
+          }
+        }
+        for (const p of pts) {
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color; ctx.fill();
+        }
+      });
+    </script>
+  </body>
+</html>

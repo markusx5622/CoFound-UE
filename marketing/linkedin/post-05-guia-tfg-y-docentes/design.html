@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoFound UE — LinkedIn Post 05: Guía Práctica TFG & Docentes UEV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: #030305; color: #ffffff;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex; flex-direction: column; align-items: center; gap: 48px; padding: 48px 24px;
+      }
+      .slide {
+        width: 1080px; height: 1350px;
+        position: relative; overflow: hidden;
+        background: #09090b;
+        padding: 78px 82px;
+        display: flex; flex-direction: column; justify-content: space-between;
+      }
+      .bg-grid {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0.9) 25%, transparent 82%);
+        pointer-events: none;
+      }
+      .top-accent {
+        position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        background: linear-gradient(90deg, transparent 0%, #e60000 50%, transparent 100%);
+      }
+      .glow-tr {
+        position: absolute; top: -220px; right: -180px; width: 680px; height: 680px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(230, 0, 0, 0.22) 0%, rgba(230, 0, 0, 0.05) 45%, transparent 72%);
+        pointer-events: none;
+      }
+      .constellation-canvas {
+        position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
+      }
+      .content {
+        position: relative; z-index: 2; height: 100%;
+        display: flex; flex-direction: column; justify-content: space-between;
+      }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 9px 18px; border-radius: 9999px;
+        background: rgba(24, 24, 27, 0.88);
+        border: 1px solid rgba(63, 63, 70, 0.78);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px; font-weight: 700; letter-spacing: 0.09em;
+        text-transform: uppercase; color: #f4f4f5;
+      }
+      .dot-red {
+        width: 9px; height: 9px; border-radius: 9999px;
+        background: #e60000; box-shadow: 0 0 12px rgba(230, 0, 0, 0.9);
+      }
+      .page-num {
+        font-family: "Space Grotesk", sans-serif; font-size: 18px; font-weight: 700; color: #71717a;
+      }
+      h1, h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700; letter-spacing: -0.03em; line-height: 1.06; color: #ffffff;
+      }
+      .h1-cover { font-size: 76px; }
+      .h2-sec { font-size: 58px; }
+      .red { color: #e60000; }
+      .lead { font-size: 28px; line-height: 1.42; color: #a1a1aa; }
+      .stack { display: flex; flex-direction: column; gap: 24px; }
+      .card {
+        background: rgba(19, 19, 24, 0.88);
+        border: 1px solid rgba(63, 63, 70, 0.76);
+        border-radius: 26px;
+        padding: 32px 34px;
+        box-shadow: 0 18px 44px rgba(0, 0, 0, 0.48);
+      }
+      .card-red {
+        background: rgba(230, 0, 0, 0.08);
+        border-color: rgba(230, 0, 0, 0.38);
+      }
+      .badge-num {
+        display: inline-block;
+        padding: 6px 14px; border-radius: 10px;
+        background: rgba(230, 0, 0, 0.16);
+        border: 1px solid rgba(230, 0, 0, 0.4);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px; font-weight: 700; color: #fca5a5;
+        margin-bottom: 14px;
+      }
+      .card-title {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 30px; font-weight: 700; color: #ffffff; margin-bottom: 10px;
+      }
+      .card-body { font-size: 22px; line-height: 1.44; color: #a1a1aa; }
+      .chip-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+      .chip {
+        padding: 9px 16px; border-radius: 12px;
+        background: rgba(9, 9, 11, 0.88);
+        border: 1px solid rgba(63, 63, 70, 0.8);
+        font-size: 18px; font-weight: 600; color: #e4e4e7;
+      }
+      .chip-red {
+        background: rgba(230, 0, 0, 0.14); border-color: rgba(230, 0, 0, 0.42); color: #ffffff;
+      }
+      .footer {
+        display: flex; align-items: center; justify-content: space-between;
+        padding-top: 22px; border-top: 1px solid rgba(63, 63, 70, 0.45);
+        font-size: 20px; font-weight: 600; color: #a1a1aa;
+      }
+      .footer-brand {
+        display: inline-flex; align-items: center; gap: 14px;
+        font-family: "Space Grotesk", sans-serif; font-weight: 700; color: #ffffff;
+      }
+      .logo-sm { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; }
+      .qr-box {
+        background: #ffffff; padding: 18px; border-radius: 22px;
+        width: 220px; height: 220px; flex-shrink: 0;
+      }
+      .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+    </style>
+  </head>
+  <body>
+    <!-- SLIDE 1: PORTADA -->
+    <section class="slide" data-name="slide-01-portada" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="115" data-maxdist="110" data-seed="501"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> Guía rápida · UEV</span>
+          <span class="page-num">01 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 30px; margin: auto 0;">
+          <img src="/public/CoFoundUE_logo.png" alt="CoFound UE" style="width:116px;height:116px;border-radius:26px;box-shadow:0 18px 46px rgba(230,0,0,0.3);" />
+          <h1 class="h1-cover">
+            Monta tu equipo de <span class="red">TFG o reto</span> en 3 minutos.
+          </h1>
+          <p class="lead">
+            Paso a paso práctico para estudiantes de Turia y Alameda — y cómo pueden usar CoFound UE los docentes en clase.
+          </p>
+          <div class="chip-row">
+            <span class="chip chip-red">Estudiantes UEV</span>
+            <span class="chip">TFG &amp; Retos</span>
+            <span class="chip">Docentes</span>
+            <span class="chip">100 % Gratuito</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">www.cofoundue.es</span>
+          <span style="color:#ffffff;">Desliza · 01 / 05 →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: PERFIL Y PUBLICACIÓN -->
+    <section class="slide" data-name="slide-02-perfil-y-publicar" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="110" data-maxdist="110" data-seed="502"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> Pasos 01 y 02</span>
+          <span class="page-num">02 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 26px; margin: auto 0;">
+          <h2 class="h2-sec">De registro a idea publicada <span class="red">sin bloqueos</span>.</h2>
+
+          <div class="card">
+            <span class="badge-num">PASO 01 · 60 SEGUNDOS</span>
+            <div class="card-title">Completa tu perfil con chips rápidos</div>
+            <p class="card-body">Entra con tu <strong style="color:#fff;">@live.uem.es</strong>, elige tu campus (Turia o Alameda), indica tu grado y marca tus habilidades en un toque para que otros creadores sepan qué aportas.</p>
+            <div class="chip-row">
+              <span class="chip">Desarrollo Web</span>
+              <span class="chip">Figma / UI</span>
+              <span class="chip">Finanzas / ADE</span>
+              <span class="chip">Datos / IA</span>
+            </div>
+          </div>
+
+          <div class="card card-red">
+            <span class="badge-num">PASO 02 · SIN HOJA EN BLANCO</span>
+            <div class="card-title">Publica con nuestra plantilla guiada</div>
+            <p class="card-body" style="color:#e4e4e7;">Pulsa «Usar plantilla» para estructurar problema, estado actual y qué buscas, selecciona la categoría (<strong style="color:#fff;">TFG, Reto o Startup</strong>) y añade hasta 10 perfiles.</p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span style="color:#ffffff;">Siguiente →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: POSTULACIÓN, CHAT E IDIOMA -->
+    <section class="slide" data-name="slide-03-postular-y-chat" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="110" data-maxdist="110" data-seed="503"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> Pasos 03 y 04</span>
+          <span class="page-num">03 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 26px; margin: auto 0;">
+          <h2 class="h2-sec">Contexto real.<br /><span class="red">Cero</span> barreras de idioma.</h2>
+
+          <div class="card">
+            <span class="badge-num">PASO 03 · CHAT AUTOMÁTICO</span>
+            <div class="card-title">Postúlate con una presentación breve</div>
+            <p class="card-body">Al postularte eliges el rol al que aplicas y escribes 2 líneas sobre ti. CoFound UE envía esa presentación como <strong style="color:#fff;">primer mensaje en el chat privado 1 a 1</strong> para romper el hielo al instante.</p>
+          </div>
+
+          <div class="card">
+            <span class="badge-num">PASO 04 · INTERNACIONAL</span>
+            <div class="card-title">Interfaz ES/EN + traducción en 1 clic</div>
+            <p class="card-body">¿Eres estudiante internacional o quieres colaborar con alguien de otro idioma? Cambia la app a inglés o español y utiliza el botón <strong style="color:#fff;">«Traducir proyecto»</strong> dentro de cualquier ficha real.</p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span style="color:#ffffff;">Siguiente →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: PARA DOCENTES UEV -->
+    <section class="slide" data-name="slide-04-docentes-uev" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="110" data-maxdist="110" data-seed="504"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> Para docentes y clubes UEV</span>
+          <span class="page-num">04 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 26px; margin: auto 0;">
+          <h2 class="h2-sec">¿Impartes retos o diriges <span class="red">TFGs</span>?</h2>
+          <p class="lead">CoFound UE también admite correos <strong style="color:#fff;">@universidadeuropea.es</strong> y está lista para usar como herramienta gratuita en el aula.</p>
+
+          <div class="stack" style="gap: 18px;">
+            <div class="card" style="padding: 26px 30px;">
+              <div class="card-title" style="font-size: 26px;">1 · Dinámica de 5 minutos con QR en clase</div>
+              <p class="card-body" style="font-size: 20px;">Los alumnos escanean desde el móvil, publican su reto o buscan un perfil complementario en otro grado.</p>
+            </div>
+            <div class="card" style="padding: 26px 30px;">
+              <div class="card-title" style="font-size: 26px;">2 · Cruce real entre Turia y Alameda</div>
+              <p class="card-body" style="font-size: 20px;">Ideal para proyectos interdisciplinares entre Salud, Deporte, Ingeniería, Diseño y Empresa.</p>
+            </div>
+            <div class="card card-red" style="padding: 26px 30px;">
+              <div class="card-title" style="font-size: 26px;">3 · Te enviamos el kit de diapositiva QR</div>
+              <p class="card-body" style="font-size: 20px; color:#e4e4e7;">Escríbenos a <strong style="color:#fff;">cofoundue@gmail.com</strong> y preparamos una demo rápida de 5 min para tu asignatura o club.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span style="color:#ffffff;">Última lámina →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: CIERRE -->
+    <section class="slide" data-name="slide-05-cierre" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-tr"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="120" data-maxdist="110" data-seed="505"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> Empieza hoy</span>
+          <span class="page-num">05 / 05</span>
+        </div>
+
+        <div class="stack" style="gap: 30px; margin: auto 0;">
+          <h2 class="h1-cover" style="font-size: 70px;">
+            Tu próximo equipo está en la <span class="red">otra facultad</span>.
+          </h2>
+          <p class="lead">
+            Guarda esta guía, compártela con quien esté montando TFG este cuatrimestre y sigue a <strong style="color:#fff;">CoFound UE</strong> en LinkedIn.
+          </p>
+
+          <div class="card card-red" style="display:flex; align-items:center; gap:32px; padding:32px;">
+            <div class="qr-box">
+              <img src="/marketing/assets/qr-cofoundue.svg" alt="QR CoFound UE" />
+            </div>
+            <div class="stack" style="gap: 12px;">
+              <div style="font-family:'Space Grotesk',sans-serif; font-size: 40px; font-weight: 700; color:#ffffff;">www.cofoundue.es</div>
+              <p class="card-body" style="font-size: 20px; color:#e4e4e7;">Alumnos y docentes UE · Campus Turia y Alameda</p>
+              <div class="chip-row" style="margin-top: 6px;">
+                <span class="chip">cofoundue@gmail.com</span>
+                <span class="chip">IG: @cofoundue</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="footer-brand">
+            <img src="/public/CoFoundUE_logo.png" alt="" class="logo-sm" />
+            CoFound UE
+          </span>
+          <span style="font-size:15px; color:#71717a;">Iniciativa estudiantil independiente (sin afiliación oficial UE)</span>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      function createRng(seed) {
+        let s = seed >>> 0;
+        return () => {
+          s = (s + 0x6d2b79f5) | 0;
+          let t = Math.imul(s ^ (s >>> 15), 1 | s);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      document.querySelectorAll(".slide").forEach((slide) => {
+        const canvas = slide.querySelector(".constellation-canvas");
+        if (!canvas) return;
+        const w = 1080, h = 1350, dpr = 2;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const rand = createRng(Number(canvas.dataset.seed || 501));
+        const pts = [];
+        for (let i = 0; i < 110; i++) {
+          const isRed = rand() > 0.24;
+          pts.push({
+            x: rand() * w, y: rand() * h, r: rand() * 0.9 + 0.55,
+            color: isRed
+              ? `rgba(230, 0, 0, ${(0.24 + rand() * 0.26).toFixed(2)})`
+              : `rgba(255, 255, 255, ${(0.14 + rand() * 0.18).toFixed(2)})`,
+          });
+        }
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+            if (d < 110) {
+              ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${((1 - d / 110) * 0.085).toFixed(3)})`;
+              ctx.lineWidth = 0.55; ctx.stroke();
+            }
+          }
+        }
+        for (const p of pts) {
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color; ctx.fill();
+        }
+      });
+    </script>
+  </body>
+</html>

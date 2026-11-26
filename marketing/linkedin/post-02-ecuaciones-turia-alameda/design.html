@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoFound UE — LinkedIn Post 02: Infografía Turia × Alameda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: #030305;
+        color: #ffffff;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 48px 24px;
+      }
+      .slide {
+        width: 1080px;
+        height: 1350px;
+        position: relative;
+        overflow: hidden;
+        background: #09090b;
+        padding: 68px 72px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .bg-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+        background-size: 46px 46px;
+        mask-image: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0.9) 25%, transparent 82%);
+        pointer-events: none;
+      }
+      .top-accent {
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 4px;
+        background: linear-gradient(90deg, transparent 0%, #e60000 50%, transparent 100%);
+      }
+      .glow-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 820px; height: 820px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(230, 0, 0, 0.16) 0%, rgba(230, 0, 0, 0.03) 48%, transparent 72%);
+        pointer-events: none;
+      }
+      .constellation-canvas {
+        position: absolute;
+        inset: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 1;
+      }
+      .content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 28px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 18px;
+        border-radius: 9999px;
+        background: rgba(24, 24, 27, 0.88);
+        border: 1px solid rgba(63, 63, 70, 0.78);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #f4f4f5;
+      }
+      .dot-red {
+        width: 9px; height: 9px; border-radius: 9999px;
+        background: #e60000;
+        box-shadow: 0 0 12px rgba(230, 0, 0, 0.9);
+      }
+      .brand-mini {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      .brand-mini img {
+        width: 44px; height: 44px; border-radius: 10px; object-fit: cover;
+      }
+      .header-block {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.07;
+      }
+      .red { color: #e60000; }
+      .sub {
+        font-size: 24px;
+        line-height: 1.4;
+        color: #a1a1aa;
+      }
+      .grid-2x2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        flex-grow: 1;
+      }
+      .eq-card {
+        background: rgba(19, 19, 24, 0.88);
+        border: 1px solid rgba(63, 63, 70, 0.75);
+        border-radius: 26px;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+      }
+      .eq-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(230, 0, 0, 0.65), transparent);
+      }
+      .campus-tag {
+        display: inline-flex;
+        width: fit-content;
+        padding: 5px 12px;
+        border-radius: 9999px;
+        background: rgba(9, 9, 11, 0.9);
+        border: 1px solid rgba(63, 63, 70, 0.8);
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #a1a1aa;
+        margin-bottom: 14px;
+      }
+      .eq-formula {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .eq-pill {
+        padding: 8px 13px;
+        border-radius: 12px;
+        background: rgba(230, 0, 0, 0.12);
+        border: 1px solid rgba(230, 0, 0, 0.35);
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      .eq-plus {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #e60000;
+      }
+      .eq-title {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 25px;
+        font-weight: 700;
+        line-height: 1.22;
+        color: #ffffff;
+        margin-bottom: 14px;
+      }
+      .eq-points {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .eq-points li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 17px;
+        line-height: 1.38;
+        color: #a1a1aa;
+      }
+      .eq-points li strong {
+        color: #e4e4e7;
+      }
+      .bullet-dot {
+        width: 7px; height: 7px; border-radius: 9999px;
+        background: #e60000;
+        margin-top: 8px;
+        flex-shrink: 0;
+      }
+      .bottom-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 20px 26px;
+        border-radius: 22px;
+        background: rgba(24, 24, 27, 0.9);
+        border: 1px solid rgba(230, 0, 0, 0.36);
+      }
+      .bottom-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .bottom-cta {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      .bottom-meta {
+        font-size: 16px;
+        color: #a1a1aa;
+      }
+      .qr-mini {
+        width: 78px; height: 78px;
+        background: #ffffff;
+        padding: 7px;
+        border-radius: 14px;
+        flex-shrink: 0;
+      }
+      .qr-mini img { width: 100%; height: 100%; object-fit: contain; }
+    </style>
+  </head>
+  <body>
+    <section class="slide" data-name="infografia-turia-alameda" data-width="1080" data-height="1350">
+      <div class="bg-grid"></div>
+      <div class="glow-center"></div>
+      <div class="top-accent"></div>
+      <canvas class="constellation-canvas" data-density="125" data-maxdist="110" data-seed="202"></canvas>
+
+      <div class="content">
+        <div class="topbar">
+          <span class="eyebrow"><span class="dot-red"></span> Campus Turia × Campus Alameda</span>
+          <span class="brand-mini">
+            <img src="/public/CoFoundUE_logo.png" alt="CoFound UE" />
+            CoFound UE
+          </span>
+        </div>
+
+        <div class="header-block">
+          <h1>
+            4 equipos que hoy <span class="red">no existen</span> por culpa del pasillo.
+          </h1>
+          <p class="sub">
+            Dos campus de Valencia a 20 minutos a pie reunidos en un mismo tablero de talento universitario.
+          </p>
+        </div>
+
+        <div class="grid-2x2">
+          <article class="eq-card">
+            <div>
+              <span class="campus-tag">Alameda × Turia</span>
+              <div class="eq-formula">
+                <span class="eq-pill">Fisioterapia / CAFYD</span>
+                <span class="eq-plus">+</span>
+                <span class="eq-pill">Ingeniería / Tech</span>
+              </div>
+              <h2 class="eq-title">App clínica de seguimiento y prevención de lesiones</h2>
+            </div>
+            <ul class="eq-points">
+              <li><span class="bullet-dot"></span><span><strong>Salud/Deporte:</strong> protocolos reales y criterio clínico.</span></li>
+              <li><span class="bullet-dot"></span><span><strong>Ingeniería/Tech:</strong> app móvil, sensores y datos.</span></li>
+            </ul>
+          </article>
+
+          <article class="eq-card">
+            <div>
+              <span class="campus-tag">Alameda × Turia</span>
+              <div class="eq-formula">
+                <span class="eq-pill">Biotec / Nutrición</span>
+                <span class="eq-plus">+</span>
+                <span class="eq-pill">ADE / Marketing</span>
+              </div>
+              <h2 class="eq-title">Lanzamiento y modelo de negocio de un producto de salud</h2>
+            </div>
+            <ul class="eq-points">
+              <li><span class="bullet-dot"></span><span><strong>Ciencia/Salud:</strong> rigor técnico y propuesta diferencial.</span></li>
+              <li><span class="bullet-dot"></span><span><strong>Negocio:</strong> posicionamiento, costes y salida al mercado.</span></li>
+            </ul>
+          </article>
+
+          <article class="eq-card">
+            <div>
+              <span class="campus-tag">Campus Turia</span>
+              <div class="eq-formula">
+                <span class="eq-pill">Ingeniería / Datos</span>
+                <span class="eq-plus">+</span>
+                <span class="eq-pill">ADE / Finanzas</span>
+              </div>
+              <h2 class="eq-title">Prototipo B2B validado con números y clientes reales</h2>
+            </div>
+            <ul class="eq-points">
+              <li><span class="bullet-dot"></span><span><strong>Ingeniería:</strong> arquitectura, automatización y MVP.</span></li>
+              <li><span class="bullet-dot"></span><span><strong>ADE/Finanzas:</strong> pricing, ventas y viabilidad real.</span></li>
+            </ul>
+          </article>
+
+          <article class="eq-card">
+            <div>
+              <span class="campus-tag">Turia × Alameda</span>
+              <div class="eq-formula">
+                <span class="eq-pill">Diseño UI / UX</span>
+                <span class="eq-plus">+</span>
+                <span class="eq-pill">Cualquier grado</span>
+              </div>
+              <h2 class="eq-title">Del PowerPoint de clase a un producto claro y usable</h2>
+            </div>
+            <ul class="eq-points">
+              <li><span class="bullet-dot"></span><span><strong>Diseño:</strong> identidad visual, flujos y prototipo interactivo.</span></li>
+              <li><span class="bullet-dot"></span><span><strong>Tu grado:</strong> conocimiento del problema y validación real.</span></li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="bottom-bar">
+          <div class="bottom-left">
+            <span class="bottom-cta">www.cofoundue.es <span class="red">· Piloto Día 11</span></span>
+            <span class="bottom-meta">Acceso exclusivo UE (@live.uem.es / @universidadeuropea.es) · Iniciativa estudiantil independiente</span>
+          </div>
+          <div class="qr-mini">
+            <img src="/marketing/assets/qr-cofoundue.svg" alt="QR CoFound UE" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      function createRng(seed) {
+        let s = seed >>> 0;
+        return () => {
+          s = (s + 0x6d2b79f5) | 0;
+          let t = Math.imul(s ^ (s >>> 15), 1 | s);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      document.querySelectorAll(".slide").forEach((slide) => {
+        const canvas = slide.querySelector(".constellation-canvas");
+        if (!canvas) return;
+        const w = 1080, h = 1350, dpr = 2;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const rand = createRng(Number(canvas.dataset.seed || 202));
+        const pts = [];
+        for (let i = 0; i < 125; i++) {
+          const isRed = rand() > 0.24;
+          pts.push({
+            x: rand() * w, y: rand() * h, r: rand() * 0.9 + 0.55,
+            color: isRed
+              ? `rgba(230, 0, 0, ${(0.24 + rand() * 0.26).toFixed(2)})`
+              : `rgba(255, 255, 255, ${(0.14 + rand() * 0.18).toFixed(2)})`,
+          });
+        }
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+            if (d < 110) {
+              ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${((1 - d / 110) * 0.085).toFixed(3)})`;
+              ctx.lineWidth = 0.55; ctx.stroke();
+            }
+          }
+        }
+        for (const p of pts) {
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color; ctx.fill();
+        }
+      });
+    </script>
+  </body>
+</html>
