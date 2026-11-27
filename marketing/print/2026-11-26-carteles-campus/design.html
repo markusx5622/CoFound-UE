@@ -192,15 +192,15 @@
       .degree-pills {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px;
+        gap: 18px;
       }
 
       .pill {
-        padding: 18px 34px;
-        border-radius: 22px;
+        padding: 16px 30px;
+        border-radius: 20px;
         background: rgba(24, 24, 27, 0.92);
         border: 2px solid rgba(63, 63, 70, 0.85);
-        font-size: 36px;
+        font-size: 33px;
         font-weight: 600;
         color: #f4f4f5;
       }
@@ -373,11 +373,32 @@
       .footer-social {
         display: flex;
         align-items: center;
-        gap: 44px;
+        gap: 28px;
         font-family: "Space Grotesk", sans-serif;
         font-size: 34px;
         font-weight: 700;
         color: #e4e4e7;
+      }
+
+      .social-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .social-icon {
+        width: 36px;
+        height: 36px;
+        display: block;
+        flex-shrink: 0;
+        color: #e4e4e7;
+      }
+
+      .social-sep {
+        color: #71717a;
+        font-weight: 700;
+        font-size: 38px;
+        line-height: 1;
       }
     </style>
   </head>
@@ -418,8 +439,12 @@
           </p>
           <div class="degree-pills">
             <span class="pill pill-red">Ingeniería &amp; Tech</span>
-            <span class="pill pill-red">Diseño UI/UX</span>
-            <span class="pill pill-red">ADE &amp; Marketing</span>
+            <span class="pill pill-red">Ciencia de Datos &amp; Física</span>
+            <span class="pill pill-red">Arquitectura &amp; Diseño</span>
+            <span class="pill pill-red">ADE &amp; Finanzas</span>
+            <span class="pill pill-red">Marketing</span>
+            <span class="pill pill-red">Derecho &amp; RR.II.</span>
+            <span class="pill pill-red">Criminología</span>
             <span class="pill">+ Salud y Deporte (Alameda)</span>
           </div>
         </div>
@@ -477,8 +502,23 @@
         <footer class="footer">
           <span class="footer-legal">Iniciativa estudiantil independiente, sin afiliación oficial con la Universidad Europea.</span>
           <div class="footer-social">
-            <span>IG: @cofoundue</span>
-            <span>LinkedIn: CoFound UE</span>
+            <span class="social-item">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+              <span>@cofoundue</span>
+            </span>
+            <span class="social-sep">·</span>
+            <span class="social-item">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect x="2" y="9" width="4" height="12" />
+                <circle cx="4" cy="4" r="2" />
+              </svg>
+              <span>CoFound UE</span>
+            </span>
           </div>
         </footer>
       </div>
@@ -520,10 +560,14 @@
           </p>
           <div class="degree-pills">
             <span class="pill pill-red">Fisioterapia</span>
-            <span class="pill pill-red">CAFYD</span>
+            <span class="pill pill-red">Enfermería</span>
+            <span class="pill pill-red">Psicología</span>
+            <span class="pill pill-red">Odontología</span>
+            <span class="pill pill-red">Biomedicina</span>
             <span class="pill pill-red">Biotecnología</span>
-            <span class="pill pill-red">Odontología &amp; Nutrición</span>
-            <span class="pill">+ Tech, Diseño y ADE (Turia)</span>
+            <span class="pill pill-red">CAFYD</span>
+            <span class="pill pill-red">Nutrición</span>
+            <span class="pill">+ Tech, Diseño y Empresa (Turia)</span>
           </div>
         </div>
 
@@ -580,8 +624,23 @@
         <footer class="footer">
           <span class="footer-legal">Iniciativa estudiantil independiente, sin afiliación oficial con la Universidad Europea.</span>
           <div class="footer-social">
-            <span>IG: @cofoundue</span>
-            <span>LinkedIn: CoFound UE</span>
+            <span class="social-item">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+              <span>@cofoundue</span>
+            </span>
+            <span class="social-sep">·</span>
+            <span class="social-item">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect x="2" y="9" width="4" height="12" />
+                <circle cx="4" cy="4" r="2" />
+              </svg>
+              <span>CoFound UE</span>
+            </span>
           </div>
         </footer>
       </div>
