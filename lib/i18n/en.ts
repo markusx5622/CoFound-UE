@@ -171,7 +171,7 @@ export const en: Dictionary = {
     campus: "Turia and Alameda Campus",
     university: "European University of Valencia",
     rights: "All rights reserved.",
-    designedBy: "Designed and developed by"
+    designedBy: "Developed with ❤️ for the European University community."
   },
   pwaPrompt: {
     title: "Install CoFound UE on your phone",

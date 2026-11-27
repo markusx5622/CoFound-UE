@@ -143,7 +143,7 @@ export default function Footer() {
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
           <p>© {currentYear} Marc Cubero Cantavella · CoFound UE. {t("footer.rights")}</p>
           <p className="text-zinc-400 text-sm mb-4 md:mb-0">
-            {t("footer.designedBy")} Marc Cubero Cantavella
+            {t("footer.designedBy")}
           </p>
         </div>
       </div>

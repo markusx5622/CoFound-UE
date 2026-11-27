@@ -169,7 +169,7 @@ export const es = {
     campus: "Campus Turia y Alameda",
     university: "Universidad Europea de Valencia",
     rights: "Todos los derechos reservados.",
-    designedBy: "Diseñado y desarrollado por"
+    designedBy: "Desarrollado con ❤️ para la comunidad de la Universidad Europea."
   },
   pwaPrompt: {
     title: "Instala CoFound UE en tu móvil",
