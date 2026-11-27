@@ -1,6 +1,8 @@
 <div align="center">
 
-  <img src="public/CoFoundUE_banner.png" alt="CoFound UE Banner" width="100%" />
+  <img src="public/CoFoundUE_banner_v2.png"
+     alt="CoFound UE Banner"
+     width="100%" />
 
   <br/><br/>
 
