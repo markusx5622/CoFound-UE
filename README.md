@@ -1,42 +1,40 @@
 <div align="center">
 
-  <img src="public/CoFoundUE_banner.png" alt="CoFound UE Banner" width="100%" style="border-radius: 20px; margin-bottom: 20px;" />
+  <img src="public/CoFoundUE_banner.png" alt="CoFound UE Banner" width="100%" />
+
+  <br/><br/>
 
   ### *La Plataforma Exclusiva de Co-Founders y Talento para la Universidad Europea*
 
+  [![Producción](https://img.shields.io/badge/En_Producción-www.cofoundue.es-E60000?style=for-the-badge)](https://www.cofoundue.es)
+  [![Tests CI](https://img.shields.io/badge/Firestore_Tests-41%2F41_Passing-10B981?style=for-the-badge&logo=vitest&logoColor=white)](#-pruebas-testing)
   [![Next.js](https://img.shields.io/badge/Next.js-14.2.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-10.12-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
   [![License: Propietaria](https://img.shields.io/badge/License-Propietaria-red.svg?style=for-the-badge)](LICENSE)
-  ![Estado](https://img.shields.io/badge/Estado-En_desarrollo_activo-brightgreen?style=for-the-badge)
 
   🇬🇧 [English version available](README.en.md)
- 
+
   <p align="center">
-    <strong>Conecta con estudiantes de ADE, Ingeniería, Salud, Deporte, Marketing, Tech y Diseño para transformar ideas universitarias en proyectos reales.</strong>
-  
-  [Explorar Características](#-características-principales) •
-  [Arquitectura](#-arquitectura-del-proyecto) •
-  [Flujo de la Aplicación](#-flujo-de-la-aplicación) •
-  [Vídeo Explicativo Breve](#-vídeo-de-presentación-1-min) •
-  [Instalación](#-instalación-y-configuración-local) •
-  [Modelo de Datos](#-modelo-de-datos-firestore) •
-  [Roadmap](#-roadmap) •
-  [Despliegue](#-despliegue)
-  
+    <strong>Conecta con estudiantes de Ingeniería, Datos, Diseño, ADE, Marketing, Derecho, Salud y Deporte para transformar ideas universitarias en proyectos reales.</strong>
   </p>
+
+  [Vista en Vivo](#-vista-en-vivo-y-acceso-rápido) •
+  [Características](#-características-principales) •
+  [Arquitectura](#-arquitectura-del-proyecto) •
+  [Flujo](#-flujo-de-la-aplicación) •
+  [Vídeo](#-vídeo-de-presentación-1-min) •
+  [Instalación](#-instalación-y-configuración-local) •
+  [Testing](#-pruebas-testing) •
+  [Roadmap](#-roadmap)
 
   ---
 
-  
-
 </div>
 
-<br/>
-
-> [!NOTE]
-> **Proyecto en desarrollo activo:** CoFound UE es un proyecto universitario en desarrollo activo para la comunidad de la Universidad Europea ([www.cofoundue.es](https://www.cofoundue.es)).
+> [!TIP]
+> **Plataforma en producción:** **CoFound UE** está operativa en **[www.cofoundue.es](https://www.cofoundue.es)** para el piloto en **Campus Turia y Campus Alameda** (Universidad Europea de Valencia), accesible exclusivamente con correos `@live.uem.es` y `@universidadeuropea.es`.
 
 ## 📌 Visión General
 
@@ -49,6 +47,32 @@ Ante esta fricción, nace **CoFound UE**: una plataforma web full-stack diseñad
 * **Matchmaking por Habilidades:** Conexión estratégica entre creadores de ideas e integradores técnicos o de negocio.
 * **Formatos Flexibles:** Proyectos categorizados en *Retos Académicos*, *TFGs* y *Startups Reales*.
 * **Experiencia de Usuario Inmersiva:** Interfaz en modo oscuro moderna con animaciones dinámicas de partículas en tiempo real mediante canvas interactivo.
+
+---
+
+## 📱 Vista en Vivo y Acceso Rápido
+
+<table align="center">
+  <tr>
+    <td align="center" width="44%">
+      <img src="marketing/assets/screenshots/landing-hero-mobile.png" alt="CoFound UE en móvil (www.cofoundue.es)" width="250" />
+      <br/>
+      <sub><strong>Captura real mobile-first</strong> · iOS / Android PWA</sub>
+    </td>
+    <td align="center" width="56%">
+      <img src="marketing/assets/qr-cofoundue.svg" alt="QR oficial CoFound UE" width="175" />
+      <br/><br/>
+      <strong><a href="https://www.cofoundue.es">www.cofoundue.es</a></strong>
+      <br/><br/>
+      <sub>
+        • Acceso verificado: <code>@live.uem.es</code> y <code>@universidadeuropea.es</code><br/>
+        • Interfaz y escaparate bilingües <strong>ES / EN</strong> en 2 capas<br/>
+        • Chat privado <strong>1 a 1</strong> en tiempo real · 100 % gratuita<br/>
+        • Redes: <a href="https://www.instagram.com/cofoundue/">Instagram (@cofoundue)</a> · <a href="https://www.linkedin.com/company/cofound-ue/">LinkedIn (CoFound UE)</a>
+      </sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -88,6 +112,13 @@ Ante esta fricción, nace **CoFound UE**: una plataforma web full-stack diseñad
 ---
 
 ## 📂 Arquitectura del Proyecto
+
+<p align="center">
+  <img src="marketing/assets/github-architecture-banner.png" alt="Código y arquitectura de CoFound UE" width="100%" />
+</p>
+
+<details>
+<summary><strong>Ver árbol completo de directorios y módulos del repositorio</strong></summary>
 
 ```
 CoFound-UE/
@@ -179,6 +210,8 @@ CoFound-UE/
 ├── tailwind.config.ts                    # Configuración del tema Tailwind
 └── tsconfig.json                         # Reglas del compilador de TypeScript
 ```
+
+</details>
 
 ## 🎬 Vídeo de Presentación (1 min)
  

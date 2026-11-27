@@ -1,43 +1,43 @@
 <div align="center">
 
-  <img src="public/CoFoundUE_banner.png" alt="CoFound UE Banner" width="100%" style="border-radius: 20px; margin-bottom: 20px;" />
+  <img src="public/CoFoundUE_banner.png" alt="CoFound UE Banner" width="100%" />
+
+  <br/><br/>
 
   ### *The Exclusive Co-Founders and Talent Platform for the European University*
 
+  [![Production](https://img.shields.io/badge/Live-www.cofoundue.es-E60000?style=for-the-badge)](https://www.cofoundue.es)
+  [![CI Tests](https://img.shields.io/badge/Firestore_Tests-41%2F41_Passing-10B981?style=for-the-badge&logo=vitest&logoColor=white)](#-testing)
   [![Next.js](https://img.shields.io/badge/Next.js-14.2.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-10.12-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
   [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg?style=for-the-badge)](LICENSE)
-  ![Status](https://img.shields.io/badge/Status-In_Active_Development-brightgreen?style=for-the-badge)
 
   🇪🇸 [Versión en español disponible](README.md)
- 
+
   <p align="center">
-    <strong>Connect with Business, Engineering, Health, Sports, Marketing, Tech, and Design students to turn university ideas into real projects.</strong>
-  
+    <strong>Connect with Engineering, Data Science, Design, Business, Marketing, Law, Health, and Sports students to turn university ideas into real projects.</strong>
+  </p>
+
+  [Live Preview](#-live-preview--quick-access) •
   [Key Features](#-key-features) •
   [Architecture](#-project-architecture) •
-  [Application Flow](#-application-flow) •
-  [Brief Presentation Video](#-presentation-video-1-min) •
+  [Flow](#-application-flow) •
+  [Video](#-presentation-video-1-min) •
   [Installation](#-installation-and-local-setup) •
-  [Data Model](#-data-model-firestore) •
-  [Roadmap](#-roadmap) •
-  [Deployment](#-deployment)
-  
-  </p>
+  [Testing](#-testing) •
+  [Roadmap](#-roadmap)
 
   ---
 
 </div>
 
-<br/>
-
 > [!NOTE]
 > **Courtesy Translation:** This English version of the README is provided for international readers and exchange students. The primary and legally binding documentation remains in Spanish ([README.md](README.md)).
 
-> [!NOTE]
-> **Project in active development:** CoFound UE is a university project in active development for the European University community ([www.cofoundue.es](https://www.cofoundue.es)).
+> [!TIP]
+> **Live in production:** **CoFound UE** is live at **[www.cofoundue.es](https://www.cofoundue.es)** for the **Turia & Alameda** pilot (European University of Valencia), strictly restricted to `@live.uem.es` and `@universidadeuropea.es` emails.
 
 ## 📌 Overview
 
@@ -50,6 +50,32 @@ To resolve this friction, **CoFound UE** was created: a full-stack web platform 
 * **Skill-Based Matchmaking:** Strategic connections between ideators and technical or business builders.
 * **Flexible Formats:** Projects categorized into *Academic Challenges*, *Final Degree Projects (TFGs)*, and *Real Startups*.
 * **Immersive User Experience:** Modern dark-mode interface featuring dynamic real-time particle animations powered by an interactive canvas.
+
+---
+
+## 📱 Live Preview & Quick Access
+
+<table align="center">
+  <tr>
+    <td align="center" width="44%">
+      <img src="marketing/assets/screenshots/landing-hero-mobile.png" alt="CoFound UE mobile view (www.cofoundue.es)" width="250" />
+      <br/>
+      <sub><strong>Live mobile-first capture</strong> · iOS / Android PWA</sub>
+    </td>
+    <td align="center" width="56%">
+      <img src="marketing/assets/qr-cofoundue.svg" alt="Official CoFound UE QR" width="175" />
+      <br/><br/>
+      <strong><a href="https://www.cofoundue.es">www.cofoundue.es</a></strong>
+      <br/><br/>
+      <sub>
+        • Verified access: <code>@live.uem.es</code> &amp; <code>@universidadeuropea.es</code><br/>
+        • Bilingual <strong>ES / EN</strong> interface &amp; 2-layer showcase<br/>
+        • Real-time <strong>1-on-1</strong> private chat · 100% free<br/>
+        • Socials: <a href="https://www.instagram.com/cofoundue/">Instagram (@cofoundue)</a> · <a href="https://www.linkedin.com/company/cofound-ue/">LinkedIn (CoFound UE)</a>
+      </sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -89,6 +115,13 @@ To resolve this friction, **CoFound UE** was created: a full-stack web platform 
 ---
 
 ## 📂 Project Architecture
+
+<p align="center">
+  <img src="marketing/assets/github-architecture-banner.png" alt="CoFound UE code and architecture" width="100%" />
+</p>
+
+<details>
+<summary><strong>View full repository directory tree and modules</strong></summary>
 
 ```
 CoFound-UE/
@@ -180,6 +213,8 @@ CoFound-UE/
 ├── tailwind.config.ts                    # Tailwind theme configuration
 └── tsconfig.json                         # TypeScript compiler configuration
 ```
+
+</details>
 
 ## 🎬 Presentation Video (1 min)
  
