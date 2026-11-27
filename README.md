@@ -218,9 +218,8 @@ CoFound-UE/
 ## 🎬 Vídeo de Presentación (1 min)
  
 <p align="center">
-  <video src="https://github.com/user-attachments/assets/72fc2bfa-cadf-4fb2-82eb-405d10ed539b" width="100%" controls></video>
+  <video src="marketing/assets/CoFoundUE_Presentacion_Horizontal_1280x720.mp4" width="100%" controls></video>
 </p>
-<p align="center"><em>¿Prefieres verlo directamente? <a href="https://gitdiagram.com/markusx5622/cofound-ue/video">Ábrelo en GitDiagram</a></em></p>
 <br/>
 
 ## 🔄 Flujo de la Aplicación
