@@ -218,7 +218,7 @@ CoFound-UE/
 ## 🎬 Vídeo de Presentación (1 min)
  
 <p align="center">
-  <video src="marketing/assets/CoFoundUE_Presentacion_Horizontal_1280x720.mp4" width="100%" controls></video>
+  <video src="https://github.com/user-attachments/assets/92791c3f-0542-4e74-bb1a-12d377bbf628" width="100%" controls></video>
 </p>
 <br/>
 
