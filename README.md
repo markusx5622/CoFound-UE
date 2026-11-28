@@ -217,9 +217,8 @@ CoFound-UE/
 
 ## 🎬 Vídeo de Presentación (1 min)
  
-<p align="center">
-  <video src="https://github.com/user-attachments/assets/92791c3f-0542-4e74-bb1a-12d377bbf628" width="100%" controls></video>
-</p>
+https://github.com/user-attachments/assets/92791c3f-0542-4e74-bb1a-12d377bbf628
+
 <br/>
 
 ## 🔄 Flujo de la Aplicación
